@@ -6,4 +6,4 @@ Key priorities:
 - Testability
 - Stability
 
-Performance is not in the list, but I'll have an eye on the profiler.
+Performance is not in the list, but I'll have an eye on the profiler if it gets too wild.
