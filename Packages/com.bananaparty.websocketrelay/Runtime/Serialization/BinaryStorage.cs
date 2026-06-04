@@ -23,47 +23,62 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteInt(int key, int value) => _ints[key] = value;
         public int ReadInt(int key) => _ints.TryGetValue(key, out var val) ? val : 0;
+        public bool HasInt(int key) => _ints.ContainsKey(key);
 
         public void WriteFloat(int key, float value) => _floats[key] = value;
         public float ReadFloat(int key) => _floats.TryGetValue(key, out var val) ? val : 0f;
+        public bool HasFloat(int key) => _floats.ContainsKey(key);
 
         public void WriteBool(int key, bool value) => _bools[key] = value;
         public bool ReadBool(int key) => _bools.TryGetValue(key, out var val) ? val : false;
+        public bool HasBool(int key) => _bools.ContainsKey(key);
 
         public void WriteString(int key, string value) => _strings[key] = value;
         public string ReadString(int key) => _strings.TryGetValue(key, out var val) ? val : string.Empty;
+        public bool HasString(int key) => _strings.ContainsKey(key);
 
         public void WriteByte(int key, byte value) => _bytes[key] = value;
         public byte ReadByte(int key) => _bytes.TryGetValue(key, out var val) ? val : 0;
+        public bool HasByte(int key) => _bytes.ContainsKey(key);
 
         public void WriteShort(int key, short value) => _shorts[key] = value;
         public short ReadShort(int key) => _shorts.TryGetValue(key, out var val) ? val : 0;
+        public bool HasShort(int key) => _shorts.ContainsKey(key);
 
         public void WriteLong(int key, long value) => _longs[key] = value;
         public long ReadLong(int key) => _longs.TryGetValue(key, out var val) ? val : 0L;
+        public bool HasLong(int key) => _longs.ContainsKey(key);
 
         public void WriteDouble(int key, double value) => _doubles[key] = value;
         public double ReadDouble(int key) => _doubles.TryGetValue(key, out var val) ? val : 0d;
+        public bool HasDouble(int key) => _doubles.ContainsKey(key);
 
         public void WriteVector2(int key, Vector2 value) => _vector2s[key] = value;
         public Vector2 ReadVector2(int key) => _vector2s.TryGetValue(key, out var val) ? val : Vector2.zero;
+        public bool HasVector2(int key) => _vector2s.ContainsKey(key);
 
         public void WriteVector3(int key, Vector3 value) => _vector3s[key] = value;
         public Vector3 ReadVector3(int key) => _vector3s.TryGetValue(key, out var val) ? val : Vector3.zero;
+        public bool HasVector3(int key) => _vector3s.ContainsKey(key);
 
         public void WriteVector4(int key, Vector4 value) => _vector4s[key] = value;
         public Vector4 ReadVector4(int key) => _vector4s.TryGetValue(key, out var val) ? val : Vector4.zero;
+        public bool HasVector4(int key) => _vector4s.ContainsKey(key);
 
         public void WriteVector2Int(int key, Vector2Int value) => _vector2Ints[key] = value;
         public Vector2Int ReadVector2Int(int key) => _vector2Ints.TryGetValue(key, out var val) ? val : Vector2Int.zero;
+        public bool HasVector2Int(int key) => _vector2Ints.ContainsKey(key);
 
         public void WriteVector3Int(int key, Vector3Int value) => _vector3Ints[key] = value;
         public Vector3Int ReadVector3Int(int key) => _vector3Ints.TryGetValue(key, out var val) ? val : Vector3Int.zero;
+        public bool HasVector3Int(int key) => _vector3Ints.ContainsKey(key);
 
         public void WriteQuaternion(int key, Quaternion value) => _quaternions[key] = value;
         public Quaternion ReadQuaternion(int key) => _quaternions.TryGetValue(key, out var val) ? val : Quaternion.identity;
+        public bool HasQuaternion(int key) => _quaternions.ContainsKey(key);
 
         public void WriteColor(int key, Color value) => _colors[key] = value;
         public Color ReadColor(int key) => _colors.TryGetValue(key, out var val) ? val : Color.clear;
+        public bool HasColor(int key) => _colors.ContainsKey(key);
     }
 }
