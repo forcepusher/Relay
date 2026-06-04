@@ -3,8 +3,10 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StateStorage : IStateStorage
+    public class StateStorage
     {
+        private readonly Dictionary<string, StateStorage> _childStateStorages = new();
+
         private readonly Dictionary<string, int> _ints = new();
         private readonly Dictionary<string, float> _floats = new();
 
@@ -15,5 +17,15 @@ namespace BananaParty.WebSocketRelay
         public void WriteFloat(string key, float value) => _floats[key] = value;
         public float ReadFloat(string key) => _floats[key];
         public bool HasFloat(string key) => _floats.ContainsKey(key);
+
+        public void StartChildGroup(string key, int childCount)
+        {
+            _childStateStorages
+        }
+
+        public void EndChildGroup()
+        {
+
+        }
     }
 }
