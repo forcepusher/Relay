@@ -8,7 +8,7 @@ WebSocket relay server powered by [Bun](https://bun.sh/).
 - **Linux:** `LaunchServer-Linux.sh`
 - **macOS:** `LaunchServer-MacOS.sh`
 
-Default port: **31415** (`ws://localhost:31415`). Chosen as π digits — easy to remember, IANA-unassigned in the user port range (1024–49151), and outside common dev defaults (3000, 5173, 8000, 8080, etc.). Avoid the dynamic range (49152–65535) for a fixed server: the OS uses those for ephemeral client ports, so collisions are more likely.
+Default port **23144** (`ws://localhost:23144`) — leet **RELAY** (`R3L4Y`).
 
 ## Why `--cwd` in the launch scripts?
 
