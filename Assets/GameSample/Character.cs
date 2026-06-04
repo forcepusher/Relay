@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,9 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private CharacterController controller;
         private float verticalVelocity;
+
+        private float Health = 100f;
+        private List<Item> _items= new();
 
         private void Awake()
         {
