@@ -5,51 +5,65 @@ namespace BananaParty.WebSocketRelay
 {
     public class BinaryStorage : IStateStorage<int>
     {
-        private readonly Dictionary<int, object> _data = new();
+        private readonly Dictionary<int, int> _ints = new();
+        private readonly Dictionary<int, float> _floats = new();
+        private readonly Dictionary<int, bool> _bools = new();
+        private readonly Dictionary<int, string> _strings = new();
+        private readonly Dictionary<int, byte> _bytes = new();
+        private readonly Dictionary<int, short> _shorts = new();
+        private readonly Dictionary<int, long> _longs = new();
+        private readonly Dictionary<int, double> _doubles = new();
+        private readonly Dictionary<int, Vector2> _vector2s = new();
+        private readonly Dictionary<int, Vector3> _vector3s = new();
+        private readonly Dictionary<int, Vector4> _vector4s = new();
+        private readonly Dictionary<int, Vector2Int> _vector2Ints = new();
+        private readonly Dictionary<int, Vector3Int> _vector3Ints = new();
+        private readonly Dictionary<int, Quaternion> _quaternions = new();
+        private readonly Dictionary<int, Color> _colors = new();
 
-        public void WriteInt(int key, int value) => _data[key] = value;
-        public int ReadInt(int key) => _data.TryGetValue(key, out var val) ? (int)val : 0;
+        public void WriteInt(int key, int value) => _ints[key] = value;
+        public int ReadInt(int key) => _ints.TryGetValue(key, out var val) ? val : 0;
 
-        public void WriteFloat(int key, float value) => _data[key] = value;
-        public float ReadFloat(int key) => _data.TryGetValue(key, out var val) ? (float)val : 0f;
+        public void WriteFloat(int key, float value) => _floats[key] = value;
+        public float ReadFloat(int key) => _floats.TryGetValue(key, out var val) ? val : 0f;
 
-        public void WriteBool(int key, bool value) => _data[key] = value;
-        public bool ReadBool(int key) => _data.TryGetValue(key, out var val) ? (bool)val : false;
+        public void WriteBool(int key, bool value) => _bools[key] = value;
+        public bool ReadBool(int key) => _bools.TryGetValue(key, out var val) ? val : false;
 
-        public void WriteString(int key, string value) => _data[key] = value;
-        public string ReadString(int key) => _data.TryGetValue(key, out var val) ? (string)val : string.Empty;
+        public void WriteString(int key, string value) => _strings[key] = value;
+        public string ReadString(int key) => _strings.TryGetValue(key, out var val) ? val : string.Empty;
 
-        public void WriteByte(int key, byte value) => _data[key] = value;
-        public byte ReadByte(int key) => _data.TryGetValue(key, out var val) ? (byte)val : 0;
+        public void WriteByte(int key, byte value) => _bytes[key] = value;
+        public byte ReadByte(int key) => _bytes.TryGetValue(key, out var val) ? val : 0;
 
-        public void WriteShort(int key, short value) => _data[key] = value;
-        public short ReadShort(int key) => _data.TryGetValue(key, out var val) ? (short)val : 0;
+        public void WriteShort(int key, short value) => _shorts[key] = value;
+        public short ReadShort(int key) => _shorts.TryGetValue(key, out var val) ? val : 0;
 
-        public void WriteLong(int key, long value) => _data[key] = value;
-        public long ReadLong(int key) => _data.TryGetValue(key, out var val) ? (long)val : 0L;
+        public void WriteLong(int key, long value) => _longs[key] = value;
+        public long ReadLong(int key) => _longs.TryGetValue(key, out var val) ? val : 0L;
 
-        public void WriteDouble(int key, double value) => _data[key] = value;
-        public double ReadDouble(int key) => _data.TryGetValue(key, out var val) ? (double)val : 0d;
+        public void WriteDouble(int key, double value) => _doubles[key] = value;
+        public double ReadDouble(int key) => _doubles.TryGetValue(key, out var val) ? val : 0d;
 
-        public void WriteVector2(int key, Vector2 value) => _data[key] = value;
-        public Vector2 ReadVector2(int key) => _data.TryGetValue(key, out var val) ? (Vector2)val : Vector2.zero;
+        public void WriteVector2(int key, Vector2 value) => _vector2s[key] = value;
+        public Vector2 ReadVector2(int key) => _vector2s.TryGetValue(key, out var val) ? val : Vector2.zero;
 
-        public void WriteVector3(int key, Vector3 value) => _data[key] = value;
-        public Vector3 ReadVector3(int key) => _data.TryGetValue(key, out var val) ? (Vector3)val : Vector3.zero;
+        public void WriteVector3(int key, Vector3 value) => _vector3s[key] = value;
+        public Vector3 ReadVector3(int key) => _vector3s.TryGetValue(key, out var val) ? val : Vector3.zero;
 
-        public void WriteVector4(int key, Vector4 value) => _data[key] = value;
-        public Vector4 ReadVector4(int key) => _data.TryGetValue(key, out var val) ? (Vector4)val : Vector4.zero;
+        public void WriteVector4(int key, Vector4 value) => _vector4s[key] = value;
+        public Vector4 ReadVector4(int key) => _vector4s.TryGetValue(key, out var val) ? val : Vector4.zero;
 
-        public void WriteVector2Int(int key, Vector2Int value) => _data[key] = value;
-        public Vector2Int ReadVector2Int(int key) => _data.TryGetValue(key, out var val) ? (Vector2Int)val : Vector2Int.zero;
+        public void WriteVector2Int(int key, Vector2Int value) => _vector2Ints[key] = value;
+        public Vector2Int ReadVector2Int(int key) => _vector2Ints.TryGetValue(key, out var val) ? val : Vector2Int.zero;
 
-        public void WriteVector3Int(int key, Vector3Int value) => _data[key] = value;
-        public Vector3Int ReadVector3Int(int key) => _data.TryGetValue(key, out var val) ? (Vector3Int)val : Vector3Int.zero;
+        public void WriteVector3Int(int key, Vector3Int value) => _vector3Ints[key] = value;
+        public Vector3Int ReadVector3Int(int key) => _vector3Ints.TryGetValue(key, out var val) ? val : Vector3Int.zero;
 
-        public void WriteQuaternion(int key, Quaternion value) => _data[key] = value;
-        public Quaternion ReadQuaternion(int key) => _data.TryGetValue(key, out var val) ? (Quaternion)val : Quaternion.identity;
+        public void WriteQuaternion(int key, Quaternion value) => _quaternions[key] = value;
+        public Quaternion ReadQuaternion(int key) => _quaternions.TryGetValue(key, out var val) ? val : Quaternion.identity;
 
-        public void WriteColor(int key, Color value) => _data[key] = value;
-        public Color ReadColor(int key) => _data.TryGetValue(key, out var val) ? (Color)val : Color.clear;
+        public void WriteColor(int key, Color value) => _colors[key] = value;
+        public Color ReadColor(int key) => _colors.TryGetValue(key, out var val) ? val : Color.clear;
     }
 }
