@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
@@ -23,20 +22,32 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(StateGraph _stateGraph)
         {
+            _stateGraph.WriteState(_characters.Count);
             foreach (var character in _characters)
                 character.Serialize(_stateGraph);
 
+            _stateGraph.WriteState(_itemPickups.Count);
             foreach (var itemPickup in _itemPickups)
                 itemPickup.Serialize(_stateGraph);
         }
 
         public void Deserialize(StateGraph _stateGraph)
         {
-            foreach (var character in _characters)
+            int characterCount = (int)_stateGraph.ReadState();
+            for (int i = 0; i < characterCount; i++)
+            {
+                var character = new Character();
                 character.Deserialize(_stateGraph);
+                _characters.Add(character);
+            }
 
-            foreach (var itemPickup in _itemPickups)
+            int itemPickupCount = (int)_stateGraph.ReadState();
+            for (int i = 0; i < itemPickupCount; i++)
+            {
+                var itemPickup = new ItemSpawn();
                 itemPickup.Deserialize(_stateGraph);
+                _itemPickups.Add(itemPickup);
+            }
         }
     }
 }

@@ -21,15 +21,11 @@ namespace BananaParty.WebSocketRelay.Samples
         public void Serialize(StateGraph stateStorage)
         {
             stateStorage.WriteState(Health);
-
-            foreach (var item in _items)
-                item.Serialize(stateStorage);
         }
 
         public void Deserialize(StateGraph stateStorage)
         {
             Health = (float)stateStorage.ReadState();
-            //_items = new List<Ite
         }
 
         private void Awake()
