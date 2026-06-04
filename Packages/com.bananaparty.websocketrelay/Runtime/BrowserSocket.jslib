@@ -11,12 +11,17 @@ const browserSocketLibrary = {
             const payloadQueue = [];
 
             webSocket.onmessage = function (messageEvent) {
-                if (!(messageEvent.data instanceof ArrayBuffer)) {
+                if (messageEvent.data instanceof ArrayBuffer) {
+                    payloadQueue.push(new Uint8Array(messageEvent.data));
+                } else if (typeof messageEvent.data === "string") {
+                    payloadQueue.push(
+                        new TextEncoder().encode(messageEvent.data),
+                    );
+                } else {
                     throw new Error(
-                        "Unsupported message type. Only binary (ArrayBuffer) messages are supported.",
+                        "Unsupported message type. Only binary (ArrayBuffer) or text (string) messages are supported.",
                     );
                 }
-                payloadQueue.push(new Uint8Array(messageEvent.data));
             };
 
             this.sockets.push({ webSocket, payloadQueue });
