@@ -15,21 +15,11 @@ namespace BananaParty.WebSocketRelay.Tests
         private Socket _socketA;
         private Socket _socketB;
 
-        [OneTimeSetUp]
-        public void SetupServer()
-        {
-            RelayServerLauncher.Start();
-        }
-
-        [OneTimeTearDown]
-        public void TeardownServer()
-        {
-            RelayServerLauncher.Stop();
-        }
-
         [UnitySetUp]
-        public IEnumerator ConnectToServer()
+        public IEnumerator Setup()
         {
+            yield return RelayServerLauncher.StartCoroutine();
+
             _socketA = new("ws://localhost:23144");
             _socketB = new("ws://localhost:23144");
 
@@ -91,7 +81,7 @@ namespace BananaParty.WebSocketRelay.Tests
         }
 
         [UnityTearDown]
-        public IEnumerator Disconnect()
+        public IEnumerator Teardown()
         {
             _socketA.Disconnect();
             _socketB.Disconnect();
@@ -100,6 +90,8 @@ namespace BananaParty.WebSocketRelay.Tests
 
             Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.Disconnect)} did not flip {nameof(_socketA.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
             Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.Disconnect)} did not flip {nameof(_socketB.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
+
+            yield return RelayServerLauncher.StopCoroutine();
         }
     }
 }

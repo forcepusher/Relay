@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Tests
@@ -10,7 +12,7 @@ namespace BananaParty.WebSocketRelay.Tests
     {
         private static Process _serverProcess;
 
-        public static void Start()
+        public static async Task StartAsync()
         {
             if (_serverProcess != null && !_serverProcess.HasExited) return;
 
@@ -54,7 +56,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 _serverProcess = Process.Start(startInfo);
                 UnityEngine.Debug.Log($"Started local relay server using {scriptName}. Waiting for port 23144...");
 
-                if (!WaitForPort(23144, 5000))
+                if (!await WaitForPortAsync(23144, 5000))
                 {
                     UnityEngine.Debug.LogError("Relay Server failed to open port 23144 within timeout.");
                 }
@@ -65,7 +67,7 @@ namespace BananaParty.WebSocketRelay.Tests
             }
         }
 
-        private static bool WaitForPort(int port, int timeoutMs)
+        private static async Task<bool> WaitForPortAsync(int port, int timeoutMs)
         {
             var startTime = DateTime.Now;
             while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
@@ -74,24 +76,39 @@ namespace BananaParty.WebSocketRelay.Tests
                 {
                     using (var client = new TcpClient())
                     {
-                        if (client.ConnectAsync("127.0.0.1", port).Wait(100))
+                        var connectTask = client.ConnectAsync("127.0.0.1", port);
+                        if (await Task.WhenAny(connectTask, Task.Delay(100)) == connectTask)
                             return true;
                     }
                 }
                 catch { }
-                System.Threading.Thread.Sleep(100);
+                await Task.Delay(100);
             }
             return false;
         }
 
-        public static void Stop()
+        public static IEnumerator StartCoroutine()
+        {
+            var task = StartAsync();
+            while (!task.IsCompleted) yield return null;
+            if (task.IsFaulted) throw task.Exception;
+        }
+
+        public static IEnumerator StopCoroutine()
+        {
+            var task = StopAsync();
+            while (!task.IsCompleted) yield return null;
+            if (task.IsFaulted) throw task.Exception;
+        }
+
+        public static async Task StopAsync()
         {
             if (_serverProcess == null || _serverProcess.HasExited) return;
 
             try
             {
                 _serverProcess.Kill();
-                _serverProcess.WaitForExit(5000);
+                await Task.Run(() => _serverProcess.WaitForExit(5000));
                 _serverProcess.Dispose();
                 UnityEngine.Debug.Log("Stopped local relay server.");
             }
