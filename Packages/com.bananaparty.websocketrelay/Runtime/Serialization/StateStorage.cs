@@ -5,8 +5,6 @@ namespace BananaParty.WebSocketRelay
 {
     public class StateStorage
     {
-        private readonly Dictionary<string, StateStorage> _stateStorages = new();
-
         private readonly Dictionary<string, int> _ints = new();
         private readonly Dictionary<string, float> _floats = new();
         private readonly Dictionary<string, bool> _bools = new();
