@@ -9,14 +9,14 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(StateGraph stateStorage)
         {
-            stateStorage.WriteState(_respawnTime);
-            stateStorage.WriteState(_itemSpawned);
+            //stateStorage.WriteState(_respawnTime);
+            //stateStorage.WriteState(_itemSpawned);
         }
 
         public void Deserialize(StateGraph stateStorage)
         {
-            _respawnTime = (float)stateStorage.ReadState();
-            _itemSpawned = (bool)stateStorage.ReadState();
+            //_respawnTime = (float)stateStorage.ReadState();
+            //_itemSpawned = (bool)stateStorage.ReadState();
         }
     }
 }

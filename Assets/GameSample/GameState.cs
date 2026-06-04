@@ -37,7 +37,8 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Deserialize(StateGraph _stateGraph)
         {
-            int characterCount = (int)_stateGraph.ReadState();
+            KeyStatePair characterKeyStatePair = _stateGraph.ReadState();
+            int characterCount = (int)characterKeyStatePair.State;
             for (int i = 0; i < characterCount; i++)
             {
                 var character = new Character();
@@ -45,7 +46,8 @@ namespace BananaParty.WebSocketRelay.Samples
                 _characters.Add(character);
             }
 
-            int itemPickupCount = (int)_stateGraph.ReadState();
+            KeyStatePair itemPickupKeyStatePair = _stateGraph.ReadState();
+            int itemPickupCount = (int)itemPickupKeyStatePair.State;
             for (int i = 0; i < itemPickupCount; i++)
             {
                 var itemPickup = new ItemSpawn();

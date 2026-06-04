@@ -8,12 +8,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Deserialize(StateGraph stateStorage)
         {
-            ActiveTimeLeft = (int)stateStorage.ReadState();
+            //ActiveTimeLeft = (int)stateStorage.ReadState();
         }
 
         public void Serialize(StateGraph stateStorage)
         {
-            stateStorage.WriteState(ActiveTimeLeft);
+            //stateStorage.WriteState(ActiveTimeLeft);
         }
     }
 }

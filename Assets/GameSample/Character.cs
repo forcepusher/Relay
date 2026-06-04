@@ -20,12 +20,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(StateGraph stateStorage)
         {
-            stateStorage.WriteState(Health);
+            //stateStorage.WriteState(Health);
         }
 
         public void Deserialize(StateGraph stateStorage)
         {
-            Health = (float)stateStorage.ReadState();
+            //Health = (float)stateStorage.ReadState();
         }
 
         private void Awake()
