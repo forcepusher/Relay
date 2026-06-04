@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.bananaparty.websocketrelay": {
-      "version": "file:com.bananaparty.relay",
+      "version": "file:com.bananaparty.websocketrelay",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
