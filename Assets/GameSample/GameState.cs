@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,22 +38,32 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Deserialize(StateGraph _stateGraph)
         {
-            StateEntry characterKeyStatePair = _stateGraph.ReadState();
-            int characterCount = (int)characterKeyStatePair.State;
-            for (int i = 0; i < characterCount; i++)
+            int characterCount = (int)_stateGraph.ReadState().State;
+            Reconcile(_characters, characterCount, _stateGraph, () => new Character());
+
+            int itemPickupCount = (int)_stateGraph.ReadState().State;
+            Reconcile(_itemPickups, itemPickupCount, _stateGraph, () => new ItemSpawn());
+        }
+
+        private void Reconcile<T>(List<T> list, int count, StateGraph graph, Func<T> factory) where T : ISerializableState
+        {
+            for (int i = 0; i < Math.Min(list.Count, count); i++)
             {
-                var character = new Character();
-                character.Deserialize(_stateGraph);
-                _characters.Add(character);
+                list[i].Deserialize(graph);
             }
 
-            StateEntry itemPickupKeyStatePair = _stateGraph.ReadState();
-            int itemPickupCount = (int)itemPickupKeyStatePair.State;
-            for (int i = 0; i < itemPickupCount; i++)
+            if (count > list.Count)
             {
-                var itemPickup = new ItemSpawn();
-                itemPickup.Deserialize(_stateGraph);
-                _itemPickups.Add(itemPickup);
+                for (int i = list.Count; i < count; i++)
+                {
+                    T item = factory();
+                    item.Deserialize(graph);
+                    list.Add(item);
+                }
+            }
+            else if (list.Count > count)
+            {
+                list.RemoveRange(count, list.Count - count);
             }
         }
     }
