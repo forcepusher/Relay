@@ -12,70 +12,72 @@ namespace BananaParty.WebSocketRelay.Tests
         private const float ReceiveTimeoutThreshold = 5;
         private const float DisconnectTimeoutThreshold = 3;
 
-        private Socket _socket;
+        private Socket _socketA;
+        private Socket _socketB;
+
+        [OneTimeSetUp]
+        public void SetupServer()
+        {
+            RelayServerLauncher.Start();
+        }
+
+        [OneTimeTearDown]
+        public void TeardownServer()
+        {
+            RelayServerLauncher.Stop();
+        }
 
         [UnitySetUp]
         public IEnumerator ConnectToServer()
         {
-            // If this echo test site dies, use "ws://ws.ifelse.io"
-            _socket = new("wss://echo.websocket.events");
+            _socketA = new("ws://localhost:23144");
+            _socketB = new("ws://localhost:23144");
 
-            Assert.IsFalse(_socket.IsConnected, $"{nameof(_socket.IsConnected)} is {true} immediately after creation.");
+            Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.IsConnected)} is {true} immediately after creation.");
+            Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.IsConnected)} is {true} immediately after creation.");
 
-            _socket.Connect();
+            _socketA.Connect();
+            _socketB.Connect();
 
-            Assert.IsFalse(_socket.HasUnreadPayloadQueue, $"{nameof(_socket.HasUnreadPayloadQueue)} is {true} immediately after creation.");
+            Assert.IsFalse(_socketA.HasUnreadPayloadQueue, $"{nameof(_socketA.HasUnreadPayloadQueue)} is {true} immediately after creation.");
+            Assert.IsFalse(_socketB.HasUnreadPayloadQueue, $"{nameof(_socketB.HasUnreadPayloadQueue)} is {true} immediately after creation.");
 
-            yield return new WaitWhile(() => !_socket.IsConnected, ConnectTimeoutThreshold);
+            yield return new WaitWhile(() => !_socketA.IsConnected || !_socketB.IsConnected, ConnectTimeoutThreshold);
 
-            Assert.IsTrue(_socket.IsConnected, $"{nameof(_socket.Connect)} did not flip {nameof(_socket.IsConnected)} to {true} within {nameof(ConnectTimeoutThreshold)} of {ConnectTimeoutThreshold} seconds.");
+            Assert.IsTrue(_socketA.IsConnected, $"{nameof(_socketA.Connect)} did not flip {nameof(_socketA.IsConnected)} to {true} within {nameof(ConnectTimeoutThreshold)} of {ConnectTimeoutThreshold} seconds.");
+            Assert.IsTrue(_socketB.IsConnected, $"{nameof(_socketB.Connect)} did not flip {nameof(_socketB.IsConnected)} to {true} within {nameof(ConnectTimeoutThreshold)} of {ConnectTimeoutThreshold} seconds.");
         }
 
         [UnityTest]
-        public IEnumerator ShouldEchoSmallMessage()
+        public IEnumerator ShouldRelaySmallMessage()
         {
-            yield return SkipFirstMessage();
-            yield return TestEcho(new byte[] { 1, 0, 42, 228, 255, 0 });
+            yield return TestRelay(new byte[] { 1, 0, 42, 228, 255, 0 });
         }
 
         [UnityTest]
-        public IEnumerator ShouldEchoSequenceOfMessages()
+        public IEnumerator ShouldRelaySequenceOfMessages()
         {
-            yield return SkipFirstMessage();
-            yield return TestEcho(GenerateRandomBytes(4096));
-            yield return TestEcho(GenerateRandomBytes(1234));
+            yield return TestRelay(GenerateRandomBytes(4096));
+            yield return TestRelay(GenerateRandomBytes(1234));
         }
 
         [UnityTest]
-        public IEnumerator ShouldEchoHugeMessage()
+        public IEnumerator ShouldRelayHugeMessage()
         {
-            yield return SkipFirstMessage();
-            yield return TestEcho(GenerateRandomBytes(40000));
+            yield return TestRelay(GenerateRandomBytes(40000));
         }
 
-        /// <summary>
-        /// Those services always send some trash message immediately as you connect.
-        /// </summary>
-        private IEnumerator SkipFirstMessage()
+        private IEnumerator TestRelay(byte[] bytesToSend)
         {
-            yield return new WaitWhile(() => !_socket.HasUnreadPayloadQueue, ReceiveTimeoutThreshold);
+            _socketA.Send(bytesToSend);
 
-            Assert.IsTrue(_socket.HasUnreadPayloadQueue, "Service advertising trash message did not arrive.");
+            yield return new WaitWhile(() => !_socketB.HasUnreadPayloadQueue, ReceiveTimeoutThreshold);
 
-            _socket.ReadPayloadQueue();
-        }
+            Assert.IsTrue(_socketB.HasUnreadPayloadQueue, $"Timeout waiting for message. {nameof(_socketB.HasUnreadPayloadQueue)} did not flip to {true}.");
 
-        private IEnumerator TestEcho(byte[] bytesToSend)
-        {
-            _socket.Send(bytesToSend);
+            byte[] receivedBytes = _socketB.ReadPayloadQueue();
 
-            yield return new WaitWhile(() => !_socket.HasUnreadPayloadQueue, ReceiveTimeoutThreshold);
-
-            Assert.IsTrue(_socket.HasUnreadPayloadQueue, $"Timeout waiting for message. {nameof(_socket.HasUnreadPayloadQueue)} did not flip to {true}.");
-
-            byte[] receivedBytes = _socket.ReadPayloadQueue();
-
-            Assert.IsTrue(bytesToSend.SequenceEqual(receivedBytes), $"Received corrupted data from echo. Expected {bytesToSend.Length} bytes, but received {receivedBytes.Length}.");
+            Assert.IsTrue(bytesToSend.SequenceEqual(receivedBytes), $"Received corrupted data from relay. Expected {bytesToSend.Length} bytes, but received {receivedBytes.Length}.");
         }
 
         private byte[] GenerateRandomBytes(int length)
@@ -91,11 +93,13 @@ namespace BananaParty.WebSocketRelay.Tests
         [UnityTearDown]
         public IEnumerator Disconnect()
         {
-            _socket.Disconnect();
+            _socketA.Disconnect();
+            _socketB.Disconnect();
 
-            yield return new WaitWhile(() => _socket.IsConnected, DisconnectTimeoutThreshold);
+            yield return new WaitWhile(() => _socketA.IsConnected || _socketB.IsConnected, DisconnectTimeoutThreshold);
 
-            Assert.IsFalse(_socket.IsConnected, $"{nameof(_socket.Disconnect)} did not flip {nameof(_socket.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
+            Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.Disconnect)} did not flip {nameof(_socketA.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
+            Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.Disconnect)} did not flip {nameof(_socketB.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
         }
     }
 }
