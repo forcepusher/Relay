@@ -9,18 +9,18 @@ namespace BananaParty.WebSocketRelay.Samples
         private int _playTime = 0;
 
         List<Character> _characters = new();
-        List<ItemSpawn> _itemPickups = new();
+        //List<ItemSpawn> _itemPickups = new();
 
         readonly StateGraph _stateGraph = new();
 
         public void OnSerializeButtonClick()
         {
-            //Serialize(Key,_stateGraph);
+            Serialize(_stateGraph);
         }
 
         public void OnDeserializeButtonClick()
         {
-            //Deserialize(Key, _stateGraph);
+            Deserialize(_stateGraph);
         }
 
         public void Serialize(StateGraph _stateGraph)
