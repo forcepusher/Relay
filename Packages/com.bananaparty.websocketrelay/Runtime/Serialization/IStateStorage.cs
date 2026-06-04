@@ -4,7 +4,7 @@ namespace BananaParty.WebSocketRelay
     public interface IStateStorage<TKey>
     {
         // Write and Read for every value type
-        void Write(string key);
-        void Read(string key);
+        void WriteInt(TKey key, int value);
+        int ReadInt(TKey key);
     }
 }
