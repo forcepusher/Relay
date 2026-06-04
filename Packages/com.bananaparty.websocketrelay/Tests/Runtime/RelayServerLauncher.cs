@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Tests
@@ -53,14 +54,36 @@ namespace BananaParty.WebSocketRelay.Tests
             try
             {
                 _serverProcess = Process.Start(startInfo);
-                UnityEngine.Debug.Log($"Started local relay server using {scriptName}");
-                // Give the server a moment to start up
-                System.Threading.Thread.Sleep(1000);
+                UnityEngine.Debug.Log($"Started local relay server using {scriptName}. Waiting for port 23144...");
+
+                if (!WaitForPort(23144, 5000))
+                {
+                    UnityEngine.Debug.LogError("Relay Server failed to open port 23144 within timeout.");
+                }
             }
             catch (Exception e)
             {
                 UnityEngine.Debug.LogError($"Failed to start Relay Server: {e.Message}");
             }
+        }
+
+        private static bool WaitForPort(int port, int timeoutMs)
+        {
+            var startTime = DateTime.Now;
+            while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
+            {
+                try
+                {
+                    using (var client = new TcpClient())
+                    {
+                        if (client.ConnectAsync("127.0.0.1", port).Wait(100))
+                            return true;
+                    }
+                }
+                catch { }
+                System.Threading.Thread.Sleep(100);
+            }
+            return false;
         }
 
         public static void Stop()
@@ -73,6 +96,7 @@ namespace BananaParty.WebSocketRelay.Tests
                     try
                     {
                         _serverProcess.Kill();
+                        _serverProcess.WaitForExit(5000);
                         _serverProcess.Dispose();
                         UnityEngine.Debug.Log("Stopped local relay server.");
                     }
