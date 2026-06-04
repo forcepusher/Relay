@@ -21,6 +21,9 @@ namespace BananaParty.WebSocketRelay
         void WriteByte(TKey key, byte value);
         byte ReadByte(TKey key);
 
+        void WriteShort(TKey key, short value);
+        short ReadShort(TKey key);
+
         void WriteLong(TKey key, long value);
         long ReadLong(TKey key);
 
