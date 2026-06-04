@@ -1,0 +1,5 @@
+{
+  "name": "websocket-relay-server",
+  "private": true,
+  "type": "module"
+}
