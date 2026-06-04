@@ -4,7 +4,7 @@ namespace BananaParty.WebSocketRelay
 {
     public class StateGraph
     {
-        private readonly Queue<object> _stateStack = new();
+        private readonly Queue<KeyStatePair> _keyStateQueue = new();
 
         //public void StartChildGroup(int childCount)
         //{
@@ -13,15 +13,17 @@ namespace BananaParty.WebSocketRelay
         //    }
         //}
 
-        public void WriteState(object stateObject)
+        public void WriteState(string key, object stateObject)
         {
-            _stateStack.Enqueue(stateObject);
+            _keyStateQueue.Enqueue(new KeyStatePair { key = key, State = stateObject });
         }
 
-        public object ReadState()
+        public KeyStatePair ReadState()
         {
-            return _stateStack.Dequeue();
+            return _keyStateQueue.Dequeue();
         }
+
+        
 
         // private readonly Dictionary<string, object> _data = new();
 

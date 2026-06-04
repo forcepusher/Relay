@@ -22,13 +22,17 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(StateGraph _stateGraph)
         {
-            _stateGraph.WriteState(_characters.Count);
+            _stateGraph.WriteState("Count", _characters.Count);
             foreach (var character in _characters)
+            {
                 character.Serialize(_stateGraph);
+            }
 
-            _stateGraph.WriteState(_itemPickups.Count);
+            _stateGraph.WriteState("Count", _itemPickups.Count);
             foreach (var itemPickup in _itemPickups)
+            {
                 itemPickup.Serialize(_stateGraph);
+            }
         }
 
         public void Deserialize(StateGraph _stateGraph)
