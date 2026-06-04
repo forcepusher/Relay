@@ -9,11 +9,9 @@ namespace BananaParty.WebSocketRelay.Tests
     public static class RelayServerLauncher
     {
         private static Process _serverProcess;
-        private static int _refCount = 0;
 
         public static void Start()
         {
-            _refCount++;
             if (_serverProcess != null && !_serverProcess.HasExited) return;
 
             string scriptName = "";
@@ -88,25 +86,22 @@ namespace BananaParty.WebSocketRelay.Tests
 
         public static void Stop()
         {
-            _refCount--;
-            if (_refCount <= 0)
+            if (_serverProcess == null || _serverProcess.HasExited) return;
+
+            try
             {
-                if (_serverProcess != null && !_serverProcess.HasExited)
-                {
-                    try
-                    {
-                        _serverProcess.Kill();
-                        _serverProcess.WaitForExit(5000);
-                        _serverProcess.Dispose();
-                        UnityEngine.Debug.Log("Stopped local relay server.");
-                    }
-                    catch (Exception e)
-                    {
-                        UnityEngine.Debug.LogError($"Failed to stop Relay Server: {e.Message}");
-                    }
-                }
+                _serverProcess.Kill();
+                _serverProcess.WaitForExit(5000);
+                _serverProcess.Dispose();
+                UnityEngine.Debug.Log("Stopped local relay server.");
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError($"Failed to stop Relay Server: {e.Message}");
+            }
+            finally
+            {
                 _serverProcess = null;
-                _refCount = 0;
             }
         }
     }
