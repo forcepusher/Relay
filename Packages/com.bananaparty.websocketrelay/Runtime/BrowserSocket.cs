@@ -5,14 +5,12 @@ namespace BananaParty.WebSocketRelay
     public class BrowserSocket : ISocket
     {
         private readonly string _serverAddress;
-        private readonly bool _useTextMessages;
 
         private int _socketIndex = -1;
 
-        public BrowserSocket(string serverAddress, bool useTextMessages = false)
+        public BrowserSocket(string serverAddress)
         {
             _serverAddress = serverAddress;
-            _useTextMessages = useTextMessages;
         }
 
         public bool IsConnected => GetBrowserSocketIsConnected(_socketIndex);
@@ -42,11 +40,11 @@ namespace BananaParty.WebSocketRelay
 
         public void Connect()
         {
-            _socketIndex = BrowserSocketConnect(_serverAddress, _useTextMessages);
+            _socketIndex = BrowserSocketConnect(_serverAddress);
         }
 
         [DllImport("__Internal")]
-        private static extern int BrowserSocketConnect(string serverAddress, bool useTextMessages);
+        private static extern int BrowserSocketConnect(string serverAddress);
 
         public void Send(byte[] payloadBytes)
         {

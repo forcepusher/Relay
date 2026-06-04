@@ -4,21 +4,22 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+using BananaParty.WebSocketRelay;
 
 namespace BananaParty.WebSocketRelay.Tests
 {
     public class TextSocketTests
     {
-        private Socket _socketA;
-        private Socket _socketB;
+        private TextSocket _socketA;
+        private TextSocket _socketB;
 
         [UnitySetUp]
         public IEnumerator Setup()
         {
             yield return RelayServerLauncher.StartCoroutine();
 
-            _socketA = new("ws://localhost:23144", true);
-            _socketB = new("ws://localhost:23144", true);
+            _socketA = new TextSocket("ws://localhost:23144");
+            _socketB = new TextSocket("ws://localhost:23144");
 
             Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.IsConnected)} is {true} immediately after creation.");
             Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.IsConnected)} is {true} immediately after creation.");
@@ -38,38 +39,36 @@ namespace BananaParty.WebSocketRelay.Tests
         [UnityTest]
         public IEnumerator ShouldRelaySmallMessage()
         {
-            byte[] bytesToSend = Encoding.UTF8.GetBytes("henlo");
-
-            yield return TestRelay(bytesToSend);
+            yield return TestRelay("henlo");
         }
 
         [UnityTest]
         public IEnumerator ShouldRelaySequenceOfMessages()
         {
-            yield return TestRelay(GenerateRandomTextBytes(2048));
-            yield return TestRelay(GenerateRandomTextBytes(600));
+            yield return TestRelay(GenerateRandomText(2048));
+            yield return TestRelay(GenerateRandomText(600));
         }
 
         [UnityTest]
         public IEnumerator ShouldRelayHugeMessage()
         {
-            yield return TestRelay(GenerateRandomTextBytes(40000));
+            yield return TestRelay(GenerateRandomText(40000));
         }
 
-        private IEnumerator TestRelay(byte[] bytesToSend)
+        private IEnumerator TestRelay(string textToSend)
         {
-            _socketA.Send(bytesToSend);
+            _socketA.Send(textToSend);
 
             yield return new WaitWhile(() => !_socketB.HasUnreadPayloadQueue, TestParameters.ReceiveTimeoutThreshold);
 
             Assert.IsTrue(_socketB.HasUnreadPayloadQueue, $"Timeout waiting for message. {nameof(_socketB.HasUnreadPayloadQueue)} did not flip to {true}.");
 
-            byte[] receivedBytes = _socketB.ReadPayloadQueue();
+            string receivedText = _socketB.ReadPayloadQueue();
 
-            Assert.IsTrue(bytesToSend.SequenceEqual(receivedBytes), $"Received corrupted data from relay. Expected {bytesToSend.Length} bytes, but received {receivedBytes.Length}.");
+            Assert.AreEqual(textToSend, receivedText, $"Received corrupted data from relay.");
         }
 
-        private byte[] GenerateRandomTextBytes(int length)
+        private string GenerateRandomText(int length)
         {
             string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -78,7 +77,7 @@ namespace BananaParty.WebSocketRelay.Tests
             for (int characterIterator = 0; characterIterator < length; characterIterator += 1)
                 textToSend.Append(characters[random.Next(characters.Length)]);
 
-            return Encoding.UTF8.GetBytes(textToSend.ToString());
+            return textToSend.ToString();
         }
 
 

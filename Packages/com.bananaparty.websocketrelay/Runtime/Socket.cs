@@ -8,17 +8,15 @@ namespace BananaParty.WebSocketRelay
     /// <remarks>
     /// Internally is an <see cref="ISocket"/> Proxy for <see cref="StandaloneSocket"/> and <see cref="BrowserSocket"/>.
     /// </remarks>
-    public class Socket : ISocket
+    public class Socket
     {
         private readonly string _serverAddress;
-        private readonly bool _useTextMessages;
 
         private ISocket _webSocketClient;
 
-        public Socket(string serverAddress, bool useTextMessages = false)
+        public Socket(string serverAddress)
         {
             _serverAddress = serverAddress;
-            _useTextMessages = useTextMessages;
         }
 
         public bool IsConnected => _webSocketClient != null && _webSocketClient.IsConnected;
@@ -33,9 +31,9 @@ namespace BananaParty.WebSocketRelay
         public void Connect()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _webSocketClient = new BrowserSocket(_serverAddress, _useTextMessages);
+            _webSocketClient = new BrowserSocket(_serverAddress);
 #else
-            _webSocketClient = new StandaloneSocket(_serverAddress, _useTextMessages);
+            _webSocketClient = new StandaloneSocket(_serverAddress);
 #endif
 
             _webSocketClient.Connect();
