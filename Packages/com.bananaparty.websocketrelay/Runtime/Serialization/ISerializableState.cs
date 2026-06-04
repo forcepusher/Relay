@@ -1,8 +1,8 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface ISerializableState
+    public interface ISerializableState<TKey>
     {
-        void Serialize(IStateStorage stateStorage);
-        void Deserialize(IStateStorage stateStorage);
+        void Serialize(IStateStorage<TKey> stateStorage);
+        void Deserialize(IStateStorage<TKey> stateStorage);
     }
 }
