@@ -8,8 +8,10 @@ namespace BananaParty.WebSocketRelay.Samples
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
+        [SerializeField] private float jumpHeight = 2f;
 
         private CharacterController controller;
+        private float verticalVelocity;
 
         private void Awake()
         {
@@ -31,6 +33,11 @@ namespace BananaParty.WebSocketRelay.Samples
                 if (Keyboard.current.sKey.isPressed) input.y -= 1f;
                 if (Keyboard.current.aKey.isPressed) input.x -= 1f;
                 if (Keyboard.current.dKey.isPressed) input.x += 1f;
+
+                if (controller.isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
+                {
+                    verticalVelocity = Mathf.Sqrt(jumpHeight * 2f * 9.81f);
+                }
             }
 
             Vector3 moveDirection = new Vector3(input.x, 0, input.y).normalized;
@@ -45,11 +52,17 @@ namespace BananaParty.WebSocketRelay.Samples
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
 
-            // Basic gravity
-            if (!controller.isGrounded)
+            // Gravity and Jumping
+            if (controller.isGrounded && verticalVelocity < 0)
             {
-                controller.Move(Vector3.down * 9.81f * Time.deltaTime);
+                verticalVelocity = -2f; // Small negative value to keep grounded
             }
+            else
+            {
+                verticalVelocity -= 9.81f * Time.deltaTime;
+            }
+
+            controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
     }
 }
