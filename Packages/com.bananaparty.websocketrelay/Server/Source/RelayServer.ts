@@ -3,7 +3,7 @@ export class RelayServer {
     #sockets: Set<Bun.ServerWebSocket>;
     #server: Bun.Server | null = null;
 
-    constructor(port: number = 8080) {
+    constructor(port: number = 31415) {
         this.#port = port;
         this.#sockets = new Set();
     }

@@ -8,6 +8,8 @@ WebSocket relay server powered by [Bun](https://bun.sh/).
 - **Linux:** `LaunchServer-Linux.sh`
 - **macOS:** `LaunchServer-MacOS.sh`
 
+Default port: **31415** (`ws://localhost:31415`). Chosen as π digits — easy to remember, IANA-unassigned in the user port range (1024–49151), and outside common dev defaults (3000, 5173, 8000, 8080, etc.). Avoid the dynamic range (49152–65535) for a fixed server: the OS uses those for ephemeral client ports, so collisions are more likely.
+
 ## Why `--cwd` in the launch scripts?
 
 The Unity UPM manifest (`../package.json`) contains `"type": "library"` which is valid for Unity but not for npm/Bun. Bun performs two directory walks on startup:
