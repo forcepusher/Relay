@@ -1,96 +1,75 @@
 const browserSocketLibrary = {
-    // Class definition.
+    // Class definition
 
     $browserSocket: {
         sockets: [],
 
-        getBrowserSocketIsConnected: function (socketIndex) {
-            return (
-                browserSocket.sockets[socketIndex].webSocket.readyState ===
-                WebSocket.OPEN
-            );
-        },
-
-        getBrowserSocketHasUnreadPayloadQueue: function (socketIndex) {
-            return browserSocket.sockets[socketIndex].payloadQueue.length > 0;
-        },
-
-        browserSocketReadPayloadQueue: function (
-            socketIndex,
-            payloadBytesBufferPtr,
-            payloadBytesBufferLength,
-        ) {
-            const payloadBytesCount =
-                browserSocket.sockets[socketIndex].payloadQueue[0].length;
-            if (payloadBytesBufferLength < payloadBytesCount)
-                return payloadBytesCount;
-
-            const payloadBytes =
-                browserSocket.sockets[socketIndex].payloadQueue.shift();
-            HEAPU8.set(payloadBytes, payloadBytesBufferPtr);
-            return payloadBytesCount;
-        },
-
-        browserSocketConnect: function (serverAddress, useTextMessages) {
+        connect: function (serverAddress) {
             const webSocket = new WebSocket(serverAddress);
             webSocket.binaryType = "arraybuffer";
 
             const payloadQueue = [];
 
             webSocket.onmessage = function (messageEvent) {
-                if (messageEvent.data instanceof ArrayBuffer) {
-                    payloadQueue.push(new Uint8Array(messageEvent.data));
-                } else if (typeof messageEvent.data === "string") {
-                    payloadQueue.push(
-                        new TextEncoder().encode(messageEvent.data),
-                    );
-                } else if (messageEvent.data instanceof Blob) {
-                    console.error(
-                        "Blob message type not supported. messageEvent.data=" +
-                            messageEvent.data,
-                    );
-                } else {
-                    console.error(
-                        "Unknown message type not supported. messageEvent.data=" +
-                            messageEvent.data,
+                if (!(messageEvent.data instanceof ArrayBuffer)) {
+                    throw new Error(
+                        "Unsupported message type. Only binary (ArrayBuffer) messages are supported.",
                     );
                 }
+                payloadQueue.push(new Uint8Array(messageEvent.data));
             };
 
-            const socket = {
-                webSocket: webSocket,
-                useTextMessages: useTextMessages,
-                payloadQueue: payloadQueue,
-            };
-
-            const socketIndex = browserSocket.sockets.push(socket) - 1;
-            return socketIndex;
+            this.sockets.push({ webSocket, payloadQueue });
+            return this.sockets.length - 1;
         },
 
-        browserSocketSend: function (socketIndex, payloadBytes) {
-            var payload;
-            if (browserSocket.sockets[socketIndex].useTextMessages) {
-                payload = new TextDecoder().decode(payloadBytes);
-            } else {
-                payload = payloadBytes;
+        send: function (socketIndex, payloadBytes) {
+            this.sockets[socketIndex].webSocket.send(payloadBytes);
+        },
+
+        disconnect: function (socketIndex) {
+            this.sockets[socketIndex].webSocket.close();
+        },
+
+        isConnected: function (socketIndex) {
+            return (
+                this.sockets[socketIndex].webSocket.readyState ===
+                WebSocket.OPEN
+            );
+        },
+
+        hasUnreadPayloadQueue: function (socketIndex) {
+            return this.sockets[socketIndex].payloadQueue.length > 0;
+        },
+
+        readPayloadQueue: function (
+            socketIndex,
+            payloadBytesBufferPtr,
+            payloadBytesBufferLength,
+        ) {
+            const socket = this.sockets[socketIndex];
+            const payloadBytes = socket.payloadQueue[0];
+
+            if (
+                !payloadBytes ||
+                payloadBytesBufferLength < payloadBytes.length
+            ) {
+                return payloadBytes ? payloadBytes.length : 0;
             }
 
-            browserSocket.sockets[socketIndex].webSocket.send(payload);
-        },
-
-        browserSocketDisconnect: function (socketIndex) {
-            browserSocket.sockets[socketIndex].webSocket.close();
+            HEAPU8.set(socket.payloadQueue.shift(), payloadBytesBufferPtr);
+            return payloadBytes.length;
         },
     },
 
-    // External C# calls.
+    // External C# calls
 
     GetBrowserSocketIsConnected: function (socketIndex) {
-        return browserSocket.getBrowserSocketIsConnected(socketIndex);
+        return this.$browserSocket.isConnected(socketIndex);
     },
 
     GetBrowserSocketHasUnreadPayloadQueue: function (socketIndex) {
-        return browserSocket.getBrowserSocketHasUnreadPayloadQueue(socketIndex);
+        return this.$browserSocket.hasUnreadPayloadQueue(socketIndex);
     },
 
     BrowserSocketReadPayloadQueue: function (
@@ -98,20 +77,15 @@ const browserSocketLibrary = {
         payloadBytesBufferPtr,
         payloadBytesBufferLength,
     ) {
-        return browserSocket.browserSocketReadPayloadQueue(
+        return this.$browserSocket.readPayloadQueue(
             socketIndex,
             payloadBytesBufferPtr,
             payloadBytesBufferLength,
         );
     },
 
-    BrowserSocketConnect: function (serverAddressPtr, useTextMessagesInt) {
-        const serverAddress = UTF8ToString(serverAddressPtr);
-        const useTextMessages = !!useTextMessagesInt; // Convert integer to boolean.
-        return browserSocket.browserSocketConnect(
-            serverAddress,
-            useTextMessages,
-        );
+    BrowserSocketConnect: function (serverAddressPtr) {
+        return this.$browserSocket.connect(UTF8ToString(serverAddressPtr));
     },
 
     BrowserSocketSend: function (
@@ -123,11 +97,11 @@ const browserSocketLibrary = {
             payloadBytesPtr,
             payloadBytesPtr + payloadBytesCount,
         );
-        browserSocket.browserSocketSend(socketIndex, bytesToSend);
+        this.$browserSocket.send(socketIndex, bytesToSend);
     },
 
     BrowserSocketDisconnect: function (socketIndex) {
-        browserSocket.browserSocketDisconnect(socketIndex);
+        this.$browserSocket.disconnect(socketIndex);
     },
 };
 

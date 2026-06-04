@@ -9,7 +9,7 @@ namespace BananaParty.WebSocketRelay
 {
     public class StandaloneSocket : ISocket
     {
-        private const int MaxPayloadChunkSize = 1024;
+        private const int MaxPayloadChunkSize = 65536;
 
         private readonly Uri _serverUri;
 
