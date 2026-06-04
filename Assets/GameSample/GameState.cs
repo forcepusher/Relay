@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
     public class GameState : MonoBehaviour, ISerializableState
     {
         List<Character> _characters = new();
-        List<ItemPickup> _itemPickups = new();
+        List<ItemSpawn> _itemPickups = new();
 
         readonly StateGraph _stateGraph = new();
 
@@ -23,16 +24,19 @@ namespace BananaParty.WebSocketRelay.Samples
         public void Serialize(StateGraph _stateGraph)
         {
             foreach (var character in _characters)
-                _stateGraph.PushState(character);
+                character.Serialize(_stateGraph);
 
             foreach (var itemPickup in _itemPickups)
-                _stateGraph.PushState(itemPickup);
+                itemPickup.Serialize(_stateGraph);
         }
 
         public void Deserialize(StateGraph _stateGraph)
         {
-            _stateGraph.PopState(_characters);
-            _stateGraph.PopState(_itemPickups);
+            foreach (var character in _characters)
+                character.Deserialize(_stateGraph);
+
+            foreach (var itemPickup in _itemPickups)
+                itemPickup.Deserialize(_stateGraph);
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour
+    public class Character : MonoBehaviour, ISerializableState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -16,6 +16,18 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private float Health = 100f;
         private List<Item> _items= new();
+
+        public void Serialize(StateGraph stateStorage)
+        {
+            stateStorage.WriteState(Health);
+            stateStorage.WriteState(_items);
+        }
+
+        public void Deserialize(StateGraph stateStorage)
+        {
+            Health = (float)stateStorage.ReadState();
+            _items = (List<Item>)stateStorage.ReadState();
+        }
 
         private void Awake()
         {
