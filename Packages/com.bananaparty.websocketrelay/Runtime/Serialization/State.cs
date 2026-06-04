@@ -1,3 +1,5 @@
+using System;
+
 namespace BananaParty.WebSocketRelay
 {
     public class State<T>
@@ -8,14 +10,14 @@ namespace BananaParty.WebSocketRelay
         public T Read()
         {
             if (!HasValue)
-                throw InvalidOperationException($"Attempt to {nameof(Read)} while {nameof(HasValue)} = {HasValue}");
+                throw new InvalidOperationException($"Attempt to {nameof(Read)} while {nameof(HasValue)} = {HasValue}");
 
             return _value;
         }
 
-        public Write(T value)
+        public void Write(T value)
         {
-            _hasValue = true;
+            HasValue = true;
             _value = value;
         }
     }

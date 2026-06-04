@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StateStorageGraph
+    public class StateGraph
     {
-        private readonly Stack<StateStorageGraph> _stack = new();
+        private readonly Stack<StateGraph> _stack = new();
 
         private readonly Dictionary<string, object> _data = new();
 
-        private StateStorageGraph Current => _stack.Count > 0 ? _stack.Peek() : this;
+        private StateGraph Current => _stack.Count > 0 ? _stack.Peek() : this;
 
         public void Write(string key, object value);
         public int Read(string key) => Current._ints[key];
@@ -19,7 +19,7 @@ namespace BananaParty.WebSocketRelay
             var current = Current;
             if (!current._childStateStorages.TryGetValue(key, out var child))
             {
-                child = new StateStorageGraph();
+                child = new StateGraph();
                 current._childStateStorages[key] = child;
             }
             _stack.Push(child);
