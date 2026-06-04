@@ -1,8 +1,8 @@
 namespace BananaParty.WebSocketRelay
 {
-    public struct KeyedState
+    public struct StateEntry
     {
-        public KeyedState(string key, object state)
+        public StateEntry(string key, object state)
         {
             Key = key;
             State = state;
