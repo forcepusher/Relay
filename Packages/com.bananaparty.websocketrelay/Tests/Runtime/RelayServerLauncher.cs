@@ -33,11 +33,22 @@ namespace BananaParty.WebSocketRelay.Tests
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                FileName = scriptPath,
-                UseShellExecute = true,
                 CreateNoWindow = true,
                 WorkingDirectory = Path.GetDirectoryName(scriptPath)
             };
+
+            if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = $"/c \"{scriptPath}\"";
+                startInfo.UseShellExecute = false;
+            }
+            else
+            {
+                startInfo.FileName = "/bin/bash";
+                startInfo.Arguments = $"\"{scriptPath}\"";
+                startInfo.UseShellExecute = false;
+            }
 
             try
             {
