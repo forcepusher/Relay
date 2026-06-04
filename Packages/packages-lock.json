@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.bananaparty.websocketrelay": {
+      "version": "file:com.bananaparty.relay",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
