@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StateStorage
+    public class StateStorage : IStateStorage
     {
         private readonly Dictionary<string, int> _ints = new();
         private readonly Dictionary<string, float> _floats = new();

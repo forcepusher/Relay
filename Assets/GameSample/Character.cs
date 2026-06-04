@@ -67,12 +67,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(IStateStorage stateStorage)
         {
-            stateStorage.Write();
+            
         }
 
         public void Deserialize(IStateStorage stateStorage)
         {
-            stateStorage.Read();
+            
         }
     }
 }

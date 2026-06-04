@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ScopedStateStorage
+    public class ScopedStateStorage : IStateStorage
     {
-        private readonly StateStorage _storage;
+        private readonly IStateStorage _storage;
         private readonly string _prefix;
 
-        public ScopedStateStorage(StateStorage storage, string prefix)
+        public ScopedStateStorage(IStateStorage storage, string prefix)
         {
             _storage = storage;
             _prefix = prefix;
