@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, ISerializableState
+    public class Character : MonoBehaviour
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -63,16 +63,6 @@ namespace BananaParty.WebSocketRelay.Samples
             }
 
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
-        }
-
-        public void Serialize(IStateStorage stateStorage)
-        {
-            
-        }
-
-        public void Deserialize(IStateStorage stateStorage)
-        {
-            
         }
     }
 }
