@@ -1,5 +1,3 @@
-using System;
-
 namespace BananaParty.WebSocketRelay
 {
     public struct KeyStatePair
