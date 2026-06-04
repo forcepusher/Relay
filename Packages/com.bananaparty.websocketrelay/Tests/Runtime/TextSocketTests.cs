@@ -9,10 +9,6 @@ namespace BananaParty.WebSocketRelay.Tests
 {
     public class TextSocketTests
     {
-        private const float ConnectTimeoutThreshold = 3;
-        private const float ReceiveTimeoutThreshold = 5;
-        private const float DisconnectTimeoutThreshold = 3;
-
         private Socket _socketA;
         private Socket _socketB;
 
@@ -33,10 +29,10 @@ namespace BananaParty.WebSocketRelay.Tests
             Assert.IsFalse(_socketA.HasUnreadPayloadQueue, $"{nameof(_socketA.HasUnreadPayloadQueue)} is {true} immediately after creation.");
             Assert.IsFalse(_socketB.HasUnreadPayloadQueue, $"{nameof(_socketB.HasUnreadPayloadQueue)} is {true} immediately after creation.");
 
-            yield return new WaitWhile(() => !_socketA.IsConnected || !_socketB.IsConnected, ConnectTimeoutThreshold);
+            yield return new WaitWhile(() => !_socketA.IsConnected || !_socketB.IsConnected, TestParameters.ConnectTimeoutThreshold);
 
-            Assert.IsTrue(_socketA.IsConnected, $"{nameof(_socketA.Connect)} did not flip {nameof(_socketA.IsConnected)} to {true} within {nameof(ConnectTimeoutThreshold)} of {ConnectTimeoutThreshold} seconds.");
-            Assert.IsTrue(_socketB.IsConnected, $"{nameof(_socketB.Connect)} did not flip {nameof(_socketB.IsConnected)} to {true} within {nameof(ConnectTimeoutThreshold)} of {ConnectTimeoutThreshold} seconds.");
+            Assert.IsTrue(_socketA.IsConnected, $"{nameof(_socketA.Connect)} did not flip {nameof(_socketA.IsConnected)} to {true} within {nameof(TestParameters.ConnectTimeoutThreshold)} of {TestParameters.ConnectTimeoutThreshold} seconds.");
+            Assert.IsTrue(_socketB.IsConnected, $"{nameof(_socketB.Connect)} did not flip {nameof(_socketB.IsConnected)} to {true} within {nameof(TestParameters.ConnectTimeoutThreshold)} of {TestParameters.ConnectTimeoutThreshold} seconds.");
         }
 
         [UnityTest]
@@ -64,7 +60,7 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             _socketA.Send(bytesToSend);
 
-            yield return new WaitWhile(() => !_socketB.HasUnreadPayloadQueue, ReceiveTimeoutThreshold);
+            yield return new WaitWhile(() => !_socketB.HasUnreadPayloadQueue, TestParameters.ReceiveTimeoutThreshold);
 
             Assert.IsTrue(_socketB.HasUnreadPayloadQueue, $"Timeout waiting for message. {nameof(_socketB.HasUnreadPayloadQueue)} did not flip to {true}.");
 
@@ -92,10 +88,10 @@ namespace BananaParty.WebSocketRelay.Tests
             _socketA.Disconnect();
             _socketB.Disconnect();
 
-            yield return new WaitWhile(() => _socketA.IsConnected || _socketB.IsConnected, DisconnectTimeoutThreshold);
+            yield return new WaitWhile(() => _socketA.IsConnected || _socketB.IsConnected, TestParameters.DisconnectTimeoutThreshold);
 
-            Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.Disconnect)} did not flip {nameof(_socketA.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
-            Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.Disconnect)} did not flip {nameof(_socketB.IsConnected)} to {false} within {nameof(DisconnectTimeoutThreshold)} of {DisconnectTimeoutThreshold} seconds.");
+            Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.Disconnect)} did not flip {nameof(_socketA.IsConnected)} to {false} within {nameof(TestParameters.DisconnectTimeoutThreshold)} of {TestParameters.DisconnectTimeoutThreshold} seconds.");
+            Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.Disconnect)} did not flip {nameof(_socketB.IsConnected)} to {false} within {nameof(TestParameters.DisconnectTimeoutThreshold)} of {TestParameters.DisconnectTimeoutThreshold} seconds.");
 
             yield return RelayServerLauncher.StopCoroutine();
         }
