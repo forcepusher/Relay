@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,13 +21,15 @@ namespace BananaParty.WebSocketRelay.Samples
         public void Serialize(StateGraph stateStorage)
         {
             stateStorage.WriteState(Health);
-            stateStorage.WriteState(_items);
+
+            foreach (var item in _items)
+                item.Serialize(stateStorage);
         }
 
         public void Deserialize(StateGraph stateStorage)
         {
             Health = (float)stateStorage.ReadState();
-            _items = (List<Item>)stateStorage.ReadState();
+            //_items = new List<Ite
         }
 
         private void Awake()
