@@ -25,7 +25,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(StateGraph _stateGraph)
         {
-            _stateGraph.WriteState("PlayTime", _playTime);
+            _stateGraph.WriteState(nameof(_playTime), _playTime);
             _stateGraph.WriteState("CharacterCount", _characters.Count);
 
             //_stateGraph.WriteState("Count", _characters.Count);
@@ -43,7 +43,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Deserialize(StateGraph _stateGraph)
         {
-            _playTime = (int)_stateGraph.ReadState().State;
+            _playTime = (int)_stateGraph.ReadState(nameof(_playTime));
 
             //int characterCount = (int)_stateGraph.ReadState().State;
             //Reconcile(_characters, characterCount, _stateGraph, () => new Character());

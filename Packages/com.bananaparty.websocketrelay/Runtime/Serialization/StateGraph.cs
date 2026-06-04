@@ -4,16 +4,21 @@ namespace BananaParty.WebSocketRelay
 {
     public class StateGraph
     {
-        private readonly Queue<StateEntry> _identitySateQueue = new();
+        private readonly Dictionary<string, object> _identitySateQueue = new();
 
         public void WriteState(string key, object stateObject)
         {
-            _identitySateQueue.Enqueue(new StateEntry(key, stateObject));
+            _identitySateQueue[key] = stateObject;
         }
 
-        public StateEntry ReadState()
+        public object ReadState(string key)
         {
-            return _identitySateQueue.Dequeue();
+            return _identitySateQueue[key];
+        }
+
+        public bool HasState(string key)
+        {
+            return _identitySateQueue.ContainsKey(key);
         }
     }
 }
