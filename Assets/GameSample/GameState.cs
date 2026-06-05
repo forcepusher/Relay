@@ -5,13 +5,14 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class GameState : MonoBehaviour, ISerializableState
     {
-        private State<int> _playTimeState = new State<int>(0);
+        private IntegerState _playTimeState = new(0);
         //private int _playTime = 0;
 
         List<Character> _characters = new();
         //List<ItemSpawn> _itemPickups = new();
 
-        readonly StateGraphNode _stateGraph = new();
+        private readonly StateGraphNode _stateGraph = new();
+        private readonly BinaryStateStream _stateStream = new();
 
         public void BuildStateGraph(StateGraphNode parent)
         {
@@ -22,12 +23,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void OnSaveButtonClick()
         {
-            _stateGraph.Serialize();
+            _stateGraph.Serialize(_stateStream);
         }
 
         public void OnLoadButtonClick()
         {
-            _stateGraph.Deserialize();
+            _stateGraph.Deserialize(_stateStream);
         }
     }
 }
