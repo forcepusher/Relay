@@ -6,12 +6,13 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class GameState : MonoBehaviour, ISerializableState
     {
-        private int _playTime = 0;
+        private State<int> _playTime = new State<int>(0);
+        //private int _playTime = 0;
 
         List<Character> _characters = new();
         //List<ItemSpawn> _itemPickups = new();
 
-        readonly StateNode _stateGraph = new();
+        readonly StateGraphNode _stateGraph = new();
 
         public void OnSerializeButtonClick()
         {
@@ -23,23 +24,25 @@ namespace BananaParty.WebSocketRelay.Samples
             //Deserialize(_stateGraph);
         }
 
-        public void BuildStateGraph(StateNode parent)
+        public void BuildStateGraph(StateGraphNode parent)
         {
-            var stateNode = new StateNode();
+            var stateNode = new StateGraphNode();
 
             // Add state objects here
+            stateNode.AddChild
 
-            parent.AddChild(stateNode);
+
+            parent.AddChildStateGraphNode(stateNode);
         }
 
-        public void Serialize(StateNode _stateGraph)
+        public void Serialize(StateGraphNode _stateGraph)
         {
             // _stateGraph.WriteObject(nameof(_playTime), _playTime);
 
             // _stateGraph.WriteObject(nameof(_characters), _characters);
         }
 
-        public void Deserialize(StateNode _stateGraph)
+        public void Deserialize(StateGraphNode _stateGraph)
         {
             //_playTime = (int)_stateGraph.ReadState(nameof(_playTime));
         }

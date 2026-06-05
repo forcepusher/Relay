@@ -1,10 +1,27 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class State<T>
+    public class State<T> : IState
     {
-        private T _value;
+        private T _currentValue;
+        private T _savedValue;
 
-        public void Write(T value) => _value = value;
-        public T Read() => _value;
+        public State(T initialValue)
+        {
+            _currentValue = initialValue;
+            _savedValue = initialValue;
+        }
+
+        public void Save()
+        {
+            _savedValue = _currentValue;
+        }
+
+        public void Load()
+        {
+            _currentValue = _savedValue;
+        }
+
+        public void Write(T value) => _currentValue = value;
+        public T Read() => _currentValue;
     }
 }

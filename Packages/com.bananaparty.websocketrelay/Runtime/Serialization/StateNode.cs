@@ -2,13 +2,19 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StateNode
+    public class StateGraphNode
     {
-        private readonly List<StateNode> _children = new();
+        private readonly List<StateGraphNode> _children = new();
+        private readonly List<IState> _states = new();
 
-        public void AddChild(StateNode stateNode)
+        public void AddChildStateGraphNode(StateGraphNode stateGraphNode)
         {
-            _children.Add(stateNode);
+            _children.Add(stateGraphNode);
+        }
+
+        public void AddState(IState state)
+        {
+            _states.Add(state);
         }
     }
 
