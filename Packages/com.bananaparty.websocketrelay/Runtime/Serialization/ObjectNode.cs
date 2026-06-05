@@ -14,11 +14,6 @@ namespace BananaParty.WebSocketRelay
             _children = children;
         }
 
-        public void AddStateNode(IStateObject state)
-        {
-            _children.Add(state);
-        }
-
         public void Serialize(IStateStream stateStream)
         {
             foreach (IStateObject stateGraphNode in _children)
