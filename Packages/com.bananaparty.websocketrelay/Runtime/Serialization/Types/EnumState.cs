@@ -22,5 +22,10 @@ namespace BananaParty.WebSocketRelay
         {
             Value = stateStream.ReadEnum<T>();
         }
+
+        public string OutputNameAndValue()
+        {
+            return $"\"{Name}\": \"{Value}\"";
+        }
     }
 }

@@ -28,5 +28,10 @@ namespace BananaParty.WebSocketRelay
             get => _value;
             set => _value = value;
         }
+
+        public string OutputNameAndValue()
+        {
+            return $"\"{_name}\": \"{_value}\"";
+        }
     }
 }

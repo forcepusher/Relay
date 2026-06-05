@@ -20,5 +20,10 @@ namespace BananaParty.WebSocketRelay
         {
             Value = stateStream.ReadByte();
         }
+
+        public string OutputNameAndValue()
+        {
+            return $"\"{Name}\": {Value}";
+        }
     }
 }

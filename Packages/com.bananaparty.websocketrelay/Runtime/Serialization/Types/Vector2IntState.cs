@@ -22,5 +22,10 @@ namespace BananaParty.WebSocketRelay
         {
             Value = stateStream.ReadVector2Int();
         }
+
+        public string OutputNameAndValue()
+        {
+            return $"\"{Name}\": \"{Value}\"";
+        }
     }
 }

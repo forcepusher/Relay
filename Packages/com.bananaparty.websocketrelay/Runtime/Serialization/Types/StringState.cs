@@ -20,5 +20,11 @@ namespace BananaParty.WebSocketRelay
         {
             Value = stateStream.ReadString();
         }
+
+        public string OutputNameAndValue()
+        {
+            string escapedValue = Value?.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            return $"\"{Name}\": \"{escapedValue}\"";
+        }
     }
 }
