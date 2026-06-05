@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ByteArrayStateStream : IStateStream
+    public class BinaryStateStream : IStateStream
     {
         private byte[] _buffer;
         private int _position;
 
-        public ByteArrayStateStream(int initialCapacity = 1024)
+        public BinaryStateStream(int initialCapacity = 1024)
         {
             _buffer = new byte[initialCapacity];
             _position = 0;
         }
 
-        public ByteArrayStateStream(byte[] data)
+        public BinaryStateStream(byte[] data)
         {
             _buffer = data;
             _position = 0;
