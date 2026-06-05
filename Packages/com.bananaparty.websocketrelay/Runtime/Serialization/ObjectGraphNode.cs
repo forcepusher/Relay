@@ -4,10 +4,17 @@ namespace BananaParty.WebSocketRelay
 {
     public class ObjectGraphNode : IStateGraphNode
     {
-        private readonly List<IState> _states = new();
-        private readonly List<ObjectGraphNode> _children = new();
+        public string Name { get; private set; }
 
-        public void AddChildStateGraphNode(ObjectGraphNode stateGraphNode)
+        private readonly List<IState> _states = new();
+        private readonly List<IStateGraphNode> _children = new();
+
+        public ObjectGraphNode(string name)
+        {
+            Name = name;
+        }
+
+        public void AddChildStateGraphNode(IStateGraphNode stateGraphNode)
         {
             _children.Add(stateGraphNode);
         }
@@ -22,7 +29,7 @@ namespace BananaParty.WebSocketRelay
             foreach (IState state in _states)
                 state.Serialize(stateStream);
 
-            foreach (ObjectGraphNode stateGraphNode in _children)
+            foreach (IStateGraphNode stateGraphNode in _children)
                 stateGraphNode.Serialize(stateStream);
         }
 
@@ -31,7 +38,7 @@ namespace BananaParty.WebSocketRelay
             foreach (IState state in _states)
                 state.Deserialize(stateStream);
 
-            foreach (ObjectGraphNode stateGraphNode in _children)
+            foreach (IStateGraphNode stateGraphNode in _children)
                 stateGraphNode.Deserialize(stateStream);
         }
 

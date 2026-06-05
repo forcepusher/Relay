@@ -11,10 +11,10 @@ namespace BananaParty.WebSocketRelay.Samples
         List<Character> _characters = new();
         //List<ItemSpawn> _itemPickups = new();
 
-        private readonly ObjectGraphNode _stateGraph = new();
+        private readonly IStateGraphNode _objectGraphNode = new ObjectGraphNode();
         private readonly IStateStream _stateStream = new BinaryStateStream();
 
-        public void BuildStateGraph(ObjectGraphNode parent)
+        public void BuildStateGraph(IStateGraphNode parent)
         {
             var stateNode = new ObjectGraphNode();
             stateNode.AddState(_playTimeState);
@@ -23,12 +23,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void OnSaveButtonClick()
         {
-            _stateGraph.Serialize(_stateStream);
+            _objectGraphNode.Serialize(_stateStream);
         }
 
         public void OnLoadButtonClick()
         {
-            _stateGraph.Deserialize(_stateStream);
+            _objectGraphNode.Deserialize(_stateStream);
         }
     }
 }
