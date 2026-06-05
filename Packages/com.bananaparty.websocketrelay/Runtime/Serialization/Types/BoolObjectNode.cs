@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace BananaParty.WebSocketRelay
 {
     public class BoolObjectNode : IObjectNode

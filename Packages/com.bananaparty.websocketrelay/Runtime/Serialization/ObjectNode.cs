@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace BananaParty.WebSocketRelay
 {
     public class ObjectNode : IObjectNode
