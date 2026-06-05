@@ -16,5 +16,15 @@ namespace BananaParty.WebSocketRelay
         {
             _states.Add(state);
         }
+
+        public void SaveState()
+        {
+
+        }
+
+        public void LoadState()
+        {
+
+        }
     }
 }
