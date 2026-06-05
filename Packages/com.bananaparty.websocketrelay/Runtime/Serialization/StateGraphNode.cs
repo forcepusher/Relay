@@ -17,16 +17,16 @@ namespace BananaParty.WebSocketRelay
             _states.Add(state);
         }
 
-        public void SaveState()
+        public void Serialize()
         {
             foreach (IState state in _states)
-                state.Save();
+                state.Serialize();
         }
 
-        public void LoadState()
+        public void Deserialize()
         {
-            foreach(IState state in _states)
-                state.Load();
+            foreach (IState state in _states)
+                state.Deserialize();
         }
     }
 }

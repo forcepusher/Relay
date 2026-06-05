@@ -2,7 +2,7 @@ namespace BananaParty.WebSocketRelay
 {
     public interface IState
     {
-        void Save();
-        void Load();
+        void Serialize();
+        void Deserialize();
     }
 }

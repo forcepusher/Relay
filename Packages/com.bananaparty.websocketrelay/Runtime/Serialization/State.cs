@@ -3,22 +3,22 @@ namespace BananaParty.WebSocketRelay
     public class State<T> : IState
     {
         private T _currentValue;
-        private T _savedValue;
+        private T _serializedValue;
 
         public State(T initialValue)
         {
             _currentValue = initialValue;
-            _savedValue = initialValue;
+            _serializedValue = initialValue;
         }
 
-        public void Save()
+        public void Serialize()
         {
-            _savedValue = _currentValue;
+            _serializedValue = _currentValue;
         }
 
-        public void Load()
+        public void Deserialize()
         {
-            _currentValue = _savedValue;
+            _currentValue = _serializedValue;
         }
 
         public void Write(T value) => _currentValue = value;
