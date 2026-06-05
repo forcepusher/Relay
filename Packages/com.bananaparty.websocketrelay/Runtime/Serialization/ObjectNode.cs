@@ -6,24 +6,24 @@ namespace BananaParty.WebSocketRelay
     {
         public string Name { get; private set; }
 
-        private readonly IObjectNode[] _children;
+        private readonly IObjectNode[] _childObjectNodes;
 
-        public ObjectNode(string name, params IObjectNode[] children)
+        public ObjectNode(string name, params IObjectNode[] childObjectNodes)
         {
             Name = name;
-            _children = children;
+            _childObjectNodes = childObjectNodes;
         }
 
         public void Serialize(IStateStream stateStream)
         {
-            foreach (IObjectNode stateGraphNode in _children)
-                stateGraphNode.Serialize(stateStream);
+            foreach (IObjectNode childObjectNode in _childObjectNodes)
+                childObjectNode.Serialize(stateStream);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            foreach (IObjectNode stateGraphNode in _children)
-                stateGraphNode.Deserialize(stateStream);
+            foreach (IObjectNode childObjectNode in _childObjectNodes)
+                childObjectNode.Deserialize(stateStream);
         }
 
         public string OutputNameAndValue()
