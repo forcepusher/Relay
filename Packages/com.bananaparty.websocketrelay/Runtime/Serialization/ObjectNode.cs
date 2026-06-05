@@ -2,31 +2,32 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ObjectNode : IStateNode
+    public class ObjectNode : IStateObject
     {
         public string Name { get; private set; }
 
-        private readonly List<IStateNode> _children = new();
+        private readonly IStateObject[] _children;
 
-        public ObjectNode(string name)
+        public ObjectNode(string name, params IStateObject[] children)
         {
             Name = name;
+            _children = children;
         }
 
-        public void AddStateNode(IStateNode state)
+        public void AddStateNode(IStateObject state)
         {
             _children.Add(state);
         }
 
         public void Serialize(IStateStream stateStream)
         {
-            foreach (IStateNode stateGraphNode in _children)
+            foreach (IStateObject stateGraphNode in _children)
                 stateGraphNode.Serialize(stateStream);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            foreach (IStateNode stateGraphNode in _children)
+            foreach (IStateObject stateGraphNode in _children)
                 stateGraphNode.Deserialize(stateStream);
         }
 
