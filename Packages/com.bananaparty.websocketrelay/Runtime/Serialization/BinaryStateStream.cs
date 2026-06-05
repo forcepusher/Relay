@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -6,34 +7,25 @@ namespace BananaParty.WebSocketRelay
 {
     public class BinaryStateStream : IStateStream
     {
-        private byte[] _buffer;
+        private List<byte> _buffer;
         private int _position;
 
         public BinaryStateStream(int initialCapacity = 1024)
         {
-            _buffer = new byte[initialCapacity];
+            _buffer = new List<byte>(initialCapacity);
             _position = 0;
         }
 
         public BinaryStateStream(byte[] data)
         {
-            _buffer = data;
+            _buffer = new List<byte>(data);
             _position = 0;
-        }
-
-        private void EnsureCapacity(int additionalBytes)
-        {
-            if (_position + additionalBytes > _buffer.Length)
-            {
-                int newCapacity = Math.Max(_buffer.Length * 2, _position + additionalBytes);
-                Array.Resize(ref _buffer, newCapacity);
-            }
         }
 
         public byte[] ToArray()
         {
             byte[] result = new byte[_position];
-            Array.Copy(_buffer, 0, result, 0, _position);
+            _buffer.CopyTo(0, result, 0, _position);
             return result;
         }
 
@@ -42,11 +34,19 @@ namespace BananaParty.WebSocketRelay
             _position = 0;
         }
 
+        private void WriteInternal(byte value)
+        {
+            if (_position < _buffer.Count)
+                _buffer[_position] = value;
+            else
+                _buffer.Add(value);
+            _position++;
+        }
+
         // Primitives
         public void WriteBool(bool value)
         {
-            EnsureCapacity(1);
-            _buffer[_position++] = (byte)(value ? 1 : 0);
+            WriteInternal((byte)(value ? 1 : 0));
         }
 
         public bool ReadBool()
@@ -56,8 +56,7 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteByte(byte value)
         {
-            EnsureCapacity(1);
-            _buffer[_position++] = value;
+            WriteInternal(value);
         }
 
         public byte ReadByte()
@@ -67,11 +66,10 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteInt(int value)
         {
-            EnsureCapacity(4);
-            _buffer[_position++] = (byte)(value & 0xFF);
-            _buffer[_position++] = (byte)((value >> 8) & 0xFF);
-            _buffer[_position++] = (byte)((value >> 16) & 0xFF);
-            _buffer[_position++] = (byte)((value >> 24) & 0xFF);
+            WriteInternal((byte)(value & 0xFF));
+            WriteInternal((byte)((value >> 8) & 0xFF));
+            WriteInternal((byte)((value >> 16) & 0xFF));
+            WriteInternal((byte)((value >> 24) & 0xFF));
         }
 
         public int ReadInt()
@@ -81,10 +79,9 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteLong(long value)
         {
-            EnsureCapacity(8);
             for (int i = 0; i < 8; i++)
             {
-                _buffer[_position++] = (byte)((value >> (i * 8)) & 0xFF);
+                WriteInternal((byte)((value >> (i * 8)) & 0xFF));
             }
         }
 
@@ -119,9 +116,7 @@ namespace BananaParty.WebSocketRelay
 
             byte[] bytes = Encoding.UTF8.GetBytes(value);
             WriteInt(bytes.Length);
-            EnsureCapacity(bytes.Length);
-            Array.Copy(bytes, 0, _buffer, _position, bytes.Length);
-            _position += bytes.Length;
+            foreach (byte b in bytes) WriteInternal(b);
         }
 
         public string ReadString()
@@ -130,7 +125,7 @@ namespace BananaParty.WebSocketRelay
             if (length == -1) return null;
 
             byte[] bytes = new byte[length];
-            Array.Copy(_buffer, _position, bytes, 0, length);
+            _buffer.CopyTo(_position, bytes, 0, length);
             _position += length;
             return Encoding.UTF8.GetString(bytes);
         }
