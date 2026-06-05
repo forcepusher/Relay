@@ -23,7 +23,7 @@ namespace BananaParty.WebSocketRelay
 
         public string OutputNameAndValue()
         {
-            return $"\"{Name}\": {Value.ToString().ToLower()}";
+            return Json.ConvertToText(Name, Value);
         }
     }
 }

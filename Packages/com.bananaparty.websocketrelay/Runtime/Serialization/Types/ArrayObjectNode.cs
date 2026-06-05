@@ -32,14 +32,14 @@ namespace BananaParty.WebSocketRelay
         public string OutputNameAndValue()
         {
             var sb = new System.Text.StringBuilder();
-            sb.Append($"\"{Name}\": [");
+            sb.Append("[");
             for (int i = 0; i < Values.Count; i++)
             {
                 sb.Append(Values[i].OutputNameAndValue());
                 if (i < Values.Count - 1) sb.Append(", ");
             }
             sb.Append("]");
-            return sb.ToString();
+            return Json.ConvertToText(Name, (object)sb.ToString());
         }
     }
 }

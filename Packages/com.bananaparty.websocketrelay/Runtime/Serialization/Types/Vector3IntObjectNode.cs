@@ -31,7 +31,7 @@ namespace BananaParty.WebSocketRelay
 
         public string OutputNameAndValue()
         {
-            return $"\"{_name}\": \"{_value}\"";
+            return Json.ConvertToText(_name, _value);
         }
     }
 }

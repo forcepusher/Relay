@@ -23,8 +23,7 @@ namespace BananaParty.WebSocketRelay
 
         public string OutputNameAndValue()
         {
-            string escapedValue = Value?.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            return $"\"{Name}\": \"{escapedValue}\"";
+            return Json.ConvertToText(Name, Value);
         }
     }
 }
