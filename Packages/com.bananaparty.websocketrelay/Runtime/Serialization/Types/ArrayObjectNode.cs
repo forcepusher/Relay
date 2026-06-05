@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ArrayOfObjectsNode : IObjectNode
+    public class ArrayObjectNode<T> : IObjectNode where T : IObjectNode
     {
-        public readonly List<ObjectNode> Values;
+        public readonly List<T> Values;
         public readonly string Name;
 
-        public ArrayOfObjectsNode(List<ObjectNode> initialValues, string name = nameof(ArrayOfObjectsNode))
+        public ArrayObjectNode(List<T> initialValues, string name = nameof(ArrayObjectNode<T>))
         {
             Values = initialValues;
             Name = name;
@@ -17,7 +17,7 @@ namespace BananaParty.WebSocketRelay
         {
             // use integers to specify length of busy objects instead of fixed array length
 
-            foreach (ObjectNode value in Values)
+            foreach (T value in Values)
                 value.Serialize(stateStream);
         }
 
@@ -25,7 +25,7 @@ namespace BananaParty.WebSocketRelay
         {
             // use integers to specify length of busy objects instead of fixed array length
 
-            foreach (ObjectNode value in Values)
+            foreach (T value in Values)
                 value.Deserialize(stateStream);
         }
 
