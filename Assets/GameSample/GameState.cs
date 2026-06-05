@@ -22,12 +22,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void OnSaveButtonClick()
         {
-            //_stateGraph.Save();
+            _stateGraph.SaveState();
         }
 
         public void OnLoadButtonClick()
         {
-
+            _stateGraph.LoadState();
         }
     }
 }
