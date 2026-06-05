@@ -19,6 +19,8 @@ namespace BananaParty.WebSocketRelay.Samples
             _objectNode = new ObjectNode("GameState",
                 _playTimeState
             );
+
+            Debug.Log(_objectNode.OutputNameAndValue());
         }
 
         public void OnSaveButtonClick()
