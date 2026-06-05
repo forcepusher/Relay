@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class GameState : MonoBehaviour, ISerializableState
     {
-        private IntegerState _playTimeState = new(0);
+        private IntegerState _playTimeState = new(0, nameof(_playTimeState));
         //private int _playTime = 0;
 
         List<Character> _characters = new();
