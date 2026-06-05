@@ -21,12 +21,18 @@ namespace BananaParty.WebSocketRelay
         {
             foreach (IState state in _states)
                 state.Serialize(stateStream);
+
+            foreach (StateGraphNode stateGraphNode in _children)
+                stateGraphNode.Serialize(stateStream);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
             foreach (IState state in _states)
                 state.Deserialize(stateStream);
+
+            foreach (StateGraphNode stateGraphNode in _children)
+                stateGraphNode.Deserialize(stateStream);
         }
     }
 }
