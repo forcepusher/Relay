@@ -19,12 +19,14 @@ namespace BananaParty.WebSocketRelay
 
         public void SaveState()
         {
-
+            foreach (IState state in _states)
+                state.Save();
         }
 
         public void LoadState()
         {
-
+            foreach(IState state in _states)
+                state.Load();
         }
     }
 }
