@@ -18,8 +18,5 @@ namespace BananaParty.WebSocketRelay
         {
             _value = _serializedValue;
         }
-
-        public void Write(T value) => _value = value;
-        public T Read() => _value;
     }
 }
