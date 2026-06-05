@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, ISerializableState
+    public class GameState : MonoBehaviour, IStateGraphObject
     {
         private IntegerState _playTimeState = new(0, nameof(_playTimeState));
         //private int _playTime = 0;
@@ -18,7 +18,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             var stateNode = new ObjectGraphNode();
             stateNode.AddState(_playTimeState);
-            parent.AddChildStateGraphNode(stateNode);
+            parent.AddObject(stateNode);
         }
 
         public void OnSaveButtonClick()

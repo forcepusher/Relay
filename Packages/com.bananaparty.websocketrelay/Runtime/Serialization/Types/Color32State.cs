@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Color32State : IState
+    public class Color32State : IStateNode
     {
         private Color32 _value;
         private string _name;

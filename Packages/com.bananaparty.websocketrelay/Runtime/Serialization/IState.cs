@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IState
+    public interface IStateNode
     {
         void Serialize(IStateStream stateStream);
         void Deserialize(IStateStream stateStream);

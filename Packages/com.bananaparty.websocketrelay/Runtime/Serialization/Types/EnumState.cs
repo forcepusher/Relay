@@ -2,7 +2,7 @@ using System;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class EnumState<T> : IState where T : Enum
+    public class EnumState<T> : IStateNode where T : Enum
     {
         public T Value;
         public readonly string Name;
