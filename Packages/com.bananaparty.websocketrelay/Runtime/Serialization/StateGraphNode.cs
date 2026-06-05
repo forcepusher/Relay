@@ -36,12 +36,7 @@ namespace BananaParty.WebSocketRelay
                 stateGraphNode.Deserialize(stateStream);
         }
 
-        public void OutputCurrentStateToJson()
-        {
-            Debug.Log(GetJson());
-        }
-
-        private string GetJson()
+        public string GetJson()
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("{");
