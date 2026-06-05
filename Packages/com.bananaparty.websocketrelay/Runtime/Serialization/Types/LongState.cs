@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class LongState : IStateObject
+    public class LongState : IObjectNode
     {
         public long Value;
         public readonly string Name;

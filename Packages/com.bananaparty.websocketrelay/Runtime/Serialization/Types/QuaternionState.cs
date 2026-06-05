@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class QuaternionState : IStateObject
+    public class QuaternionState : IObjectNode
     {
         public Quaternion Value;
         public readonly string Name;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector4State : IStateObject
+    public class Vector4State : IObjectNode
     {
         public Vector4 Value;
         public readonly string Name;

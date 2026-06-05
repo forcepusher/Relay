@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ObjectNode : IStateObject
+    public class ObjectNode : IObjectNode
     {
         public string Name { get; private set; }
 
-        private readonly IStateObject[] _children;
+        private readonly IObjectNode[] _children;
 
-        public ObjectNode(string name, params IStateObject[] children)
+        public ObjectNode(string name, params IObjectNode[] children)
         {
             Name = name;
             _children = children;
@@ -16,13 +16,13 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            foreach (IStateObject stateGraphNode in _children)
+            foreach (IObjectNode stateGraphNode in _children)
                 stateGraphNode.Serialize(stateStream);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            foreach (IStateObject stateGraphNode in _children)
+            foreach (IObjectNode stateGraphNode in _children)
                 stateGraphNode.Deserialize(stateStream);
         }
 
