@@ -16,7 +16,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Awake()
         {
-            _objectNode = new ObjectNode("GameState",
+            _objectNode = new ArrayObjectNode("GameState",
                 _playTimeState
             );
 
