@@ -1,4 +1,4 @@
-# Relay
+# WebSocketRelay
 Networking as simple as it gets.
 
 Key priorities:
