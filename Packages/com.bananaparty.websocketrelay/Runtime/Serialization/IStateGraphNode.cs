@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IStateGraphNode
+    public interface IStateGraphNode : IState
     {
 
     }

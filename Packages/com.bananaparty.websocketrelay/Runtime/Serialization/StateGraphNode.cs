@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StateGraphNode
+    public class StateGraphNode : IStateGraphNode
     {
         private readonly List<IState> _states = new();
         private readonly List<StateGraphNode> _children = new();
@@ -36,7 +35,7 @@ namespace BananaParty.WebSocketRelay
                 stateGraphNode.Deserialize(stateStream);
         }
 
-        public string GetJson()
+        public string OutputNameAndValue()
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("{");
@@ -52,7 +51,7 @@ namespace BananaParty.WebSocketRelay
             sb.Append("\"children\": [");
             for (int i = 0; i < _children.Count; i++)
             {
-                sb.Append(_children[i].GetJson());
+                sb.Append(_children[i].OutputNameAndValue());
                 if (i < _children.Count - 1) sb.Append(", ");
             }
             sb.Append("]");
