@@ -6,10 +6,8 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour//, ISerializableState
+    public class Character : MonoBehaviour, IObjectNode
     {
-        public string Key { get; } = nameof(Character);
-
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
         [SerializeField] private float jumpHeight = 2f;
@@ -20,15 +18,6 @@ namespace BananaParty.WebSocketRelay.Samples
         private float Health = 100f;
         //private List<Item> _items= new();
 
-        //public void Serialize(StateGraph stateStorage)
-        //{
-        //    //stateStorage.WriteState(Health);
-        //}
-
-        //public void Deserialize(StateGraph stateStorage)
-        //{
-        //    //Health = (float)stateStorage.ReadState();
-        //}
 
         private void Awake()
         {
@@ -80,6 +69,21 @@ namespace BananaParty.WebSocketRelay.Samples
             }
 
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
+        }
+
+        public void Serialize(IStateStream stateStream)
+        {
+
+        }
+
+        public void Deserialize(IStateStream stateStream)
+        {
+
+        }
+
+        public string OutputNameAndValue()
+        {
+            return $"\"{Key}\": {{ \"Health\": {Health} }}";
         }
     }
 }

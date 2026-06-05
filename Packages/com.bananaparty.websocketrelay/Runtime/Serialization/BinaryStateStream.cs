@@ -43,12 +43,6 @@ namespace BananaParty.WebSocketRelay
             _position++;
         }
 
-        // Array
-        public void WriteArray<T>(T[] values)
-        {
-
-        }
-
         // Primitives
         public void WriteBool(bool value)
         {
