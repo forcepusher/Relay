@@ -26,8 +26,10 @@ namespace BananaParty.WebSocketRelay.Samples
         public void BuildStateGraph(StateNode parent)
         {
             var stateNode = new StateNode();
-            //stateNode
-            parent.AddChild();
+
+            // Add state objects here
+
+            parent.AddChild(stateNode);
         }
 
         public void Serialize(StateNode _stateGraph)

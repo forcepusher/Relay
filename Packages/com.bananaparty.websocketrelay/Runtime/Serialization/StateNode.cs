@@ -4,9 +4,11 @@ namespace BananaParty.WebSocketRelay
 {
     public class StateNode
     {
-        public void AddChild()
-        {
+        private readonly List<StateNode> _children = new();
 
+        public void AddChild(StateNode stateNode)
+        {
+            _children.Add(stateNode);
         }
     }
 
