@@ -4,29 +4,23 @@ namespace BananaParty.WebSocketRelay
 {
     public class Vector4State : IState
     {
-        private Vector4 _value;
-        private string _name;
+        public Vector4 Value;
+        public readonly string Name;
 
         public Vector4State(Vector4 initialValue, string name = nameof(Vector4State))
         {
-            _value = initialValue;
-            _name = name;
+            Value = initialValue;
+            Name = name;
         }
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteVector4(_value);
+            stateStream.WriteVector4(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadVector4();
-        }
-
-        public Vector4 Value
-        {
-            get => _value;
-            set => _value = value;
+            Value = stateStream.ReadVector4();
         }
     }
 }

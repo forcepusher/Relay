@@ -4,29 +4,23 @@ namespace BananaParty.WebSocketRelay
 {
     public class EnumState<T> : IState where T : Enum
     {
-        private T _value;
-        private string _name;
+        public T Value;
+        public readonly string Name;
 
         public EnumState(T initialValue, string name = nameof(EnumState<T>))
         {
-            _value = initialValue;
-            _name = name;
+            Value = initialValue;
+            Name = name;
         }
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteEnum(_value);
+            stateStream.WriteEnum(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadEnum<T>();
-        }
-
-        public T Value
-        {
-            get => _value;
-            set => _value = value;
+            Value = stateStream.ReadEnum<T>();
         }
     }
 }
