@@ -11,12 +11,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            _serializedValue = _value;
+            stateStream.WriteInt(_value);
         }
 
-        public void Deserialize()
+        public void Deserialize(IStateStream stateStream)
         {
-            _value = _serializedValue;
+            _value = stateStream.ReadInt();
         }
     }
 }
