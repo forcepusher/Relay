@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector3IntState : IObjectNode
+    public class Color32ObjectNode : IObjectNode
     {
-        private Vector3Int _value;
+        private Color32 _value;
         private string _name;
 
-        public Vector3IntState(Vector3Int initialValue, string name = nameof(Vector3IntState))
+        public Color32ObjectNode(Color32 initialValue, string name = nameof(Color32ObjectNode))
         {
             _value = initialValue;
             _name = name;
@@ -15,15 +15,15 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteVector3Int(_value);
+            stateStream.WriteColor32(_value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadVector3Int();
+            _value = stateStream.ReadColor32();
         }
 
-        public Vector3Int Value
+        public Color32 Value
         {
             get => _value;
             set => _value = value;

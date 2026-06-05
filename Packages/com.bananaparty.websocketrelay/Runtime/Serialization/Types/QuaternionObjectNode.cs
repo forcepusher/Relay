@@ -1,11 +1,13 @@
+using UnityEngine;
+
 namespace BananaParty.WebSocketRelay
 {
-    public class LongState : IObjectNode
+    public class QuaternionObjectNode : IObjectNode
     {
-        public long Value;
+        public Quaternion Value;
         public readonly string Name;
 
-        public LongState(long initialValue, string name = nameof(LongState))
+        public QuaternionObjectNode(Quaternion initialValue, string name = nameof(QuaternionObjectNode))
         {
             Value = initialValue;
             Name = name;
@@ -13,17 +15,17 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteLong(Value);
+            stateStream.WriteQuaternion(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadLong();
+            Value = stateStream.ReadQuaternion();
         }
 
         public string OutputNameAndValue()
         {
-            return $"\"{Name}\": {Value}";
+            return $"\"{Name}\": \"{Value}\"";
         }
     }
 }

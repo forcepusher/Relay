@@ -1,13 +1,11 @@
-using UnityEngine;
-
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector2IntState : IObjectNode
+    public class ByteObjectNode : IObjectNode
     {
-        public Vector2Int Value;
+        public byte Value;
         public readonly string Name;
 
-        public Vector2IntState(Vector2Int initialValue, string name = nameof(Vector2IntState))
+        public ByteObjectNode(byte initialValue, string name = nameof(ByteObjectNode))
         {
             Value = initialValue;
             Name = name;
@@ -15,17 +13,17 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteVector2Int(Value);
+            stateStream.WriteByte(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadVector2Int();
+            Value = stateStream.ReadByte();
         }
 
         public string OutputNameAndValue()
         {
-            return $"\"{Name}\": \"{Value}\"";
+            return $"\"{Name}\": {Value}";
         }
     }
 }

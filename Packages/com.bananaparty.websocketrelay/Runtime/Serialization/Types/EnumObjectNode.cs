@@ -1,13 +1,13 @@
-using UnityEngine;
+using System;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class QuaternionState : IObjectNode
+    public class EnumObjectNode<T> : IObjectNode where T : Enum
     {
-        public Quaternion Value;
+        public T Value;
         public readonly string Name;
 
-        public QuaternionState(Quaternion initialValue, string name = nameof(QuaternionState))
+        public EnumObjectNode(T initialValue, string name = nameof(EnumObjectNode<T>))
         {
             Value = initialValue;
             Name = name;
@@ -15,12 +15,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteQuaternion(Value);
+            stateStream.WriteEnum(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadQuaternion();
+            Value = stateStream.ReadEnum<T>();
         }
 
         public string OutputNameAndValue()

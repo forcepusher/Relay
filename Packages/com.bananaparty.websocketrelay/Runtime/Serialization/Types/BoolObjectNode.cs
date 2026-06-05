@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class FloatState : IObjectNode
+    public class BoolObjectNode : IObjectNode
     {
-        public float Value;
+        public bool Value;
         public readonly string Name;
 
-        public FloatState(float initialValue, string name = nameof(FloatState))
+        public BoolObjectNode(bool initialValue, string name = nameof(BoolObjectNode))
         {
             Value = initialValue;
             Name = name;
@@ -15,17 +15,17 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteFloat(Value);
+            stateStream.WriteBool(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadFloat();
+            Value = stateStream.ReadBool();
         }
 
         public string OutputNameAndValue()
         {
-            return $"\"{Name}\": {Value}";
+            return $"\"{Name}\": {Value.ToString().ToLower()}";
         }
     }
 }

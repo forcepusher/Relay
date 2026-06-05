@@ -1,13 +1,13 @@
-using System;
+using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class EnumState<T> : IObjectNode where T : Enum
+    public class Vector2IntObjectNode : IObjectNode
     {
-        public T Value;
+        public Vector2Int Value;
         public readonly string Name;
 
-        public EnumState(T initialValue, string name = nameof(EnumState<T>))
+        public Vector2IntObjectNode(Vector2Int initialValue, string name = nameof(Vector2IntObjectNode))
         {
             Value = initialValue;
             Name = name;
@@ -15,12 +15,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteEnum(Value);
+            stateStream.WriteVector2Int(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadEnum<T>();
+            Value = stateStream.ReadVector2Int();
         }
 
         public string OutputNameAndValue()
