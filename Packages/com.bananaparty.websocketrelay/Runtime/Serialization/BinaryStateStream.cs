@@ -10,9 +10,9 @@ namespace BananaParty.WebSocketRelay
         private List<byte> _buffer;
         private int _position;
 
-        public BinaryStateStream(int initialCapacity = 1024)
+        public BinaryStateStream()
         {
-            _buffer = new List<byte>(initialCapacity);
+            _buffer = new List<byte>();
             _position = 0;
         }
 
