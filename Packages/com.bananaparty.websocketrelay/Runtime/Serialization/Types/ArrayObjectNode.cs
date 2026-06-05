@@ -31,7 +31,15 @@ namespace BananaParty.WebSocketRelay
 
         public string OutputNameAndValue()
         {
-            //return $"\"{Name}\": {Value.ToString().ToLower()}";
+            var sb = new System.Text.StringBuilder();
+            sb.Append($"\"{Name}\": [");
+            for (int i = 0; i < Values.Count; i++)
+            {
+                sb.Append(Values[i].OutputNameAndValue());
+                if (i < Values.Count - 1) sb.Append(", ");
+            }
+            sb.Append("]");
+            return sb.ToString();
         }
     }
 }
