@@ -11,45 +11,35 @@ namespace BananaParty.WebSocketRelay.Samples
         List<Character> _characters = new();
         //List<ItemSpawn> _itemPickups = new();
 
-        readonly StateGraph _stateGraph = new();
+        readonly StateNode _stateGraph = new();
 
         public void OnSerializeButtonClick()
         {
-            Serialize(_stateGraph);
+            //Serialize(_stateGraph);
         }
 
         public void OnDeserializeButtonClick()
         {
-            Deserialize(_stateGraph);
+            //Deserialize(_stateGraph);
         }
 
-        public void Serialize(StateGraph _stateGraph)
+        public void BuildStateGraph(StateNode parent)
         {
-            _stateGraph.WriteState(nameof(_playTime), _playTime);
-            _stateGraph.WriteState("CharacterCount", _characters.Count);
-
-            //_stateGraph.WriteState("Count", _characters.Count);
-            //foreach (var character in _characters)
-            //{
-            //    character.Serialize(character.GetKey(), _stateGraph);
-            //}
-
-            //_stateGraph.WriteState("Count", _itemPickups.Count);
-            //foreach (var itemPickup in _itemPickups)
-            //{
-            //    itemPickup.Serialize(itemPickup.GetKey(), _stateGraph);
-            //}
+            var stateNode = new StateNode();
+            //stateNode
+            parent.AddChild();
         }
 
-        public void Deserialize(StateGraph _stateGraph)
+        public void Serialize(StateNode _stateGraph)
         {
-            _playTime = (int)_stateGraph.ReadState(nameof(_playTime));
+            // _stateGraph.WriteObject(nameof(_playTime), _playTime);
 
-            //int characterCount = (int)_stateGraph.ReadState().State;
-            //Reconcile(_characters, characterCount, _stateGraph, () => new Character());
+            // _stateGraph.WriteObject(nameof(_characters), _characters);
+        }
 
-            //int itemPickupCount = (int)_stateGraph.ReadState().State;
-            //Reconcile(_itemPickups, itemPickupCount, _stateGraph, () => new ItemSpawn());
+        public void Deserialize(StateNode _stateGraph)
+        {
+            //_playTime = (int)_stateGraph.ReadState(nameof(_playTime));
         }
     }
 }
