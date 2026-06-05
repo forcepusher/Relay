@@ -4,5 +4,7 @@ namespace BananaParty.WebSocketRelay
     {
         void Serialize(IStateStream stateStream);
         void Deserialize(IStateStream stateStream);
+
+        string OutputNameAndValue();
     }
 }
