@@ -2,23 +2,23 @@ namespace BananaParty.WebSocketRelay
 {
     public class IntegerState : IState
     {
-        private int _value;
-        private string _name;
+        public int Value;
+        public readonly string Name;
 
         public IntegerState(int initialValue, string name = nameof(IntegerState))
         {
-            _value = initialValue;
-            _name = name;
+            Value = initialValue;
+            Name = name;
         }
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteInt(_value);
+            stateStream.WriteInt(Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadInt();
+            Value = stateStream.ReadInt();
         }
     }
 }
