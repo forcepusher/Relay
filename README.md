@@ -4,7 +4,7 @@ Networking as simple as it gets (for programmers though).
 Key priorities:  
 1. Readable Debug - JSON data stream for developing, binary for shipping (with JSOD debug output on demand).
 2. Protable - Relay server runtime embedded in the Unity package, double-click-ready.
-3. Testing - Integration/unit tests using the portable runtime for quick QA.
+3. Testing - Integration/unit tests using the portable runtime for quick QA. Especially in the age of AI slop.
   
 Yes, it actually serializes your state to Json so you can easily spot bugs.  
 That is the core difference for improving your debugging experience.  
