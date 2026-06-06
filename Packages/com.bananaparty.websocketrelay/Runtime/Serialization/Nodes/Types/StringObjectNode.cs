@@ -1,14 +1,14 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class StringObjectNode : IValueNode
+    public class StringObjectNode : IValueNode<string>
     {
         public string Name { get; private set; }
-        public string Value;
+        public string Value { get; set; }
 
         public StringObjectNode(string name, string initialValue)
         {
-            Value = initialValue;
             Name = name;
+            Value = initialValue;
         }
     }
 }
