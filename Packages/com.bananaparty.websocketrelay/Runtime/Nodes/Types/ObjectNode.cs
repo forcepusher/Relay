@@ -24,5 +24,15 @@ namespace BananaParty.WebSocketRelay
 
             stateGraph.EndChildGroup();
         }
+
+        public void ReadStateFromJson(JsonReadStateGraph stateGraph)
+        {
+            stateGraph.StartChildGroup(Name);
+
+            foreach (INode node in _nodes)
+                node.ReadStateFromJson(stateGraph);
+
+            stateGraph.EndChildGroup();
+        }
     }
 }
