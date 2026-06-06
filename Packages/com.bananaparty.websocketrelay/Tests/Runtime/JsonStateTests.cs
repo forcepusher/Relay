@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using BananaParty.WebSocketRelay;
-using BananaParty.WebSocketRelay.Runtime.Nodes.Types;
 
 namespace BananaParty.WebSocketRelay.Tests
 {
