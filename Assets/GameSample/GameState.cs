@@ -36,6 +36,8 @@ namespace BananaParty.WebSocketRelay.Samples
                 }
               }
             }";
+
+            INode root = Json.Parse(sampleJson);
         }
 
         public void Awake()
