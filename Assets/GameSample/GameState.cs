@@ -12,11 +12,10 @@ namespace BananaParty.WebSocketRelay.Samples
         //List<ItemSpawn> _itemPickups = new();
 
         private IObjectNode _objectNode;
-        private readonly IStateStream _stateStream = new BinaryStateStream();
-
+        private readonly IStateStream _stateStream = new JsonStateStream();
         public void Awake()
         {
-            _objectNode = new ArrayObjectNode("GameState",
+            _objectNode = new ObjectNode("GameState",
                 _playTimeState
             );
 

@@ -17,16 +17,6 @@ namespace BananaParty.WebSocketRelay
             _position = 0;
         }
 
-        public JsonStateStream(byte[] data)
-        {
-            string json = Encoding.UTF8.GetString(data);
-            // Simple split by comma, but this is naive and won't work for nested objects/arrays.
-            // However, since we are implementing a "stream" of values,
-            // we assume the input is a JSON array of these values.
-            _readBuffer = json.Trim('[', ']').Split(',');
-            _position = 0;
-        }
-
         public byte[] ToArray()
         {
             StringBuilder sb = new StringBuilder();
