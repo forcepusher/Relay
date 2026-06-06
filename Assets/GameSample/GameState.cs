@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IObjectNode
+    public class GameState : MonoBehaviour, IObjectNode, IState<string>
     {
         [SerializeField]
         private Character _playerCharacter;
@@ -24,25 +24,44 @@ namespace BananaParty.WebSocketRelay.Samples
             };
         }
 
+        public void Write(IDataGraph<string> dataGraph)
+        {
+            dataGraph.StartChildGroup(Name);
+            _playTime.WriteToGraph(dataGraph);
+
+            foreach (INode node in GetNodes())
+                node.WriteToGraph(dataGraph);
+
+            dataGraph.EndChildGroup();
+        }
+        public void Read(IDataGraph<string> dataGraph)
+        {
+
+        }
+
         public void Awake()
         {
-            string sampleJson = @"{
-              ""GameState"": {
-                ""_playTime"": 0,
-                ""PlayerCharacter"": {
-                  ""_health"": 100.0,
-                  ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-                },
-                ""BotCharacter"": {
-                  ""_health"": 100.0,
-                  ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-                }
-              }
-            }";
+            JsonDataGraph _jsonDataGraph = new();
+            Write(_jsonDataGraph);
 
-            INode parsedSampleJsonRoot = Json.Parse(sampleJson);
 
-            Debug.Log(Json.Serialize(parsedSampleJsonRoot));
+            //string sampleJson = @"{
+            //  ""GameState"": {
+            //    ""_playTime"": 0,
+            //    ""PlayerCharacter"": {
+            //      ""_health"": 100.0,
+            //      ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+            //    },
+            //    ""BotCharacter"": {
+            //      ""_health"": 100.0,
+            //      ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+            //    }
+            //  }
+            //}";
+
+            //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
+
+            //Debug.Log(Json.Serialize(parsedSampleJsonRoot));
         }
     }
 }
