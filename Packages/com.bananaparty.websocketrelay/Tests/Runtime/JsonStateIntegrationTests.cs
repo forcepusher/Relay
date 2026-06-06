@@ -13,16 +13,16 @@ namespace BananaParty.WebSocketRelay.Tests
     {
         private const string ServerAddress = "ws://127.0.0.1:23144";
 
-        [SetUp]
-        public void SetUp()
+        [UnitySetUp]
+        public IEnumerator SetUp()
         {
-            RelayServerLauncher.StartAsync().Wait();
+            yield return RelayServerLauncher.StartCoroutine();
         }
 
-        [TearDown]
-        public void TearDown()
+        [UnityTearDown]
+        public IEnumerator TearDown()
         {
-            RelayServerLauncher.StopAsync().Wait();
+            yield return RelayServerLauncher.StopCoroutine();
         }
 
         [UnityTest]
