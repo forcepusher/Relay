@@ -10,4 +10,4 @@ Yes, it actually serializes your game state to JSON so you can easily spot bugs.
 That is the core difference for improving your debugging experience.  
   
 Library boilerplate code abd tests were AI-assisted, LLMs can't write OOP code like this anyway.  
-And as always - beware it's all code. No drag and drop crap planned.  
+And as always - beware it's all code. No drag and drop garbage planned.  
