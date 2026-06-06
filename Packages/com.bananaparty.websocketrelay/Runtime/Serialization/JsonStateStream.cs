@@ -17,7 +17,7 @@ namespace BananaParty.WebSocketRelay
             _position = 0;
         }
 
-        public byte[] ToArray()
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("[");
@@ -27,7 +27,7 @@ namespace BananaParty.WebSocketRelay
                 if (i < _writeBuffer.Count - 1) sb.Append(",");
             }
             sb.Append("]");
-            return Encoding.UTF8.GetBytes(sb.ToString());
+            return sb.ToString();
         }
 
         public void Reset()

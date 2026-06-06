@@ -29,6 +29,11 @@ namespace BananaParty.WebSocketRelay
             return result;
         }
 
+        public override string ToString()
+        {
+            return BitConverter.ToString(ToArray()).Replace("-", "");
+        }
+
         public void Reset()
         {
             _position = 0;

@@ -5,6 +5,8 @@ namespace BananaParty.WebSocketRelay
 {
     public interface IStateStream
     {
+        string ToString();
+
         void WriteBool(bool value);
         bool ReadBool();
 
