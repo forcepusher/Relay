@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay
         public bool Value;
         public readonly string Name;
 
-        public BoolObjectNode(bool initialValue, string name = nameof(BoolObjectNode))
+        public BoolObjectNode(string name, bool initialValue)
         {
             Value = initialValue;
             Name = name;

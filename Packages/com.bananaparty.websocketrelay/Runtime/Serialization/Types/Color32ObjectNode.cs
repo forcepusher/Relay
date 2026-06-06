@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         private Color32 _value;
         private string _name;
 
-        public Color32ObjectNode(Color32 initialValue, string name = nameof(Color32ObjectNode))
+        public Color32ObjectNode(string name, Color32 initialValue)
         {
             _value = initialValue;
             _name = name;
@@ -20,7 +20,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadColor32();
+            _value = stateStream.ReadColor32(_name);
         }
 
         public Color32 Value

@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay
         public string Value;
         public readonly string Name;
 
-        public StringObjectNode(string initialValue, string name = nameof(StringObjectNode))
+        public StringObjectNode(string name, string initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -13,12 +13,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteString(Value);
+            stateStream.WriteString(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadString();
+            Value = stateStream.ReadString(Name);
         }
 
         public string OutputNameAndValue()

@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         public float Value;
         public readonly string Name;
 
-        public FloatObjectNode(float initialValue, string name = nameof(FloatObjectNode))
+        public FloatObjectNode(string name, float initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -20,7 +20,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadFloat();
+            Value = stateStream.ReadFloat(Name);
         }
 
         public string OutputNameAndValue()

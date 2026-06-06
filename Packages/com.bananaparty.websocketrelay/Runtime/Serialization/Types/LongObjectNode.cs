@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay
         public long Value;
         public readonly string Name;
 
-        public LongObjectNode(long initialValue, string name = nameof(LongObjectNode))
+        public LongObjectNode(string name, long initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -13,12 +13,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteLong(Value);
+            stateStream.WriteLong(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadLong();
+            Value = stateStream.ReadLong(Name);
         }
 
         public string OutputNameAndValue()

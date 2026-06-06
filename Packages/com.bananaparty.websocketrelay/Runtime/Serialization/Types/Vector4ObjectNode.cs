@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         public Vector4 Value;
         public readonly string Name;
 
-        public Vector4ObjectNode(Vector4 initialValue, string name = nameof(Vector4ObjectNode))
+        public Vector4ObjectNode(string name, Vector4 initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -15,12 +15,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteVector4(Value);
+            stateStream.WriteVector4(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadVector4();
+            Value = stateStream.ReadVector4(Name);
         }
 
         public string OutputNameAndValue()

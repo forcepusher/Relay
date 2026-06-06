@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         private Vector3Int _value;
         private string _name;
 
-        public Vector3IntObjectNode(Vector3Int initialValue, string name = nameof(Vector3IntObjectNode))
+        public Vector3IntObjectNode(string name, Vector3Int initialValue)
         {
             _value = initialValue;
             _name = name;
@@ -15,12 +15,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteVector3Int(_value);
+            stateStream.WriteVector3Int(_name, _value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            _value = stateStream.ReadVector3Int();
+            _value = stateStream.ReadVector3Int(_name);
         }
 
         public Vector3Int Value

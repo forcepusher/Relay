@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         public readonly List<T> Values;
         public readonly string Name;
 
-        public ArrayObjectNode(List<T> initialValues, string name = nameof(ArrayObjectNode<T>))
+        public ArrayObjectNode(string name, List<T> initialValues)
         {
             Values = initialValues;
             Name = name;

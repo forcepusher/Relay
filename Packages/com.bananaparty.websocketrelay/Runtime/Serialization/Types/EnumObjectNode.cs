@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         public T Value;
         public readonly string Name;
 
-        public EnumObjectNode(T initialValue, string name = nameof(EnumObjectNode<T>))
+        public EnumObjectNode(string name, T initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -20,7 +20,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadEnum<T>();
+            Value = stateStream.ReadEnum<T>(Name);
         }
 
         public string OutputNameAndValue()

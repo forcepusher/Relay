@@ -7,7 +7,7 @@ namespace BananaParty.WebSocketRelay
         public Quaternion Value;
         public readonly string Name;
 
-        public QuaternionObjectNode(Quaternion initialValue, string name = nameof(QuaternionObjectNode))
+        public QuaternionObjectNode(string name, Quaternion initialValue)
         {
             Value = initialValue;
             Name = name;
@@ -15,12 +15,12 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteQuaternion(Value);
+            stateStream.WriteQuaternion(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadQuaternion();
+            Value = stateStream.ReadQuaternion(Name);
         }
 
         public string OutputNameAndValue()
