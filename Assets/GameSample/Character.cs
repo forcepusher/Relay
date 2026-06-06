@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour
+    public class Character : MonoBehaviour, IObjectNode
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -12,6 +13,19 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private CharacterController controller;
         private float verticalVelocity;
+
+        private FloatValueNode _health = new(nameof(_health), 100f);
+        private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
+
+        public string Name => transform.name;
+        public List<INode> GetNodes()
+        {
+            return new List<INode>
+            {
+                _health,
+                _position
+            };
+        }
 
         private void Awake()
         {
