@@ -12,13 +12,13 @@ namespace BananaParty.WebSocketRelay
             _childObjectNodes = childObjectNodes;
         }
 
-        public void Serialize(IStateStream stateStream)
+        public void Serialize(IStateNode stateStream)
         {
             foreach (IObjectNode childObjectNode in _childObjectNodes)
                 childObjectNode.Serialize(stateStream);
         }
 
-        public void Deserialize(IStateStream stateStream)
+        public void Deserialize(IStateNode stateStream)
         {
             foreach (IObjectNode childObjectNode in _childObjectNodes)
                 childObjectNode.Deserialize(stateStream);

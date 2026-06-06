@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay.Samples
         //List<ItemSpawn> _itemPickups = new();
 
         private IObjectNode _objectNode;
-        private readonly IStateStream _stateStream = new JsonStateStream();
+        private readonly IStateNode _stateStream = new JsonStateStream();
         public void Awake()
         {
             _characters = new ArrayObjectNode<Character>(nameof(_characters), _initialCharacters);

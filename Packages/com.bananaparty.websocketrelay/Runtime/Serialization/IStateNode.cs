@@ -3,7 +3,7 @@ using System;
 
 namespace BananaParty.WebSocketRelay
 {
-    public interface IStateStream
+    public interface IStateNode
     {
         string ToString();
 

@@ -71,19 +71,19 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void Serialize(IStateStream stateStream)
+        public void Serialize(IStateNode stateStream)
         {
             stateStream.WriteFloat("Health", Health);
         }
 
-        public void Deserialize(IStateStream stateStream)
+        public void Deserialize(IStateNode stateStream)
         {
 
         }
 
         public string OutputNameAndValue()
         {
-            return $"\"{Key}\": {{ \"Health\": {Health} }}";
+            return ""; //$"\"{Key}\": {{ \"Health\": {Health} }}";
         }
     }
 }

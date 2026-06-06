@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
             Name = name;
         }
 
-        public void Serialize(IStateStream stateStream)
+        public void Serialize(IStateNode stateStream)
         {
             // use integers to specify length of busy objects instead of fixed array length
 
@@ -21,7 +21,7 @@ namespace BananaParty.WebSocketRelay
                 value.Serialize(stateStream);
         }
 
-        public void Deserialize(IStateStream stateStream)
+        public void Deserialize(IStateNode stateStream)
         {
             // use integers to specify length of busy objects instead of fixed array length
 

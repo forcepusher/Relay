@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class BinaryStateStream : IStateStream
+    public class BinaryStateStream : IStateNode
     {
         private List<byte> _buffer;
         private int _position;
