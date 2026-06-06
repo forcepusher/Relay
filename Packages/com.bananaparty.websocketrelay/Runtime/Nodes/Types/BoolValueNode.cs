@@ -15,5 +15,12 @@ namespace BananaParty.WebSocketRelay
         {
             stateGraph.WriteEntry(Name, Value.ToString().ToLowerInvariant(), false);
         }
+
+        public void ReadStateFromJson(JsonReadStateGraph stateGraph)
+        {
+            string val = stateGraph.ReadEntry(Name);
+            if (val != null && bool.TryParse(val, out bool result))
+                Value = result;
+        }
     }
 }
