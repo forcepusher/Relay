@@ -18,7 +18,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Deserialize(IStateStream stateStream)
         {
-            Value = stateStream.ReadBool();
+            Value = stateStream.ReadBool(Name);
         }
 
         public string OutputNameAndValue()

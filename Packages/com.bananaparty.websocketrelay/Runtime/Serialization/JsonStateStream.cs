@@ -47,9 +47,10 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{(value ? "true" : "false")}");
         }
 
-        public bool ReadBool()
+        public bool ReadBool(string name)
         {
-            return CleanRead().ToLower() == "true";
+            string val = CleanRead(); // "name":true
+            return ExtractJsonValue(val, name).ToLower() == "true";
         }
 
         public void WriteByte(string name, byte value)
@@ -57,9 +58,10 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{value}");
         }
 
-        public byte ReadByte()
+        public byte ReadByte(string name)
         {
-            return byte.Parse(CleanRead());
+            string val = CleanRead();
+            return byte.Parse(ExtractJsonValue(val, name));
         }
 
         public void WriteInt(string name, int value)
@@ -67,9 +69,10 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{value}");
         }
 
-        public int ReadInt()
+        public int ReadInt(string name)
         {
-            return int.Parse(CleanRead());
+            string val = CleanRead();
+            return int.Parse(ExtractJsonValue(val, name));
         }
 
         public void WriteFloat(string name, float value)
@@ -77,9 +80,10 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
         }
 
-        public float ReadFloat()
+        public float ReadFloat(string name)
         {
-            return float.Parse(CleanRead(), System.Globalization.CultureInfo.InvariantCulture);
+            string val = CleanRead();
+            return float.Parse(ExtractJsonValue(val, name), System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public void WriteLong(string name, long value)
@@ -87,9 +91,10 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{value}");
         }
 
-        public long ReadLong()
+        public long ReadLong(string name)
         {
-            return long.Parse(CleanRead());
+            string val = CleanRead();
+            return long.Parse(ExtractJsonValue(val, name));
         }
 
         public void WriteString(string name, string value)
@@ -102,11 +107,12 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"");
         }
 
-        public string ReadString()
+        public string ReadString(string name)
         {
             string val = CleanRead();
-            if (val == "null") return null;
-            return val;
+            string result = ExtractJsonValue(val, name);
+            if (result == "null") return null;
+            return result;
         }
 
         public void WriteEnum<T>(string name, T value) where T : Enum
@@ -114,9 +120,9 @@ namespace BananaParty.WebSocketRelay
             WriteInt(name, Convert.ToInt32(value));
         }
 
-        public T ReadEnum<T>() where T : Enum
+        public T ReadEnum<T>(string name) where T : Enum
         {
-            return (T)Enum.ToObject(typeof(T), ReadInt());
+            return (T)Enum.ToObject(typeof(T), ReadInt(name));
         }
 
         // Unity Types - Serialized as JSON objects for readability/standard
@@ -125,11 +131,12 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
-        public Vector2 ReadVector2()
+        public Vector2 ReadVector2(string name)
         {
-            string val = CleanRead(); // {"x":1,"y":2}
-            string xStr = ExtractJsonValue(val, "x");
-            string yStr = ExtractJsonValue(val, "y");
+            string val = CleanRead(); // "name":{"x":1,"y":2}
+            string jsonObject = ExtractJsonValue(val, name);
+            string xStr = ExtractJsonValue(jsonObject, "x");
+            string yStr = ExtractJsonValue(jsonObject, "y");
             return new Vector2(float.Parse(xStr, System.Globalization.CultureInfo.InvariantCulture), float.Parse(yStr, System.Globalization.CultureInfo.InvariantCulture));
         }
 
@@ -138,13 +145,14 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
-        public Vector3 ReadVector3()
+        public Vector3 ReadVector3(string name)
         {
             string val = CleanRead();
+            string jsonObject = ExtractJsonValue(val, name);
             return new Vector3(
-                float.Parse(ExtractJsonValue(val, "x"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "y"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "z"), System.Globalization.CultureInfo.InvariantCulture)
+                float.Parse(ExtractJsonValue(jsonObject, "x"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "y"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "z"), System.Globalization.CultureInfo.InvariantCulture)
             );
         }
 
@@ -153,14 +161,15 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
-        public Vector4 ReadVector4()
+        public Vector4 ReadVector4(string name)
         {
             string val = CleanRead();
+            string jsonObject = ExtractJsonValue(val, name);
             return new Vector4(
-                float.Parse(ExtractJsonValue(val, "x"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "y"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "z"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "w"), System.Globalization.CultureInfo.InvariantCulture)
+                float.Parse(ExtractJsonValue(jsonObject, "x"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "y"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "z"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "w"), System.Globalization.CultureInfo.InvariantCulture)
             );
         }
 
@@ -169,14 +178,15 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
-        public Quaternion ReadQuaternion()
+        public Quaternion ReadQuaternion(string name)
         {
             string val = CleanRead();
+            string jsonObject = ExtractJsonValue(val, name);
             return new Quaternion(
-                float.Parse(ExtractJsonValue(val, "x"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "y"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "z"), System.Globalization.CultureInfo.InvariantCulture),
-                float.Parse(ExtractJsonValue(val, "w"), System.Globalization.CultureInfo.InvariantCulture)
+                float.Parse(ExtractJsonValue(jsonObject, "x"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "y"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "z"), System.Globalization.CultureInfo.InvariantCulture),
+                float.Parse(ExtractJsonValue(jsonObject, "w"), System.Globalization.CultureInfo.InvariantCulture)
             );
         }
 
@@ -185,10 +195,11 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x},\"y\":{value.y}}}");
         }
 
-        public Vector2Int ReadVector2Int()
+        public Vector2Int ReadVector2Int(string name)
         {
             string val = CleanRead();
-            return new Vector2Int(int.Parse(ExtractJsonValue(val, "x")), int.Parse(ExtractJsonValue(val, "y")));
+            string jsonObject = ExtractJsonValue(val, name);
+            return new Vector2Int(int.Parse(ExtractJsonValue(jsonObject, "x")), int.Parse(ExtractJsonValue(jsonObject, "y")));
         }
 
         public void WriteVector3Int(string name, Vector3Int value)
@@ -196,10 +207,11 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x},\"y\":{value.y},\"z\":{value.z}}}");
         }
 
-        public Vector3Int ReadVector3Int()
+        public Vector3Int ReadVector3Int(string name)
         {
             string val = CleanRead();
-            return new Vector3Int(int.Parse(ExtractJsonValue(val, "x")), int.Parse(ExtractJsonValue(val, "y")), int.Parse(ExtractJsonValue(val, "z")));
+            string jsonObject = ExtractJsonValue(val, name);
+            return new Vector3Int(int.Parse(ExtractJsonValue(jsonObject, "x")), int.Parse(ExtractJsonValue(jsonObject, "y")), int.Parse(ExtractJsonValue(jsonObject, "z")));
         }
 
         public void WriteColor32(string name, Color32 value)
@@ -207,10 +219,11 @@ namespace BananaParty.WebSocketRelay
             _writeBuffer.Add($"\"{name}\":{{\"r\":{value.r},\"g\":{value.g},\"b\":{value.b},\"a\":{value.a}}}");
         }
 
-        public Color32 ReadColor32()
+        public Color32 ReadColor32(string name)
         {
             string val = CleanRead();
-            return new Color32(byte.Parse(ExtractJsonValue(val, "r")), byte.Parse(ExtractJsonValue(val, "g")), byte.Parse(ExtractJsonValue(val, "b")), byte.Parse(ExtractJsonValue(val, "a")));
+            string jsonObject = ExtractJsonValue(val, name);
+            return new Color32(byte.Parse(ExtractJsonValue(jsonObject, "r")), byte.Parse(ExtractJsonValue(jsonObject, "g")), byte.Parse(ExtractJsonValue(jsonObject, "b")), byte.Parse(ExtractJsonValue(jsonObject, "a")));
         }
 
         private string ExtractJsonValue(string json, string key)
