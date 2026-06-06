@@ -20,7 +20,7 @@ namespace BananaParty.WebSocketRelay
             stateGraph.StartChildGroup(Name);
 
             foreach (INode node in _nodes)
-                node.WriteJsonState(stateGraph);
+                node.WriteStateToJson(stateGraph);
 
             stateGraph.EndChildGroup();
         }
