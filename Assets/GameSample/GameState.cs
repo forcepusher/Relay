@@ -13,8 +13,6 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
-        private INode _rootNode;
-
         public string Name => transform.name;
         public List<INode> GetNodes()
         {
