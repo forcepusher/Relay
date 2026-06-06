@@ -6,10 +6,10 @@ namespace BananaParty.WebSocketRelay.Samples
     public class GameState : MonoBehaviour, IObjectNode
     {
         [SerializeField]
-        private Character _playerCharacter = new();
+        private Character _playerCharacter;
 
         [SerializeField]
-        private Character _botCharacter = new();
+        private Character _botCharacter;
 
         private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
@@ -37,7 +37,9 @@ namespace BananaParty.WebSocketRelay.Samples
               }
             }";
 
-            INode root = Json.Parse(sampleJson);
+            //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
+
+            //Debug.Log(Json.Serialize(parsedSampleJsonRoot));
         }
 
         public void Awake()

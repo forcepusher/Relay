@@ -17,6 +17,15 @@ namespace BananaParty.WebSocketRelay
             return parser.ParseNode("");
         }
 
+        /// <summary>
+        /// Converts a node graph back into a JSON string.
+        /// </summary>
+        public static string Serialize(INode root)
+        {
+            var serializer = new SimpleJsonSerializer();
+            return serializer.SerializeNode(root);
+        }
+
         private class SimpleJsonParser
         {
             private readonly string _json;
@@ -158,6 +167,50 @@ namespace BananaParty.WebSocketRelay
             {
                 if (Peek() != expected) throw new Exception($"Expected {expected} at {_pos}, found {Peek()}");
                 _pos++;
+            }
+        }
+
+        private class SimpleJsonSerializer
+        {
+            public string SerializeNode(INode node)
+            {
+                if (node is IObjectNode objNode)
+                {
+                    return SerializeObject(objNode);
+                }
+                else if (node is IntegerValueNode intNode)
+                {
+                    return intNode.Value.ToString(CultureInfo.InvariantCulture);
+                }
+                else if (node is FloatValueNode floatNode)
+                {
+                    return floatNode.Value.ToString(CultureInfo.InvariantCulture);
+                }
+                else if (node is StringValueNode stringNode)
+                {
+                    return $"\"{stringNode.Value}\"";
+                }
+                else if (node is Vector3ValueNode vecNode)
+                {
+                    var v = vecNode.Value;
+                    return $"{{\"x\":{v.x.ToString(CultureInfo.InvariantCulture)},\"y\":{v.y.ToString(CultureInfo.InvariantCulture)},\"z\":{v.z.ToString(CultureInfo.InvariantCulture)}}}";
+                }
+                throw new Exception($"Cannot serialize node type {node?.GetType()}");
+            }
+
+            private string SerializeObject(IObjectNode objNode)
+            {
+                var sb = new StringBuilder();
+                sb.Append("{");
+                var nodes = objNode.GetNodes();
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    var node = nodes[i];
+                    sb.Append($"\"{node.Name}\":{SerializeNode(node)}");
+                    if (i < nodes.Count - 1) sb.Append(",");
+                }
+                sb.Append("}");
+                return sb.ToString();
             }
         }
     }
