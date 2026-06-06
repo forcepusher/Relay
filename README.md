@@ -9,5 +9,15 @@ Key priorities:
 Yes, it actually serializes your game state to JSON so you can easily spot bugs.  
 That is the core difference for improving your debugging experience.  
   
+Future plans:
+1. Sample projects to use as a template for kickstarting development of your games.
+2. Unity Dedicated Server, where Unity instance server is just a connected client to its own relay server.
+3. UDP support via HTTP3/QUIC.
+  
+Not planned:
+1. Chasing performance brownie points. Not doing anything unless it's spiking in a profiler.
+2. Drag and drop garbage. Too much hassle and bloat to get right.
+3. Deterministic prediction-rollback. Not financially viable for most studios and game types.
+  
 Library boilerplate code and tests were AI-assisted, LLMs can't write OOP code like this anyway.  
-And as always - beware it's all code. No drag and drop garbage planned.  
+And as always - beware it's all code.  
