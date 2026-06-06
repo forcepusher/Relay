@@ -21,5 +21,5 @@ Not planned:
   
 ---
   
-Library boilerplate code and tests were AI-assisted, LLMs can't write OOP code like this anyway.  
+Library boilerplate code and tests were AI-assisted, LLMs can't design OOP code like this anyway.  
 And as always - beware it's all code.  
