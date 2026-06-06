@@ -8,7 +8,7 @@ namespace BananaParty.WebSocketRelay.Samples
     [RequireComponent(typeof(CharacterController))]
     public class Character : MonoBehaviour, IObjectNode
     {
-        public string Name => nameof(Character);
+        public string Name {  get; set; }
 
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
