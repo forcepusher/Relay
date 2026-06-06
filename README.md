@@ -2,7 +2,7 @@
 Networking as simple as it gets (for programmers though).  
   
 Key priorities:  
-1. Readable Debug - JSON stream for developing, binary for shipping (with JSOD debug output on demand).
+1. Readable Debug - JSON data stream for developing, binary for shipping (with JSOD debug output on demand).
 2. Protable - Relay server runtime ships with the package, double-click-ready.
 3. Testing - Integration/unit tests using the portable runtime for quick QA.
   
