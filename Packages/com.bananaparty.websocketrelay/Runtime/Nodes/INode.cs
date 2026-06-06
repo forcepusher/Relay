@@ -3,6 +3,7 @@ namespace BananaParty.WebSocketRelay
     public interface INode
     {
         string Name { get; }
-        void WriteState<T>(IStateGraph<T> stateGraph);
+        void WriteJsonState(JsonStateGraph jsonStateGraph);
+        // void WriteBinaryState(BinaryStateGraph binaryStateGraph);
     }
 }
