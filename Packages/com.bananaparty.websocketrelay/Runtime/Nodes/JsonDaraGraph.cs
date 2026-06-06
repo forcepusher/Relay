@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonStateGraph : IStateGraph<string>
+    public class JsonStateGraph
     {
         private readonly StringBuilder _sb = new();
         private int _depth = 0;
@@ -38,7 +38,7 @@ namespace BananaParty.WebSocketRelay
             _firstItemScopes.Push(true);
         }
 
-        public void WriteEntry(string name, string data)
+        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
         {
             if (!_hasStarted)
             {
@@ -49,13 +49,16 @@ namespace BananaParty.WebSocketRelay
             }
 
             bool isFirst = _firstItemScopes.Pop();
+
             if (!isFirst)
-            {
                 _sb.Append(",");
-            }
+
             _firstItemScopes.Push(false);
 
-            _sb.Append($"\"{name}\":\"{data}\"");
+            if (wrapStateInQuotes)
+                _sb.Append($"\"{name}\":\"{state}\"");
+            else
+                _sb.Append($"\"{name}\":{state}");
         }
 
         public void EndChildGroup()
