@@ -2,7 +2,7 @@
 Networking as simple as it gets (for programmers though).  
   
 Key priorities:  
-1. Readable Debug - JSON data stream for developing, binary for shipping (with JSOD debug output on demand).
+1. Readable Debug - JSON data stream for developing, binary for shipping (with JSON debug output on demand).
 2. Protable - Relay server runtime embedded in the Unity package, double-click-ready.
 3. Testing - Integration/unit tests using the portable runtime for quick QA. Especially valuable for AI slop.
   
