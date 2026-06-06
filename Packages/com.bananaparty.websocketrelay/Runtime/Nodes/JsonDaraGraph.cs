@@ -7,19 +7,23 @@ namespace BananaParty.WebSocketRelay
     public class JsonStateGraph
     {
         private readonly bool _prettyPrint;
+        private readonly bool _bracesOnNewLine;
+        private readonly int _indentationCount;
         private readonly StringBuilder _sb = new();
         private int _depth = 0;
         private bool _hasStarted = false;
         private readonly Stack<bool> _firstItemScopes = new();
 
-        public JsonStateGraph(bool prettyPrint = true)
+        public JsonStateGraph(bool prettyPrint = true, bool bracesOnNewLine = true, int spaceIndentationCount = 4)
         {
             _prettyPrint = prettyPrint;
+            _bracesOnNewLine = bracesOnNewLine;
+            _indentationCount = spaceIndentationCount;
         }
 
         private void AppendIndent()
         {
-            _sb.Append(new string(' ', _depth * 2));
+            _sb.Append(new string(' ', _depth * _indentationCount));
         }
 
         public void StartChildGroup(string name)
@@ -56,6 +60,12 @@ namespace BananaParty.WebSocketRelay
             if (!string.IsNullOrEmpty(name))
             {
                 _sb.Append($"\"{name}\":");
+            }
+
+            if (_prettyPrint && _bracesOnNewLine)
+            {
+                _sb.Append("\n");
+                AppendIndent();
             }
 
             _sb.Append("{");
@@ -141,7 +151,7 @@ namespace BananaParty.WebSocketRelay
                     currentDepth--;
                     if (currentDepth > 0)
                     {
-                        result.Append(new string(' ', currentDepth * 2));
+                        result.Append(new string(' ', currentDepth * _indentationCount));
                     }
                 }
                 else
