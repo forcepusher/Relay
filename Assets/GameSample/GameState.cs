@@ -6,27 +6,31 @@ namespace BananaParty.WebSocketRelay.Samples
     public class GameState : MonoBehaviour
     {
         [SerializeField]
-        private List<Character> _initialCharacters = new();
+        private Character _playerCharacter = new();
+
+        [SerializeField]
+        private Character _botCharacter = new();
 
         private IntegerObjectNode _playTime = new(nameof(_playTime), 0);
+        private ObjectNode _playerCharacterNode;
         //private int _playTime = 0;
 
-        ArrayObjectNode<Character> _characters;
+        //ArrayObjectNode<Character> _characters;
         //List<ItemSpawn> _itemPickups = new();
 
         private IObjectNode _objectNode;
-        private readonly IStateNode _stateStream = new JsonStateStream();
+
         public void Awake()
         {
-            _characters = new ArrayObjectNode<Character>(nameof(_characters), _initialCharacters);
+            _playerCharacterNode = new ObjectNode(nameof(_playerCharacter), _playerCharacter.GetNodes());
 
             _objectNode = new ObjectNode("GameState",
                 _playTime,
-                _characters
+                _playerCharacterNode
             );
 
-            Debug.Log(_objectNode.OutputNameAndValue());
 
+            string sampleJson = 
 
         }
 

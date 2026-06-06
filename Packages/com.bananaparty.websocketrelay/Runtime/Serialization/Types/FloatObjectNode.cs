@@ -12,20 +12,5 @@ namespace BananaParty.WebSocketRelay
             Value = initialValue;
             Name = name;
         }
-
-        public void Serialize(IStateNode stateStream)
-        {
-            stateStream.WriteFloat(Name, Value);
-        }
-
-        public void Deserialize(IStateNode stateStream)
-        {
-            Value = stateStream.ReadFloat(Name);
-        }
-
-        public string OutputNameAndValue()
-        {
-            return Json.ConvertToText(Name, Value);
-        }
     }
 }

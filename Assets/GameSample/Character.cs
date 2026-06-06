@@ -14,10 +14,15 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private CharacterController controller;
         private float verticalVelocity;
-
-        private float Health = 100f;
+        
+        private FloatObjectNode Health = new(nameof(Health), 100f);
+        private Vector3ObjectNode Position = new(nameof(Position), Vector3.zero);
         //private List<Item> _items= new();
 
+        public IObjectNode[] GetNodes()
+        {
+            return new IObjectNode[] { Health, Position };
+        }
 
         private void Awake()
         {
@@ -69,21 +74,6 @@ namespace BananaParty.WebSocketRelay.Samples
             }
 
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
-        }
-
-        public void Serialize(IStateNode stateStream)
-        {
-            stateStream.WriteFloat("Health", Health);
-        }
-
-        public void Deserialize(IStateNode stateStream)
-        {
-
-        }
-
-        public string OutputNameAndValue()
-        {
-            return ""; //$"\"{Key}\": {{ \"Health\": {Health} }}";
         }
     }
 }

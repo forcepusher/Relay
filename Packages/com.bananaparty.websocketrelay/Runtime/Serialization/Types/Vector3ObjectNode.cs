@@ -13,16 +13,6 @@ namespace BananaParty.WebSocketRelay
             Name = name;
         }
 
-        public void Serialize(IStateNode stateStream)
-        {
-            stateStream.WriteVector3(Name, Value);
-        }
-
-        public void Deserialize(IStateNode stateStream)
-        {
-            Value = stateStream.ReadVector3(Name);
-        }
-
         public string OutputNameAndValue()
         {
             return Json.ConvertToText(Name, Value);
