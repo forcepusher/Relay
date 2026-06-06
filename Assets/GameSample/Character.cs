@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,7 +13,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private CharacterController controller;
         private float verticalVelocity;
-        
+
         private FloatValueNode _health = new(nameof(_health), 100f);
         private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
 
