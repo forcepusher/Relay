@@ -13,11 +13,6 @@ namespace BananaParty.WebSocketRelay
             _nodes = nodes;
         }
 
-        public void AddNode(INode node)
-        {
-            _nodes.Add(node);
-        }
-
         public List<INode> GetNodes() => _nodes;
     }
 }
