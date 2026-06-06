@@ -24,17 +24,17 @@ namespace BananaParty.WebSocketRelay.Samples
             };
         }
 
-        public void Write(IDataGraph<string> dataGraph)
+        public void Write(IStateGraph<string> dataGraph)
         {
             dataGraph.StartChildGroup(Name);
-            _playTime.WriteToGraph(dataGraph);
+            _playTime.WriteState<string>(dataGraph);
 
             foreach (INode node in GetNodes())
-                node.WriteToGraph(dataGraph);
+                node.WriteState<string>(dataGraph);
 
             dataGraph.EndChildGroup();
         }
-        public void Read(IDataGraph<string> dataGraph)
+        public void Read(IStateGraph<string> dataGraph)
         {
 
         }

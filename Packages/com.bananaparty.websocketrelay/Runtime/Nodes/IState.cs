@@ -2,7 +2,7 @@ namespace BananaParty.WebSocketRelay
 {
     public interface IState<T>
     {
-        void Write(IDataGraph<T> dataGraph);
-        void Read(IDataGraph<T> dataGraph);
+        void Write(IStateGraph<T> dataGraph);
+        void Read(IStateGraph<T> dataGraph);
     }
 }

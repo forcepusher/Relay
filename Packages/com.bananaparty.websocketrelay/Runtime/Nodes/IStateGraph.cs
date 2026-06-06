@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IDataGraph<T>
+    public interface IStateGraph<T>
     {
         void StartChildGroup(string name);
         void Write(string name, T data);

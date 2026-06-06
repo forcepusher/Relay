@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonDataGraph : IDataGraph<string>
+    public class JsonDataGraph : IStateGraph<string>
     {
         private readonly StringBuilder _sb = new();
         private int _depth = 0;
