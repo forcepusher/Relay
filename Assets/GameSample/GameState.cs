@@ -27,7 +27,6 @@ namespace BananaParty.WebSocketRelay.Samples
         public void WriteJsonState(JsonStateGraph jsonStateGraph)
         {
             jsonStateGraph.StartChildGroup(Name);
-            _playTime.WriteJsonState(jsonStateGraph);
 
             foreach (INode node in GetNodes())
                 node.WriteJsonState(jsonStateGraph);
