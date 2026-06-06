@@ -17,7 +17,6 @@ namespace BananaParty.WebSocketRelay.Samples
         
         private FloatValueNode _health = new(nameof(_health), 100f);
         private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
-        //private List<Item> _items= new();
 
         public string Name => transform.name;
         public List<INode> GetNodes()

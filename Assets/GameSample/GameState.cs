@@ -26,28 +26,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Awake()
         {
-            //_playerCharacterNode = new ObjectNode(nameof(_playerCharacter), _playerCharacter.GetNodes());
-            //_botCharacterNode = new ObjectNode(nameof(_botCharacter), _botCharacter.GetNodes());
 
-            //_objectNode = new ObjectNode("GameState",
-            //    _playTimeNode,
-            //    _playerCharacterNode,
-            //    _botCharacterNode
-            //);
-
-
-            //string sampleJson = 
-
-        }
-
-        public void OnSaveButtonClick()
-        {
-            //_objectNode.Serialize(_stateStream);
-        }
-
-        public void OnLoadButtonClick()
-        {
-            //_objectNode.Deserialize(_stateStream);
         }
     }
 }
