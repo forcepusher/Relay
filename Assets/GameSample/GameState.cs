@@ -44,7 +44,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             JsonStateGraph _jsonStateGraph = new();
             WriteJsonState(_jsonStateGraph);
-
+            Debug.Log(_jsonStateGraph.ToString());
 
             //string sampleJson = @"{
             //  ""GameState"": {
