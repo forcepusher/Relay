@@ -24,7 +24,7 @@ namespace BananaParty.WebSocketRelay.Samples
             };
         }
 
-        public void WriteStateToJson(JsonStateGraph jsonStateGraph)
+        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {
             jsonStateGraph.StartChildGroup(Name);
 
@@ -34,30 +34,31 @@ namespace BananaParty.WebSocketRelay.Samples
             jsonStateGraph.EndChildGroup();
         }
 
-        public void ReadStateFromJson(JsonStateGraph jsonStateGraph)
+        public void ReadStateFromJson(JsonWriteStateGraph jsonStateGraph)
         {
 
         }
 
         public void Awake()
         {
-            JsonStateGraph _jsonStateGraph = new();
+            JsonWriteStateGraph _jsonStateGraph = new();
             WriteStateToJson(_jsonStateGraph);
             Debug.Log(_jsonStateGraph.ToString());
 
-            //string sampleJson = @"{
-            //  ""GameState"": {
-            //    ""_playTime"": 0,
-            //    ""PlayerCharacter"": {
-            //      ""_health"": 100.0,
-            //      ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-            //    },
-            //    ""BotCharacter"": {
-            //      ""_health"": 100.0,
-            //      ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-            //    }
-            //  }
-            //}";
+
+            string sampleJson = @"{
+             ""GameState"": {
+               ""_playTime"": 0,
+               ""PlayerCharacter"": {
+                 ""_health"": 100.0,
+                 ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+               },
+               ""BotCharacter"": {
+                 ""_health"": 100.0,
+                 ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+               }
+             }
+            }";
 
             //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
 

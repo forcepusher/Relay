@@ -79,7 +79,7 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void WriteStateToJson(JsonStateGraph jsonStateGraph)
+        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {
             jsonStateGraph.StartChildGroup(Name);
             _health.WriteStateToJson(jsonStateGraph);
