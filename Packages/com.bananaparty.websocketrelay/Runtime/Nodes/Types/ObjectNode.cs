@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay
 
         public List<INode> GetNodes() => _nodes;
 
-        public void WriteJsonState(JsonStateGraph stateGraph)
+        public void WriteStateToJson(JsonStateGraph stateGraph)
         {
             stateGraph.StartChildGroup(Name);
 
