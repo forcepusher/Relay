@@ -22,7 +22,10 @@ namespace BananaParty.WebSocketRelay.Samples
                 _playerCharacter,
                 _botCharacter
             };
+        }
 
+        public void Awake()
+        {
             string sampleJson = @"{
               ""GameState"": {
                 ""_playTime"": 0,
@@ -37,14 +40,9 @@ namespace BananaParty.WebSocketRelay.Samples
               }
             }";
 
-            //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
+            INode parsedSampleJsonRoot = Json.Parse(sampleJson);
 
-            //Debug.Log(Json.Serialize(parsedSampleJsonRoot));
-        }
-
-        public void Awake()
-        {
-
+            Debug.Log(Json.Serialize(parsedSampleJsonRoot));
         }
     }
 }
