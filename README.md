@@ -19,6 +19,7 @@ Not planned:
 2. Drag and drop garbage. Too much hassle and bloat to get right.
 3. Deterministic prediction-rollback. Not financially viable for most studios and game types.
   
+---
   
 Library boilerplate code and tests were AI-assisted, LLMs can't write OOP code like this anyway.  
 And as always - beware it's all code.  
