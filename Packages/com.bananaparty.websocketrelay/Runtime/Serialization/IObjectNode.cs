@@ -2,6 +2,6 @@ namespace BananaParty.WebSocketRelay
 {
     public interface IObjectNode
     {
-        IObjectNode[] GetNodes();
+        IObjectNode[] GetNodes() => new IObjectNode[] {};
     }
 }
