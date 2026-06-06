@@ -12,7 +12,7 @@ That is the core difference for improving your debugging experience.
 Future plans:
 1. Sample projects to use as a template for kickstarting development of your games.
 2. Unity Dedicated Server, where Unity instance server is just a connected client to its own relay server.
-3. UDP support via HTTP3/QUIC.
+3. UDP support via HTTP/3 QUIC.
   
 Not planned:
 1. Chasing performance brownie points. Not doing anything unless it's spiking in a profiler.
