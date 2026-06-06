@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class GenericObjectNode : IObjectNode
+    public class ObjectNode : IObjectNode
     {
         public string Name { get; }
-        private readonly List<INode> _nodes = new();
+        private readonly List<INode> _nodes;
 
-        public GenericObjectNode(string name)
+        public ObjectNode(string name, List<INode> _nodes)
         {
             Name = name;
         }

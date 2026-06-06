@@ -53,7 +53,7 @@ namespace BananaParty.WebSocketRelay
 
             private IObjectNode ParseObject(string name)
             {
-                var objNode = new GenericObjectNode(name);
+                List<INode> nodes = new();
                 Consume('{');
                 SkipWhitespace();
 
@@ -65,7 +65,7 @@ namespace BananaParty.WebSocketRelay
                     Consume(':');
                     SkipWhitespace();
 
-                    objNode.AddNode(ParseNode(key));
+                    nodes.Add(ParseNode(key));
                     SkipWhitespace();
                     if (Peek() == ',')
                     {
@@ -74,7 +74,7 @@ namespace BananaParty.WebSocketRelay
                     }
                 }
                 Consume('}');
-                return objNode;
+                return new ObjectNode(name, nodes);
             }
 
             private object ParseValue()
