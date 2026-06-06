@@ -6,10 +6,21 @@ namespace BananaParty.WebSocketRelay
 {
     public class JsonStateGraph
     {
+        private readonly bool _prettyPrint;
         private readonly StringBuilder _sb = new();
         private int _depth = 0;
         private bool _hasStarted = false;
         private readonly Stack<bool> _firstItemScopes = new();
+
+        public JsonStateGraph(bool prettyPrint = true)
+        {
+            _prettyPrint = prettyPrint;
+        }
+
+        private void AppendIndent()
+        {
+            _sb.Append(new string(' ', _depth * 2));
+        }
 
         public void StartChildGroup(string name)
         {
@@ -19,12 +30,26 @@ namespace BananaParty.WebSocketRelay
                 _hasStarted = true;
                 _depth++;
                 _firstItemScopes.Push(true);
+
+                if (_prettyPrint)
+                {
+                    _sb.Append("\n");
+                    AppendIndent();
+                }
             }
 
             bool isFirst = _firstItemScopes.Pop();
             if (!isFirst)
             {
-                _sb.Append(",");
+                if (_prettyPrint)
+                {
+                    _sb.Append(",\n");
+                    AppendIndent();
+                }
+                else
+                {
+                    _sb.Append(",");
+                }
             }
             _firstItemScopes.Push(false);
 
@@ -36,6 +61,12 @@ namespace BananaParty.WebSocketRelay
             _sb.Append("{");
             _depth++;
             _firstItemScopes.Push(true);
+
+            if (_prettyPrint)
+            {
+                _sb.Append("\n");
+                AppendIndent();
+            }
         }
 
         public void WriteEntry(string name, string state, bool wrapStateInQuotes)
@@ -46,12 +77,28 @@ namespace BananaParty.WebSocketRelay
                 _hasStarted = true;
                 _depth++;
                 _firstItemScopes.Push(true);
+
+                if (_prettyPrint)
+                {
+                    _sb.Append("\n");
+                    AppendIndent();
+                }
             }
 
             bool isFirst = _firstItemScopes.Pop();
 
             if (!isFirst)
-                _sb.Append(",");
+            {
+                if (_prettyPrint)
+                {
+                    _sb.Append(",\n");
+                    AppendIndent();
+                }
+                else
+                {
+                    _sb.Append(",");
+                }
+            }
 
             _firstItemScopes.Push(false);
 
@@ -65,8 +112,18 @@ namespace BananaParty.WebSocketRelay
         {
             if (_depth <= 1) return; // Cannot close implicit root here, handled in ToString
 
+            if (_prettyPrint)
+            {
+                _sb.Append("\n");
+                _depth--;
+                AppendIndent();
+            }
+            else
+            {
+                _depth--;
+            }
+
             _sb.Append("}");
-            _depth--;
             _firstItemScopes.Pop();
         }
 
@@ -78,8 +135,20 @@ namespace BananaParty.WebSocketRelay
             int currentDepth = _depth;
             while (currentDepth > 0)
             {
+                if (_prettyPrint)
+                {
+                    result.Append("\n");
+                    currentDepth--;
+                    if (currentDepth > 0)
+                    {
+                        result.Append(new string(' ', currentDepth * 2));
+                    }
+                }
+                else
+                {
+                    currentDepth--;
+                }
                 result.Append("}");
-                currentDepth--;
             }
             return result.ToString();
         }
