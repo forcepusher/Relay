@@ -8,7 +8,7 @@ namespace BananaParty.WebSocketRelay
     /// <remarks>
     /// Internally is an <see cref="ISocket"/> Proxy for <see cref="StandaloneSocket"/> and <see cref="BrowserSocket"/>.
     /// </remarks>
-    public class Socket
+    public class Socket : IDisposable
     {
         private readonly string _serverAddress;
 
