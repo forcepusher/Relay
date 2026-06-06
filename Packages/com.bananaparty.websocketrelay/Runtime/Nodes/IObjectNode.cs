@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace BananaParty.WebSocketRelay
 {
     public interface IObjectNode : INode
     {
-        INode[] GetNodes();
+        List<INode> GetNodes();
     }
 }

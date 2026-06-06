@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour
+    public class GameState : MonoBehaviour, IObjectNode
     {
         [SerializeField]
         private Character _playerCharacter = new();
@@ -11,22 +11,29 @@ namespace BananaParty.WebSocketRelay.Samples
         [SerializeField]
         private Character _botCharacter = new();
 
-        private IntegerObjectNode _playTimeNode = new(nameof(_playTimeNode), 0);
-        private ObjectNode _playerCharacterNode;
-        private ObjectNode _botCharacterNode;
+        private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
-        private INode _objectNode;
+        public string Name => transform.name;
+        public List<INode> GetNodes()
+        {
+            return new List<INode>
+            {
+                _playTime,
+                _playerCharacter,
+                _botCharacter
+            };
+        }
 
         public void Awake()
         {
-            _playerCharacterNode = new ObjectNode(nameof(_playerCharacter), _playerCharacter.GetNodes());
-            _botCharacterNode = new ObjectNode(nameof(_botCharacter), _botCharacter.GetNodes());
+            //_playerCharacterNode = new ObjectNode(nameof(_playerCharacter), _playerCharacter.GetNodes());
+            //_botCharacterNode = new ObjectNode(nameof(_botCharacter), _botCharacter.GetNodes());
 
-            _objectNode = new ObjectNode("GameState",
-                _playTimeNode,
-                _playerCharacterNode,
-                _botCharacterNode
-            );
+            //_objectNode = new ObjectNode("GameState",
+            //    _playTimeNode,
+            //    _playerCharacterNode,
+            //    _botCharacterNode
+            //);
 
 
             //string sampleJson = 
