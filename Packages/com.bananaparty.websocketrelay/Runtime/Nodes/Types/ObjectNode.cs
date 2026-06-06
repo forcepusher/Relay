@@ -7,9 +7,10 @@ namespace BananaParty.WebSocketRelay
         public string Name { get; }
         private readonly List<INode> _nodes;
 
-        public ObjectNode(string name, List<INode> _nodes)
+        public ObjectNode(string name, List<INode> nodes)
         {
             Name = name;
+            _nodes = nodes;
         }
 
         public void AddNode(INode node)
