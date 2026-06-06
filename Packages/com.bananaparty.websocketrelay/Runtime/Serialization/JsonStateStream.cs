@@ -20,13 +20,13 @@ namespace BananaParty.WebSocketRelay
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append("{");
             for (int i = 0; i < _writeBuffer.Count; i++)
             {
                 sb.Append(_writeBuffer[i]);
                 if (i < _writeBuffer.Count - 1) sb.Append(",");
             }
-            sb.Append("]");
+            sb.Append("}");
             return sb.ToString();
         }
 
@@ -42,9 +42,9 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Primitives
-        public void WriteBool(bool value)
+        public void WriteBool(string name, bool value)
         {
-            _writeBuffer.Add(value ? "true" : "false");
+            _writeBuffer.Add($"\"{name}\":{(value ? "true" : "false")}");
         }
 
         public bool ReadBool()
@@ -52,9 +52,9 @@ namespace BananaParty.WebSocketRelay
             return CleanRead().ToLower() == "true";
         }
 
-        public void WriteByte(byte value)
+        public void WriteByte(string name, byte value)
         {
-            _writeBuffer.Add(value.ToString());
+            _writeBuffer.Add($"\"{name}\":{value}");
         }
 
         public byte ReadByte()
@@ -62,9 +62,9 @@ namespace BananaParty.WebSocketRelay
             return byte.Parse(CleanRead());
         }
 
-        public void WriteInt(int value)
+        public void WriteInt(string name, int value)
         {
-            _writeBuffer.Add(value.ToString());
+            _writeBuffer.Add($"\"{name}\":{value}");
         }
 
         public int ReadInt()
@@ -72,9 +72,9 @@ namespace BananaParty.WebSocketRelay
             return int.Parse(CleanRead());
         }
 
-        public void WriteFloat(float value)
+        public void WriteFloat(string name, float value)
         {
-            _writeBuffer.Add(value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            _writeBuffer.Add($"\"{name}\":{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
         }
 
         public float ReadFloat()
@@ -82,9 +82,9 @@ namespace BananaParty.WebSocketRelay
             return float.Parse(CleanRead(), System.Globalization.CultureInfo.InvariantCulture);
         }
 
-        public void WriteLong(long value)
+        public void WriteLong(string name, long value)
         {
-            _writeBuffer.Add(value.ToString());
+            _writeBuffer.Add($"\"{name}\":{value}");
         }
 
         public long ReadLong()
@@ -92,14 +92,14 @@ namespace BananaParty.WebSocketRelay
             return long.Parse(CleanRead());
         }
 
-        public void WriteString(string value)
+        public void WriteString(string name, string value)
         {
             if (value == null)
             {
-                _writeBuffer.Add("null");
+                _writeBuffer.Add($"\"{name}\":null");
                 return;
             }
-            _writeBuffer.Add($"\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"");
+            _writeBuffer.Add($"\"{name}\":\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"");
         }
 
         public string ReadString()
@@ -109,9 +109,9 @@ namespace BananaParty.WebSocketRelay
             return val;
         }
 
-        public void WriteEnum<T>(T value) where T : Enum
+        public void WriteEnum<T>(string name, T value) where T : Enum
         {
-            WriteInt(Convert.ToInt32(value));
+            WriteInt(name, Convert.ToInt32(value));
         }
 
         public T ReadEnum<T>() where T : Enum
@@ -120,9 +120,9 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Unity Types - Serialized as JSON objects for readability/standard
-        public void WriteVector2(Vector2 value)
+        public void WriteVector2(string name, Vector2 value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
         public Vector2 ReadVector2()
@@ -133,9 +133,9 @@ namespace BananaParty.WebSocketRelay
             return new Vector2(float.Parse(xStr, System.Globalization.CultureInfo.InvariantCulture), float.Parse(yStr, System.Globalization.CultureInfo.InvariantCulture));
         }
 
-        public void WriteVector3(Vector3 value)
+        public void WriteVector3(string name, Vector3 value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
         public Vector3 ReadVector3()
@@ -148,9 +148,9 @@ namespace BananaParty.WebSocketRelay
             );
         }
 
-        public void WriteVector4(Vector4 value)
+        public void WriteVector4(string name, Vector4 value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
         public Vector4 ReadVector4()
@@ -164,9 +164,9 @@ namespace BananaParty.WebSocketRelay
             );
         }
 
-        public void WriteQuaternion(Quaternion value)
+        public void WriteQuaternion(string name, Quaternion value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"y\":{value.y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"z\":{value.z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"w\":{value.w.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}");
         }
 
         public Quaternion ReadQuaternion()
@@ -180,9 +180,9 @@ namespace BananaParty.WebSocketRelay
             );
         }
 
-        public void WriteVector2Int(Vector2Int value)
+        public void WriteVector2Int(string name, Vector2Int value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x},\"y\":{value.y}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x},\"y\":{value.y}}}");
         }
 
         public Vector2Int ReadVector2Int()
@@ -191,9 +191,9 @@ namespace BananaParty.WebSocketRelay
             return new Vector2Int(int.Parse(ExtractJsonValue(val, "x")), int.Parse(ExtractJsonValue(val, "y")));
         }
 
-        public void WriteVector3Int(Vector3Int value)
+        public void WriteVector3Int(string name, Vector3Int value)
         {
-            _writeBuffer.Add($"{{\"x\":{value.x},\"y\":{value.y},\"z\":{value.z}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"x\":{value.x},\"y\":{value.y},\"z\":{value.z}}}");
         }
 
         public Vector3Int ReadVector3Int()
@@ -202,9 +202,9 @@ namespace BananaParty.WebSocketRelay
             return new Vector3Int(int.Parse(ExtractJsonValue(val, "x")), int.Parse(ExtractJsonValue(val, "y")), int.Parse(ExtractJsonValue(val, "z")));
         }
 
-        public void WriteColor32(Color32 value)
+        public void WriteColor32(string name, Color32 value)
         {
-            _writeBuffer.Add($"{{\"r\":{value.r},\"g\":{value.g},\"b\":{value.b},\"a\":{value.a}}}");
+            _writeBuffer.Add($"\"{name}\":{{\"r\":{value.r},\"g\":{value.g},\"b\":{value.b},\"a\":{value.a}}}");
         }
 
         public Color32 ReadColor32()

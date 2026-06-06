@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteFloat(Value);
+            stateStream.WriteFloat(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)

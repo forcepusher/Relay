@@ -73,7 +73,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Serialize(IStateStream stateStream)
         {
-
+            stateStream.WriteFloat("Health", Health);
         }
 
         public void Deserialize(IStateStream stateStream)

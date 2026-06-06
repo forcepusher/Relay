@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteColor32(_value);
+            stateStream.WriteColor32(_name, _value);
         }
 
         public void Deserialize(IStateStream stateStream)

@@ -7,46 +7,46 @@ namespace BananaParty.WebSocketRelay
     {
         string ToString();
 
-        void WriteBool(bool value);
+        void WriteBool(string name, bool value);
         bool ReadBool();
 
-        void WriteByte(byte value);
+        void WriteByte(string name, byte value);
         byte ReadByte();
 
-        void WriteInt(int value);
+        void WriteInt(string name, int value);
         int ReadInt();
 
-        void WriteFloat(float value);
+        void WriteFloat(string name, float value);
         float ReadFloat();
 
-        void WriteLong(long value);
+        void WriteLong(string name, long value);
         long ReadLong();
 
-        void WriteString(string value);
+        void WriteString(string name, string value);
         string ReadString();
 
-        void WriteEnum<T>(T value) where T : Enum;
+        void WriteEnum<T>(string name, T value) where T : Enum;
         T ReadEnum<T>() where T : Enum;
 
-        void WriteVector2(Vector2 value);
+        void WriteVector2(string name, Vector2 value);
         Vector2 ReadVector2();
 
-        void WriteVector3(Vector3 value);
+        void WriteVector3(string name, Vector3 value);
         Vector3 ReadVector3();
 
-        void WriteVector4(Vector4 value);
+        void WriteVector4(string name, Vector4 value);
         Vector4 ReadVector4();
 
-        void WriteQuaternion(Quaternion value);
+        void WriteQuaternion(string name, Quaternion value);
         Quaternion ReadQuaternion();
 
-        void WriteVector2Int(Vector2Int value);
+        void WriteVector2Int(string name, Vector2Int value);
         Vector2Int ReadVector2Int();
 
-        void WriteVector3Int(Vector3Int value);
+        void WriteVector3Int(string name, Vector3Int value);
         Vector3Int ReadVector3Int();
 
-        void WriteColor32(Color32 value);
+        void WriteColor32(string name, Color32 value);
         Color32 ReadColor32();
     }
 }

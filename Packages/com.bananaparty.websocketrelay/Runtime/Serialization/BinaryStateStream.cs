@@ -49,8 +49,12 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Primitives
-        public void WriteBool(bool value)
+        public void WriteBool(string name, bool value)
         {
+            // In binary stream, we can't easily store names without a schema.
+            // For now, we just write the value and ignore the name to maintain backward compatibility with the byte stream format,
+            // or we could write the name as a string first.
+            // Given this is a 'BinaryStateStream', usually it follows a strict order.
             WriteInternal((byte)(value ? 1 : 0));
         }
 
@@ -59,7 +63,7 @@ namespace BananaParty.WebSocketRelay
             return _buffer[_position++] != 0;
         }
 
-        public void WriteByte(byte value)
+        public void WriteByte(string name, byte value)
         {
             WriteInternal(value);
         }
@@ -69,7 +73,7 @@ namespace BananaParty.WebSocketRelay
             return _buffer[_position++];
         }
 
-        public void WriteInt(int value)
+        public void WriteInt(string name, int value)
         {
             WriteInternal((byte)(value & 0xFF));
             WriteInternal((byte)((value >> 8) & 0xFF));
@@ -82,7 +86,7 @@ namespace BananaParty.WebSocketRelay
             return _buffer[_position++] | (_buffer[_position++] << 8) | (_buffer[_position++] << 16) | (_buffer[_position++] << 24);
         }
 
-        public void WriteLong(long value)
+        public void WriteLong(string name, long value)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -100,9 +104,9 @@ namespace BananaParty.WebSocketRelay
             return value;
         }
 
-        public void WriteFloat(float value)
+        public void WriteFloat(string name, float value)
         {
-            WriteInt(BitConverter.SingleToInt32Bits(value));
+            WriteInt(name, BitConverter.SingleToInt32Bits(value));
         }
 
         public float ReadFloat()
@@ -111,16 +115,16 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Strings and GUIDs
-        public void WriteString(string value)
+        public void WriteString(string name, string value)
         {
             if (value == null)
             {
-                WriteInt(-1);
+                WriteInt(name, -1);
                 return;
             }
 
             byte[] bytes = Encoding.UTF8.GetBytes(value);
-            WriteInt(bytes.Length);
+            WriteInt(name, bytes.Length);
             foreach (byte b in bytes) WriteInternal(b);
         }
 
@@ -136,9 +140,9 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Enums
-        public void WriteEnum<T>(T value) where T : Enum
+        public void WriteEnum<T>(string name, T value) where T : Enum
         {
-            WriteInt(Convert.ToInt32(value));
+            WriteInt(name, Convert.ToInt32(value));
         }
 
         public T ReadEnum<T>() where T : Enum
@@ -147,10 +151,10 @@ namespace BananaParty.WebSocketRelay
         }
 
         // Unity Types
-        public void WriteVector2(Vector2 value)
+        public void WriteVector2(string name, Vector2 value)
         {
-            WriteFloat(value.x);
-            WriteFloat(value.y);
+            WriteFloat(name, value.x);
+            WriteFloat(name, value.y);
         }
 
         public Vector2 ReadVector2()
@@ -158,11 +162,11 @@ namespace BananaParty.WebSocketRelay
             return new Vector2(ReadFloat(), ReadFloat());
         }
 
-        public void WriteVector3(Vector3 value)
+        public void WriteVector3(string name, Vector3 value)
         {
-            WriteFloat(value.x);
-            WriteFloat(value.y);
-            WriteFloat(value.z);
+            WriteFloat(name, value.x);
+            WriteFloat(name, value.y);
+            WriteFloat(name, value.z);
         }
 
         public Vector3 ReadVector3()
@@ -170,12 +174,12 @@ namespace BananaParty.WebSocketRelay
             return new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
         }
 
-        public void WriteVector4(Vector4 value)
+        public void WriteVector4(string name, Vector4 value)
         {
-            WriteFloat(value.x);
-            WriteFloat(value.y);
-            WriteFloat(value.z);
-            WriteFloat(value.w);
+            WriteFloat(name, value.x);
+            WriteFloat(name, value.y);
+            WriteFloat(name, value.z);
+            WriteFloat(name, value.w);
         }
 
         public Vector4 ReadVector4()
@@ -183,12 +187,12 @@ namespace BananaParty.WebSocketRelay
             return new Vector4(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
 
-        public void WriteQuaternion(Quaternion value)
+        public void WriteQuaternion(string name, Quaternion value)
         {
-            WriteFloat(value.x);
-            WriteFloat(value.y);
-            WriteFloat(value.z);
-            WriteFloat(value.w);
+            WriteFloat(name, value.x);
+            WriteFloat(name, value.y);
+            WriteFloat(name, value.z);
+            WriteFloat(name, value.w);
         }
 
         public Quaternion ReadQuaternion()
@@ -196,10 +200,10 @@ namespace BananaParty.WebSocketRelay
             return new Quaternion(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
 
-        public void WriteVector2Int(Vector2Int value)
+        public void WriteVector2Int(string name, Vector2Int value)
         {
-            WriteInt(value.x);
-            WriteInt(value.y);
+            WriteInt(name, value.x);
+            WriteInt(name, value.y);
         }
 
         public Vector2Int ReadVector2Int()
@@ -207,11 +211,11 @@ namespace BananaParty.WebSocketRelay
             return new Vector2Int(ReadInt(), ReadInt());
         }
 
-        public void WriteVector3Int(Vector3Int value)
+        public void WriteVector3Int(string name, Vector3Int value)
         {
-            WriteInt(value.x);
-            WriteInt(value.y);
-            WriteInt(value.z);
+            WriteInt(name, value.x);
+            WriteInt(name, value.y);
+            WriteInt(name, value.z);
         }
 
         public Vector3Int ReadVector3Int()
@@ -219,12 +223,12 @@ namespace BananaParty.WebSocketRelay
             return new Vector3Int(ReadInt(), ReadInt(), ReadInt());
         }
 
-        public void WriteColor32(Color32 value)
+        public void WriteColor32(string name, Color32 value)
         {
-            WriteByte(value.r);
-            WriteByte(value.g);
-            WriteByte(value.b);
-            WriteByte(value.a);
+            WriteByte(name, value.r);
+            WriteByte(name, value.g);
+            WriteByte(name, value.b);
+            WriteByte(name, value.a);
         }
 
         public Color32 ReadColor32()

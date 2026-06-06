@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Serialize(IStateStream stateStream)
         {
-            stateStream.WriteBool(Value);
+            stateStream.WriteBool(Name, Value);
         }
 
         public void Deserialize(IStateStream stateStream)
