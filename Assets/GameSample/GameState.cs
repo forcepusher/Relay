@@ -26,16 +26,18 @@ namespace BananaParty.WebSocketRelay.Samples
             );
 
             Debug.Log(_objectNode.OutputNameAndValue());
+
+
         }
 
         public void OnSaveButtonClick()
         {
-            _objectNode.Serialize(_stateStream);
+            //_objectNode.Serialize(_stateStream);
         }
 
         public void OnLoadButtonClick()
         {
-            _objectNode.Deserialize(_stateStream);
+            //_objectNode.Deserialize(_stateStream);
         }
     }
 }
