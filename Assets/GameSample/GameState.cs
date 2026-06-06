@@ -22,6 +22,20 @@ namespace BananaParty.WebSocketRelay.Samples
                 _playerCharacter,
                 _botCharacter
             };
+
+            string sampleJson = @"{
+              ""GameState"": {
+                ""_playTime"": 0,
+                ""PlayerCharacter"": {
+                  ""_health"": 100.0,
+                  ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+                },
+                ""BotCharacter"": {
+                  ""_health"": 100.0,
+                  ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
+                }
+              }
+            }";
         }
 
         public void Awake()
