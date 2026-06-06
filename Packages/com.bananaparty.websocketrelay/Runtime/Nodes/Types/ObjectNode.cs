@@ -14,5 +14,15 @@ namespace BananaParty.WebSocketRelay
         }
 
         public List<INode> GetNodes() => _nodes;
+
+        public void WriteJsonState(JsonStateGraph stateGraph)
+        {
+            stateGraph.StartChildGroup(Name);
+
+            foreach (INode node in _nodes)
+                node.WriteJsonState(stateGraph);
+
+            stateGraph.EndChildGroup();
+        }
     }
 }

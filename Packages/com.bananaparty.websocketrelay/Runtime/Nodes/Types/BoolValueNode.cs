@@ -11,7 +11,7 @@ namespace BananaParty.WebSocketRelay
             Value = initialValue;
         }
 
-        public void WriteState(JsonStateGraph stateGraph)
+        public void WriteJsonState(JsonStateGraph stateGraph)
         {
             stateGraph.WriteEntry(Name, Value.ToString().ToLowerInvariant());
         }
