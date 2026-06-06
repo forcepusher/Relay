@@ -8,6 +8,8 @@ namespace BananaParty.WebSocketRelay.Samples
     [RequireComponent(typeof(CharacterController))]
     public class Character : MonoBehaviour, IObjectNode
     {
+        public string Name => nameof(Character);
+
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
         [SerializeField] private float jumpHeight = 2f;
@@ -19,9 +21,9 @@ namespace BananaParty.WebSocketRelay.Samples
         private Vector3ObjectNode Position = new(nameof(Position), Vector3.zero);
         //private List<Item> _items= new();
 
-        public IObjectNode[] GetNodes()
+        public INode[] GetNodes()
         {
-            return new IObjectNode[] { Health, Position };
+            return new INode[] { Health, Position };
         }
 
         private void Awake()

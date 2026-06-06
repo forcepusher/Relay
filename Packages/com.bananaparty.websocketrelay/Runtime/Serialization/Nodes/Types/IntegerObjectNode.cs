@@ -1,9 +1,9 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class IntegerObjectNode : IObjectNode
+    public class IntegerObjectNode : IValueNode
     {
         public int Value;
-        public readonly string Name;
+        public string Name { get; private set; }
 
         public IntegerObjectNode(string name, int initialValue)
         {

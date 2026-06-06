@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private ObjectNode _playerCharacterNode;
         private ObjectNode _botCharacterNode;
 
-        private IObjectNode _objectNode;
+        private INode _objectNode;
 
         public void Awake()
         {

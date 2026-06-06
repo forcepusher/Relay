@@ -1,11 +1,9 @@
-using UnityEngine;
-
 namespace BananaParty.WebSocketRelay
 {
-    public class FloatObjectNode : IObjectNode
+    public class FloatObjectNode : INode
     {
+        public string Name { get; private set; }
         public float Value;
-        public readonly string Name;
 
         public FloatObjectNode(string name, float initialValue)
         {
