@@ -42,8 +42,8 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Awake()
         {
-            JsonDataGraph _jsonDataGraph = new();
-            WriteState(_jsonDataGraph);
+            JsonStateGraph _jsonStateGraph = new();
+            WriteState(_jsonStateGraph);
 
 
             //string sampleJson = @"{
