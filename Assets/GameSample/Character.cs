@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, ISerializableState
+    public class Character : MonoBehaviour, IObjectNode, IJsonState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -12,6 +13,19 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private CharacterController controller;
         private float verticalVelocity;
+
+        private FloatValueNode _health = new(nameof(_health), 100f);
+        private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
+
+        public string Name => transform.name;
+        public List<INode> GetNodes()
+        {
+            return new List<INode>
+            {
+                _health,
+                _position
+            };
+        }
 
         private void Awake()
         {
@@ -65,14 +79,20 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void Serialize(IStateStorage stateStorage)
+        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {
-            
+            jsonStateGraph.StartChildGroup(Name);
+            _health.WriteStateToJson(jsonStateGraph);
+            _position.WriteStateToJson(jsonStateGraph);
+            jsonStateGraph.EndChildGroup();
         }
 
-        public void Deserialize(IStateStorage stateStorage)
+        public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
         {
-            
+            jsonReadStateGraph.StartChildGroup(Name);
+            _health.ReadStateFromJson(jsonReadStateGraph);
+            _position.ReadStateFromJson(jsonReadStateGraph);
+            jsonReadStateGraph.EndChildGroup();
         }
     }
 }
