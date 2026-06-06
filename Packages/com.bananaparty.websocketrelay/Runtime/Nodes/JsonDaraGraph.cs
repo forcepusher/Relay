@@ -38,7 +38,7 @@ namespace BananaParty.WebSocketRelay
             _firstItemScopes.Push(true);
         }
 
-        public void Write(string name, string data)
+        public void WriteEntry(string name, string data)
         {
             if (!_hasStarted)
             {

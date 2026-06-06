@@ -24,7 +24,7 @@ namespace BananaParty.WebSocketRelay.Samples
             };
         }
 
-        public void Write(IStateGraph<string> stateGraph)
+        public void WriteState(IStateGraph<string> stateGraph)
         {
             stateGraph.StartChildGroup(Name);
             _playTime.WriteState<string>(stateGraph);
@@ -35,7 +35,7 @@ namespace BananaParty.WebSocketRelay.Samples
             stateGraph.EndChildGroup();
         }
 
-        public void Read(IStateGraph<string> stateGraph)
+        public void ReadState(IStateGraph<string> stateGraph)
         {
 
         }
@@ -43,7 +43,7 @@ namespace BananaParty.WebSocketRelay.Samples
         public void Awake()
         {
             JsonDataGraph _jsonDataGraph = new();
-            Write(_jsonDataGraph);
+            WriteState(_jsonDataGraph);
 
 
             //string sampleJson = @"{
