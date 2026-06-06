@@ -1,5 +1,5 @@
 # WebSocketRelay
-Networking as simple as it gets.  
+Networking as simple as it gets (for programmers though).  
   
 Key priorities:  
 1. Readable Debug - Readable Json data stream for developing, binary for shipping.
