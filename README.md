@@ -11,7 +11,7 @@ That is the core difference for improving your debugging experience.
   
 Future plans:
 1. Sample projects to use as a template for kickstarting development of your games.
-2. Unity Dedicated Server, where Unity instance server is just a connected client to its own relay server.
+2. Unity Instance Dedicated Server, where Unity server is just a connected client to its own relay server.
 3. UDP support via HTTP/3 QUIC. At this point it's going to be just as efficient as any other non-web network library.
   
 Not planned:
