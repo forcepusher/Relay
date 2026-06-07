@@ -2,7 +2,7 @@
 Networking as simple as it gets (for programmers though).  
   
 Key priorities:  
-1. Developer Experience - JSON data stream for developing, binary for shipping (JSON debug output on demand).
+1. Developer Experience - JSON data stream for developing. Binary for shipping (JSON debug output on demand).
 2. Portable & Cheap - Relay server runtime embedded in Unity package. No expensive setups, doubleclick-ready.
 3. Tests & Stability - Integration tests using the portable runtime for quick QA. Especially valuable for AI slop.
   
