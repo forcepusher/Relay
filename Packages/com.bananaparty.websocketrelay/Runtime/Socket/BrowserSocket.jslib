@@ -20,13 +20,20 @@ const browserSocketLibrary = {
             payloadBytesBufferPtr,
             payloadBytesBufferLength,
         ) {
-            const payloadBytesCount =
-                browserSocket.sockets[socketIndex].payloadQueue[0].length;
+            const socket = browserSocket.sockets[socketIndex];
+            if (
+                !socket ||
+                !socket.payloadQueue ||
+                socket.payloadQueue.length === 0
+            ) {
+                return 0;
+            }
+
+            const payloadBytesCount = socket.payloadQueue[0].length;
             if (payloadBytesBufferLength < payloadBytesCount)
                 return payloadBytesCount;
 
-            const payloadBytes =
-                browserSocket.sockets[socketIndex].payloadQueue.shift();
+            const payloadBytes = socket.payloadQueue.shift();
             HEAPU8.set(payloadBytes, payloadBytesBufferPtr);
             return payloadBytesCount;
         },

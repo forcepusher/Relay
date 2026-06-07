@@ -16,6 +16,12 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             if (_serverProcess != null && !_serverProcess.HasExited) return;
 
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                UnityEngine.Debug.LogWarning("RelayServerLauncher: Cannot start server from WebGL. Assuming server is already running.");
+                return;
+            }
+
             string scriptName = "";
             if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
                 scriptName = "LaunchServer-Windows.bat";
