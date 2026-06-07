@@ -3,7 +3,7 @@ Networking as simple as it gets (for programmers though).
   
 Key priorities:  
 1. Readable Debug - JSON data stream for developing, binary for shipping (with JSON debug output on demand).
-2. Portable & Cheap - Relay server runtime embedded in the Unity package. Double-click-ready and cost nothing.
+2. Portable & Cheap - Relay server runtime embedded in the Unity package. Double-click-ready, no expensive setups.
 3. Tests & Stability - Integration tests using the portable runtime for quick QA. Especially valuable for AI slop.
   
 Yes, it actually serializes your game state to JSON so you can easily spot bugs.  
