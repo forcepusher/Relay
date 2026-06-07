@@ -22,9 +22,7 @@ const browserSocketLibrary = {
         ) {
             const socket = browserSocket.sockets[socketIndex];
             if (!socket) {
-                console.error(
-                    "Socket at index " + socketIndex + " is not created",
-                );
+                console.error("Socket at index " + socketIndex + " is missing");
                 return 0;
             }
 
