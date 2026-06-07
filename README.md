@@ -17,7 +17,7 @@ Future plans:
 Not planned:
 1. Chasing performance brownie points. If it's not spiking in a profiler, then I'm not doing anything.
 2. Drag and drop garbage. Too much hassle and bloat to get right.
-3. Deterministic prediction-rollback. Too intensive on hardware and company finances for most studios and games.
+3. Deterministic prediction-rollback. Extremely CPU-intensive, expensive to develop, and horrible developer experience.
   
 ---
   
