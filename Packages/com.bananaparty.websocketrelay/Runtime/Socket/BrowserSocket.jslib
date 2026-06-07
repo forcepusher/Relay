@@ -31,7 +31,7 @@ const browserSocketLibrary = {
             return payloadBytesCount;
         },
 
-        browserSocketConnect: function (serverAddress, useTextMessages) {
+        browserSocketConnect: function (serverAddress) {
             const webSocket = new WebSocket(serverAddress);
             webSocket.binaryType = "arraybuffer";
 
@@ -59,7 +59,6 @@ const browserSocketLibrary = {
 
             const socket = {
                 webSocket: webSocket,
-                useTextMessages: useTextMessages,
                 payloadQueue: payloadQueue,
             };
 
@@ -68,14 +67,7 @@ const browserSocketLibrary = {
         },
 
         browserSocketSend: function (socketIndex, payloadBytes) {
-            var payload;
-            if (browserSocket.sockets[socketIndex].useTextMessages) {
-                payload = new TextDecoder().decode(payloadBytes);
-            } else {
-                payload = payloadBytes;
-            }
-
-            browserSocket.sockets[socketIndex].webSocket.send(payload);
+            browserSocket.sockets[socketIndex].webSocket.send(payloadBytes);
         },
 
         browserSocketDisconnect: function (socketIndex) {
@@ -105,13 +97,9 @@ const browserSocketLibrary = {
         );
     },
 
-    BrowserSocketConnect: function (serverAddressPtr, useTextMessagesInt) {
+    BrowserSocketConnect: function (serverAddressPtr) {
         const serverAddress = UTF8ToString(serverAddressPtr);
-        const useTextMessages = !!useTextMessagesInt; // Convert integer to boolean.
-        return browserSocket.browserSocketConnect(
-            serverAddress,
-            useTextMessages,
-        );
+        return browserSocket.browserSocketConnect(serverAddress);
     },
 
     BrowserSocketSend: function (
