@@ -21,11 +21,12 @@ const browserSocketLibrary = {
             payloadBytesBufferLength,
         ) {
             const socket = browserSocket.sockets[socketIndex];
-            if (
-                !socket ||
-                !socket.payloadQueue ||
-                socket.payloadQueue.length === 0
-            ) {
+            if (!socket) {
+                console.error(`Socket at index ${socketIndex} is not created`);
+                return 0;
+            }
+
+            if (socket.payloadQueue.length === 0) {
                 return 0;
             }
 
