@@ -1,4 +1,7 @@
 # WebSocketRelay
+This is a development repository for com.bananaparty.websocketrelay  
+See (package readme)[https://github.com/forcepusher/WebSocketRelay/blob/master/Packages/com.bananaparty.websocketrelay/README.md]
+
 Networking as simple as it gets (for programmers though).  
   
 Key priorities:  
