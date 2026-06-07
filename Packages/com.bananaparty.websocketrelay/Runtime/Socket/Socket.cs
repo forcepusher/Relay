@@ -58,7 +58,12 @@ namespace BananaParty.WebSocketRelay
         public void Dispose()
         {
             if (_webSocketClient != null)
+            {
+                if (_webSocketClient.IsConnected)
+                    _webSocketClient.Disconnect();
+
                 _webSocketClient.Dispose();
+            }
         }
     }
 }
