@@ -16,8 +16,8 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             yield return RelayServerLauncher.StartCoroutine();
 
-            _socketA = new("ws://localhost:23144");
-            _socketB = new("ws://localhost:23144");
+            _socketA = new($"ws://localhost:{TestParameters.RelayServerPort}");
+            _socketB = new($"ws://localhost:{TestParameters.RelayServerPort}");
 
             Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.IsConnected)} is {true} immediately after creation.");
             Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.IsConnected)} is {true} immediately after creation.");

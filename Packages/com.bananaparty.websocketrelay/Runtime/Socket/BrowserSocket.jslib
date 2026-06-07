@@ -1,10 +1,37 @@
 const browserSocketLibrary = {
-    // Class definition
+    // Class definition.
 
     $browserSocket: {
         sockets: [],
 
-        connect: function (serverAddress) {
+        getBrowserSocketIsConnected: function (socketIndex) {
+            return (
+                browserSocket.sockets[socketIndex].webSocket.readyState ===
+                WebSocket.OPEN
+            );
+        },
+
+        getBrowserSocketHasUnreadPayloadQueue: function (socketIndex) {
+            return browserSocket.sockets[socketIndex].payloadQueue.length > 0;
+        },
+
+        browserSocketReadPayloadQueue: function (
+            socketIndex,
+            payloadBytesBufferPtr,
+            payloadBytesBufferLength,
+        ) {
+            const payloadBytesCount =
+                browserSocket.sockets[socketIndex].payloadQueue[0].length;
+            if (payloadBytesBufferLength < payloadBytesCount)
+                return payloadBytesCount;
+
+            const payloadBytes =
+                browserSocket.sockets[socketIndex].payloadQueue.shift();
+            HEAPU8.set(payloadBytes, payloadBytesBufferPtr);
+            return payloadBytesCount;
+        },
+
+        browserSocketConnect: function (serverAddress) {
             const webSocket = new WebSocket(serverAddress);
             webSocket.binaryType = "arraybuffer";
 
@@ -17,64 +44,45 @@ const browserSocketLibrary = {
                     payloadQueue.push(
                         new TextEncoder().encode(messageEvent.data),
                     );
+                } else if (messageEvent.data instanceof Blob) {
+                    console.error(
+                        "Blob message type not supported. messageEvent.data=" +
+                            messageEvent.data,
+                    );
                 } else {
-                    throw new Error(
-                        "Unsupported message type. Only binary (ArrayBuffer) or text (string) messages are supported.",
+                    console.error(
+                        "Unknown message type not supported. messageEvent.data=" +
+                            messageEvent.data,
                     );
                 }
             };
 
-            this.sockets.push({ webSocket, payloadQueue });
-            return this.sockets.length - 1;
+            const socket = {
+                webSocket: webSocket,
+                payloadQueue: payloadQueue,
+            };
+
+            const socketIndex = browserSocket.sockets.push(socket) - 1;
+            return socketIndex;
         },
 
-        send: function (socketIndex, payloadBytes) {
-            this.sockets[socketIndex].webSocket.send(payloadBytes);
+        browserSocketSend: function (socketIndex, payloadBytes) {
+            browserSocket.sockets[socketIndex].webSocket.send(payloadBytes);
         },
 
-        disconnect: function (socketIndex) {
-            this.sockets[socketIndex].webSocket.close();
-        },
-
-        isConnected: function (socketIndex) {
-            return (
-                this.sockets[socketIndex].webSocket.readyState ===
-                WebSocket.OPEN
-            );
-        },
-
-        hasUnreadPayloadQueue: function (socketIndex) {
-            return this.sockets[socketIndex].payloadQueue.length > 0;
-        },
-
-        readPayloadQueue: function (
-            socketIndex,
-            payloadBytesBufferPtr,
-            payloadBytesBufferLength,
-        ) {
-            const socket = this.sockets[socketIndex];
-            const payloadBytes = socket.payloadQueue[0];
-
-            if (
-                !payloadBytes ||
-                payloadBytesBufferLength < payloadBytes.length
-            ) {
-                return payloadBytes ? payloadBytes.length : 0;
-            }
-
-            HEAPU8.set(socket.payloadQueue.shift(), payloadBytesBufferPtr);
-            return payloadBytes.length;
+        browserSocketDisconnect: function (socketIndex) {
+            browserSocket.sockets[socketIndex].webSocket.close();
         },
     },
 
-    // External C# calls
+    // External C# calls.
 
     GetBrowserSocketIsConnected: function (socketIndex) {
-        return this.$browserSocket.isConnected(socketIndex);
+        return browserSocket.getBrowserSocketIsConnected(socketIndex);
     },
 
     GetBrowserSocketHasUnreadPayloadQueue: function (socketIndex) {
-        return this.$browserSocket.hasUnreadPayloadQueue(socketIndex);
+        return browserSocket.getBrowserSocketHasUnreadPayloadQueue(socketIndex);
     },
 
     BrowserSocketReadPayloadQueue: function (
@@ -82,7 +90,7 @@ const browserSocketLibrary = {
         payloadBytesBufferPtr,
         payloadBytesBufferLength,
     ) {
-        return this.$browserSocket.readPayloadQueue(
+        return browserSocket.browserSocketReadPayloadQueue(
             socketIndex,
             payloadBytesBufferPtr,
             payloadBytesBufferLength,
@@ -90,7 +98,8 @@ const browserSocketLibrary = {
     },
 
     BrowserSocketConnect: function (serverAddressPtr) {
-        return this.$browserSocket.connect(UTF8ToString(serverAddressPtr));
+        const serverAddress = UTF8ToString(serverAddressPtr);
+        return browserSocket.browserSocketConnect(serverAddress);
     },
 
     BrowserSocketSend: function (
@@ -102,11 +111,11 @@ const browserSocketLibrary = {
             payloadBytesPtr,
             payloadBytesPtr + payloadBytesCount,
         );
-        this.$browserSocket.send(socketIndex, bytesToSend);
+        browserSocket.browserSocketSend(socketIndex, bytesToSend);
     },
 
     BrowserSocketDisconnect: function (socketIndex) {
-        this.$browserSocket.disconnect(socketIndex);
+        browserSocket.browserSocketDisconnect(socketIndex);
     },
 };
 

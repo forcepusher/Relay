@@ -11,7 +11,7 @@ namespace BananaParty.WebSocketRelay.Tests
 {
     public class JsonStateIntegrationTests
     {
-        private const string ServerAddress = "ws://127.0.0.1:23144";
+        private static string ServerAddress => $"ws://127.0.0.1:{TestParameters.RelayServerPort}";
 
         [UnitySetUp]
         public IEnumerator SetUp()

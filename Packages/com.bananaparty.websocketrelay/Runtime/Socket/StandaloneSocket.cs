@@ -111,6 +111,7 @@ namespace BananaParty.WebSocketRelay
             await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
 
         ConnectionAborted:
+            _disconnectTokenSource.Dispose();
             _clientWebSocket.Dispose();
         }
 

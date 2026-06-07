@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace BananaParty.WebSocketRelay
@@ -5,7 +6,7 @@ namespace BananaParty.WebSocketRelay
     /// <summary>
     /// Adapter for <see cref="Socket"/> that provides a semantic wrapper for text-based communication.
     /// </summary>
-    public class TextSocket
+    public class TextSocket : IDisposable
     {
         private readonly Socket _socket;
 
