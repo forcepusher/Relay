@@ -16,7 +16,7 @@ Future plans:
   
 Not planned:
 1. Chasing performance brownie points. If it's not spiking in a profiler, then I'm not doing anything.
-2. Drag and drop garbage. Too much hassle and bloat just to get right.
+2. Drag and drop garbage. Too much hassle and bloat just to get right. If you're not a programmer - don't touch it.
 3. Deterministic prediction-rollback. Very CPU-intensive, expensive to develop, and horrible developer experience.
   
 ---
