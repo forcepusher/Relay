@@ -6,15 +6,15 @@ namespace BananaParty.WebSocketRelay.Samples
     public class GameState : MonoBehaviour, IState
     {
         [SerializeField]
-        private Character _playerCharacter;
+        private Character _playerCharacterState;
 
         [SerializeField]
-        private Character _botCharacter;
+        private Character _botCharacterState;
 
         [SerializeField]
         private List<ItemSpawn> _itemSpawns;
 
-        private IntegerValueState _playTime = new(nameof(_playTime), 0);
+        private IntegerValueState _playTimeState = new(nameof(_playTimeState), 0);
 
         private StaticArrayState<ItemSpawn> _itemSpawnsState;
         private DynamicArrayState<Item> _itemsState;
@@ -35,9 +35,9 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             writeGraph.StartObject(Name);
 
-            _playTime.Write(writeGraph);
-            _playerCharacter.Write(writeGraph);
-            _botCharacter.Write(writeGraph);
+            _playTimeState.Write(writeGraph);
+            _playerCharacterState.Write(writeGraph);
+            _botCharacterState.Write(writeGraph);
             _itemSpawnsState.Write(writeGraph);
             _itemsState.Write(writeGraph);
 
@@ -48,9 +48,9 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             readGraph.StartObject(Name);
 
-            _playTime.Read(readGraph);
-            _playerCharacter.Read(readGraph);
-            _botCharacter.Read(readGraph);
+            _playTimeState.Read(readGraph);
+            _playerCharacterState.Read(readGraph);
+            _botCharacterState.Read(readGraph);
             _itemSpawnsState.Read(readGraph);
             _itemsState.Read(readGraph);
 
