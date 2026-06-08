@@ -23,8 +23,9 @@ namespace BananaParty.WebSocketRelay.Samples
             {
                 _playTime,
                 _playerCharacter,
-                _botCharacter
-            };
+                _botCharacter,
+                new ArrayNode(nameof(_itemSpawns), _itemSpawns)
+            }
         }
 
         public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
