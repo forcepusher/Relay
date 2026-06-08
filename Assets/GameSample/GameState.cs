@@ -21,42 +21,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private void Awake()
         {
             _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
-        }
 
-        public string Name => transform.name;
-        public List<INode> GetNodes()
-        {
-            return new List<INode>
-            {
-                _playTime,
-                _playerCharacter,
-                _botCharacter,
-                _itemSpawnsNode
-            };
-        }
-
-        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
-        {
-            jsonStateGraph.StartObject(Name);
-
-            foreach (INode node in GetNodes())
-                node.WriteStateToJson(jsonStateGraph);
-
-            jsonStateGraph.EndObject();
-        }
-
-        public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
-        {
-            jsonReadStateGraph.StartObject(Name);
-
-            foreach (INode node in GetNodes())
-                node.ReadStateFromJson(jsonReadStateGraph);
-
-            jsonReadStateGraph.EndObject();
-        }
-
-        public void Awake()
-        {
             JsonWriteStateGraph _jsonStateGraph = new();
             WriteStateToJson(_jsonStateGraph);
             Debug.Log(_jsonStateGraph.ToString());
@@ -79,6 +44,42 @@ namespace BananaParty.WebSocketRelay.Samples
             //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
 
             //Debug.Log(Json.Serialize(parsedSampleJsonRoot));
+        }
+
+        public string Name => transform.name;
+        public List<INode> GetNodes()
+        {
+            return new List<INode>
+            {
+                _playTime,
+                _playerCharacter,
+                _botCharacter,
+                _itemSpawnsNode
+            };
+        }
+
+        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
+        {
+            jsonStateGraph.StartObject(Name);
+
+            _playTime.WriteStateToJson(jsonStateGraph);
+            _playerCharacter.WriteStateToJson(jsonStateGraph);
+            _botCharacter.WriteStateToJson(jsonStateGraph);
+            _itemSpawnsNode.WriteStateToJson(jsonStateGraph);
+
+            jsonStateGraph.EndObject();
+        }
+
+        public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
+        {
+            jsonReadStateGraph.StartObject(Name);
+
+            _playTime.ReadStateFromJson(jsonReadStateGraph);
+            _playerCharacter.ReadStateFromJson(jsonReadStateGraph);
+            _botCharacter.ReadStateFromJson(jsonReadStateGraph);
+            _itemSpawnsNode.ReadStateFromJson(jsonReadStateGraph);
+
+            jsonReadStateGraph.EndObject();
         }
     }
 }
