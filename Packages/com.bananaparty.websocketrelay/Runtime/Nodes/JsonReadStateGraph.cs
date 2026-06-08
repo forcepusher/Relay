@@ -13,96 +13,21 @@ namespace BananaParty.WebSocketRelay
             _json = json ?? "{}";
         }
 
-        private void SkipWhitespace()
-        {
-            while (_pos < _json.Length && char.IsWhiteSpace(_json[_pos]))
-                _pos++;
-        }
-
-        private bool Match(char c)
-        {
-            SkipWhitespace();
-            if (_pos < _json.Length && _json[_pos] == c)
-            {
-                _pos++;
-                return true;
-            }
-            return false;
-        }
-
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public void StartChildGroup(string name)
-        {
-            if (!InArray && !string.IsNullOrEmpty(name))
-            {
-                string key = $"\"{name}\"";
-                int index = _json.IndexOf(key, _pos);
-                if (index != -1 && IsAtKeyPosition(index))
-                {
-                    _pos = index + key.Length;
-                    SkipWhitespace();
-                    Match(':');
-                }
-            }
-            else if (InArray)
-            {
-                SkipWhitespace();
-                if (_pos < _json.Length && _json[_pos] == ',')
-                    _pos++;
-                SkipWhitespace();
-            }
+        public void StartChildGroup(string name) => StartChildContainer('{', false, name);
 
-            while (_pos < _json.Length && _json[_pos] != '{')
-                _pos++;
-
-            if (Match('{'))
-                _inArrayStack.Push(false);
-        }
-
-        public void StartChildArray(string name)
-        {
-            if (!InArray && !string.IsNullOrEmpty(name))
-            {
-                string key = $"\"{name}\"";
-                int index = _json.IndexOf(key, _pos);
-                if (index != -1 && IsAtKeyPosition(index))
-                {
-                    _pos = index + key.Length;
-                    SkipWhitespace();
-                    Match(':');
-                }
-            }
-            else if (InArray)
-            {
-                SkipWhitespace();
-                if (_pos < _json.Length && _json[_pos] == ',')
-                    _pos++;
-                SkipWhitespace();
-            }
-
-            while (_pos < _json.Length && _json[_pos] != '[')
-                _pos++;
-
-            if (Match('['))
-                _inArrayStack.Push(true);
-        }
-
-        private bool IsAtKeyPosition(int index)
-        {
-            return true;
-        }
+        public void StartChildArray(string name) => StartChildContainer('[', true, name);
 
         public string ReadEntry(string name)
         {
             if (InArray)
                 return ReadArrayElementValue();
 
-            string key = $"\"{name}\"";
-            int index = _json.IndexOf(key, _pos);
-            if (index == -1 || !IsAtKeyPosition(index)) return null;
+            int index = _json.IndexOf($"\"{name}\"", _pos);
+            if (index == -1) return null;
 
-            _pos = index + key.Length;
+            _pos = index + name.Length + 2;
             SkipWhitespace();
             Match(':');
             SkipWhitespace();
@@ -110,14 +35,56 @@ namespace BananaParty.WebSocketRelay
             return ReadValueAtPosition();
         }
 
+        public void EndChildGroup() => EndChildContainer('}');
+
+        public void EndChildArray() => EndChildContainer(']');
+
+        private void StartChildContainer(char openBracket, bool isArray, string name)
+        {
+            if (!InArray && !string.IsNullOrEmpty(name))
+            {
+                int index = _json.IndexOf($"\"{name}\"", _pos);
+                if (index != -1)
+                {
+                    _pos = index + name.Length + 2;
+                    SkipWhitespace();
+                    Match(':');
+                }
+            }
+            else if (InArray)
+            {
+                SkipArrayComma();
+            }
+
+            while (_pos < _json.Length && _json[_pos] != openBracket)
+                _pos++;
+
+            if (Match(openBracket))
+                _inArrayStack.Push(isArray);
+        }
+
+        private void EndChildContainer(char closeBracket)
+        {
+            while (_pos < _json.Length && _json[_pos] != closeBracket)
+                _pos++;
+
+            Match(closeBracket);
+            if (_inArrayStack.Count > 0)
+                _inArrayStack.Pop();
+        }
+
         private string ReadArrayElementValue()
+        {
+            SkipArrayComma();
+            return ReadValueAtPosition();
+        }
+
+        private void SkipArrayComma()
         {
             SkipWhitespace();
             if (_pos < _json.Length && _json[_pos] == ',')
                 _pos++;
             SkipWhitespace();
-
-            return ReadValueAtPosition();
         }
 
         private string ReadValueAtPosition()
@@ -140,24 +107,21 @@ namespace BananaParty.WebSocketRelay
             return _json.Substring(valueStart, _pos - valueStart).Trim();
         }
 
-        public void EndChildGroup()
+        private void SkipWhitespace()
         {
-            while (_pos < _json.Length && _json[_pos] != '}')
+            while (_pos < _json.Length && char.IsWhiteSpace(_json[_pos]))
                 _pos++;
-
-            Match('}');
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
         }
 
-        public void EndChildArray()
+        private bool Match(char c)
         {
-            while (_pos < _json.Length && _json[_pos] != ']')
+            SkipWhitespace();
+            if (_pos < _json.Length && _json[_pos] == c)
+            {
                 _pos++;
-
-            Match(']');
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
+                return true;
+            }
+            return false;
         }
     }
 }

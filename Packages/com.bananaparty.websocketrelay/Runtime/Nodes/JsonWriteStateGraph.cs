@@ -21,12 +21,92 @@ namespace BananaParty.WebSocketRelay
             _indentationCount = spaceIndentationCount;
         }
 
-        private void AppendIndent()
+        private bool InArray => _closers.Count > 0 && _closers.Peek() == ']';
+
+        public void StartChildGroup(string name) => StartChildContainer('{', '}', name);
+
+        public void StartChildArray(string name) => StartChildContainer('[', ']', name);
+
+        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
         {
-            _sb.Append(new string(' ', _depth * _indentationCount));
+            EnsureStarted('{', '}');
+            WriteItemSeparator();
+
+            if (InArray)
+                _sb.Append(wrapStateInQuotes ? $"\"{state}\"" : state);
+            else
+                _sb.Append(wrapStateInQuotes ? $"\"{name}\":\"{state}\"" : $"\"{name}\":{state}");
         }
 
-        private bool InArray => _closers.Count > 0 && _closers.Peek() == ']';
+        public void EndChildGroup() => EndChildContainer('}');
+
+        public void EndChildArray() => EndChildContainer(']');
+
+        public override string ToString()
+        {
+            if (!_hasStarted) return "{}";
+
+            StringBuilder result = new(_sb.ToString());
+            char[] remainingClosers = _closers.ToArray();
+            int currentDepth = _depth;
+            for (int i = remainingClosers.Length - 1; i >= 0 && currentDepth > 0; i--)
+            {
+                if (_prettyPrint)
+                {
+                    result.Append('\n');
+                    currentDepth--;
+                    if (currentDepth > 0)
+                        result.Append(new string(' ', currentDepth * _indentationCount));
+                }
+                else
+                {
+                    currentDepth--;
+                }
+
+                result.Append(remainingClosers[i]);
+            }
+            return result.ToString();
+        }
+
+        private void StartChildContainer(char open, char close, string name)
+        {
+            EnsureStarted(open, close);
+            WriteItemSeparator();
+            WriteNamedKeyPrefix(name);
+            OpenContainer(open, close);
+        }
+
+        private void WriteNamedKeyPrefix(string name)
+        {
+            if (!InArray && !string.IsNullOrEmpty(name))
+                _sb.Append($"\"{name}\":");
+
+            if (_prettyPrint && _bracesOnNewLine && !InArray)
+            {
+                _sb.Append('\n');
+                AppendIndent();
+            }
+        }
+
+        private void EndChildContainer(char close)
+        {
+            if (_depth <= 1) return;
+
+            if (_prettyPrint)
+            {
+                _sb.Append('\n');
+                _depth--;
+                AppendIndent();
+            }
+            else
+            {
+                _depth--;
+            }
+
+            _sb.Append(close);
+            _firstItemScopes.Pop();
+            _closers.Pop();
+        }
 
         private void EnsureStarted(char open, char close)
         {
@@ -40,7 +120,7 @@ namespace BananaParty.WebSocketRelay
 
             if (_prettyPrint)
             {
-                _sb.Append("\n");
+                _sb.Append('\n');
                 AppendIndent();
             }
         }
@@ -57,7 +137,7 @@ namespace BananaParty.WebSocketRelay
                 }
                 else
                 {
-                    _sb.Append(",");
+                    _sb.Append(',');
                 }
             }
             _firstItemScopes.Push(false);
@@ -72,131 +152,14 @@ namespace BananaParty.WebSocketRelay
 
             if (_prettyPrint)
             {
-                _sb.Append("\n");
+                _sb.Append('\n');
                 AppendIndent();
             }
         }
 
-        public void StartChildGroup(string name)
+        private void AppendIndent()
         {
-            EnsureStarted('{', '}');
-            WriteItemSeparator();
-
-            if (!InArray && !string.IsNullOrEmpty(name))
-                _sb.Append($"\"{name}\":");
-
-            if (_prettyPrint && _bracesOnNewLine && !InArray)
-            {
-                _sb.Append("\n");
-                AppendIndent();
-            }
-
-            OpenContainer('{', '}');
-        }
-
-        public void StartChildArray(string name)
-        {
-            EnsureStarted('[', ']');
-            WriteItemSeparator();
-
-            if (!InArray && !string.IsNullOrEmpty(name))
-                _sb.Append($"\"{name}\":");
-
-            if (_prettyPrint && _bracesOnNewLine && !InArray)
-            {
-                _sb.Append("\n");
-                AppendIndent();
-            }
-
-            OpenContainer('[', ']');
-        }
-
-        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
-        {
-            EnsureStarted('{', '}');
-            WriteItemSeparator();
-
-            if (InArray)
-            {
-                if (wrapStateInQuotes)
-                    _sb.Append($"\"{state}\"");
-                else
-                    _sb.Append(state);
-            }
-            else if (wrapStateInQuotes)
-            {
-                _sb.Append($"\"{name}\":\"{state}\"");
-            }
-            else
-            {
-                _sb.Append($"\"{name}\":{state}");
-            }
-        }
-
-        public void EndChildGroup()
-        {
-            if (_depth <= 1) return;
-
-            if (_prettyPrint)
-            {
-                _sb.Append("\n");
-                _depth--;
-                AppendIndent();
-            }
-            else
-            {
-                _depth--;
-            }
-
-            _sb.Append("}");
-            _firstItemScopes.Pop();
-            _closers.Pop();
-        }
-
-        public void EndChildArray()
-        {
-            if (_depth <= 1) return;
-
-            if (_prettyPrint)
-            {
-                _sb.Append("\n");
-                _depth--;
-                AppendIndent();
-            }
-            else
-            {
-                _depth--;
-            }
-
-            _sb.Append("]");
-            _firstItemScopes.Pop();
-            _closers.Pop();
-        }
-
-        public override string ToString()
-        {
-            if (!_hasStarted) return "{}";
-
-            StringBuilder result = new(_sb.ToString());
-            char[] remainingClosers = _closers.ToArray();
-            int currentDepth = _depth;
-            for (int i = remainingClosers.Length - 1; i >= 0 && currentDepth > 0; i--)
-            {
-                if (_prettyPrint)
-                {
-                    result.Append("\n");
-                    currentDepth--;
-                    if (currentDepth > 0)
-                        result.Append(new string(' ', currentDepth * _indentationCount));
-                }
-                else
-                {
-                    currentDepth--;
-                }
-
-                result.Append(remainingClosers[i]);
-            }
-            return result.ToString();
+            _sb.Append(new string(' ', _depth * _indentationCount));
         }
     }
 }
