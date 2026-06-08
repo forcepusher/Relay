@@ -16,6 +16,13 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
+        private ArrayNode<ItemSpawn> _itemSpawnsNode;
+
+        private void Awake()
+        {
+            _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
+        }
+
         public string Name => transform.name;
         public List<INode> GetNodes()
         {
@@ -24,7 +31,7 @@ namespace BananaParty.WebSocketRelay.Samples
                 _playTime,
                 _playerCharacter,
                 _botCharacter,
-                new ArrayNode<ItemSpawn>(nameof(_itemSpawns), _itemSpawns)
+                _itemSpawnsNode
             };
         }
 
