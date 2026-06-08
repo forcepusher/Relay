@@ -95,11 +95,6 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public string Name => "MockGameState";
 
-            public List<INode> GetNodes()
-            {
-                return new List<INode> { _playTimeNode, _healthNode, _positionNode };
-            }
-
             public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
             {
                 jsonStateGraph.StartObject(Name);

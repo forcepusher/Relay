@@ -10,13 +10,6 @@ namespace BananaParty.WebSocketRelay.Samples
         private FloatValueNode _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
 
         public string Name => transform.name;
-        public List<INode> GetNodes()
-        {
-            return new List<INode>
-            {
-                _timeToSpawn
-            };
-        }
 
         public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {

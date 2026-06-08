@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class BoolValueNode : IValueNode<bool>
+    public class BoolValueNode
     {
         public string Name { get; private set; }
         public bool Value { get; set; }

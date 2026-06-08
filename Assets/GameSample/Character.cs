@@ -18,14 +18,6 @@ namespace BananaParty.WebSocketRelay.Samples
         private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
 
         public string Name => transform.name;
-        public List<INode> GetNodes()
-        {
-            return new List<INode>
-            {
-                _health,
-                _position
-            };
-        }
 
         private void Awake()
         {

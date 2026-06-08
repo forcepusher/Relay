@@ -47,16 +47,6 @@ namespace BananaParty.WebSocketRelay.Samples
         }
 
         public string Name => transform.name;
-        public List<INode> GetNodes()
-        {
-            return new List<INode>
-            {
-                _playTime,
-                _playerCharacter,
-                _botCharacter,
-                _itemSpawnsNode
-            };
-        }
 
         public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {

@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay.Tests
 {
     public class JsonStateTests
     {
-        private class MockValueNode : INode, IValueNode<int>
+        private class MockValueNode : INode
         {
             public string Name { get; }
             public int Value { get; set; }
