@@ -20,16 +20,16 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
         {
-            jsonStateGraph.StartChildGroup(Name);
+            jsonStateGraph.StartObject(Name);
             _timeToSpawn.WriteStateToJson(jsonStateGraph);
-            jsonStateGraph.EndChildGroup();
+            jsonStateGraph.EndObject();
         }
 
         public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
         {
-            jsonReadStateGraph.StartChildGroup(Name);
+            jsonReadStateGraph.StartObject(Name);
             _timeToSpawn.ReadStateFromJson(jsonReadStateGraph);
-            jsonReadStateGraph.EndChildGroup();
+            jsonReadStateGraph.EndObject();
         }
     }
 }

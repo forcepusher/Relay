@@ -15,9 +15,9 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public void StartChildGroup(string name) => StartChildContainer('{', false, name);
+        public void StartObject(string name) => StartContainer('{', false, name);
 
-        public void StartChildArray(string name) => StartChildContainer('[', true, name);
+        public void StartArray(string name) => StartContainer('[', true, name);
 
         public string ReadEntry(string name)
         {
@@ -35,11 +35,11 @@ namespace BananaParty.WebSocketRelay
             return ReadValueAtPosition();
         }
 
-        public void EndChildGroup() => EndChildContainer('}');
+        public void EndObject() => EndContainer('}');
 
-        public void EndChildArray() => EndChildContainer(']');
+        public void EndArray() => EndContainer(']');
 
-        private void StartChildContainer(char openBracket, bool isArray, string name)
+        private void StartContainer(char openBracket, bool isArray, string name)
         {
             if (!InArray && !string.IsNullOrEmpty(name))
             {
@@ -63,7 +63,7 @@ namespace BananaParty.WebSocketRelay
                 _inArrayStack.Push(isArray);
         }
 
-        private void EndChildContainer(char closeBracket)
+        private void EndContainer(char closeBracket)
         {
             while (_pos < _json.Length && _json[_pos] != closeBracket)
                 _pos++;

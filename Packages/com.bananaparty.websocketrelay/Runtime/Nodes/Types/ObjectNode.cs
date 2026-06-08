@@ -17,22 +17,22 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteStateToJson(JsonWriteStateGraph stateGraph)
         {
-            stateGraph.StartChildGroup(Name);
+            stateGraph.StartObject(Name);
 
             foreach (INode node in _nodes)
                 node.WriteStateToJson(stateGraph);
 
-            stateGraph.EndChildGroup();
+            stateGraph.EndObject();
         }
 
         public void ReadStateFromJson(JsonReadStateGraph stateGraph)
         {
-            stateGraph.StartChildGroup(Name);
+            stateGraph.StartObject(Name);
 
             foreach (INode node in _nodes)
                 node.ReadStateFromJson(stateGraph);
 
-            stateGraph.EndChildGroup();
+            stateGraph.EndObject();
         }
     }
 }

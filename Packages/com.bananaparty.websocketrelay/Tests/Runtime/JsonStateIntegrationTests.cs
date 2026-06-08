@@ -102,16 +102,16 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
             {
-                jsonStateGraph.StartChildGroup(Name);
+                jsonStateGraph.StartObject(Name);
                 _playTimeNode.WriteStateToJson(jsonStateGraph);
                 _healthNode.WriteStateToJson(jsonStateGraph);
                 _positionNode.WriteStateToJson(jsonStateGraph);
-                jsonStateGraph.EndChildGroup();
+                jsonStateGraph.EndObject();
             }
 
             public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
             {
-                jsonReadStateGraph.StartChildGroup(Name);
+                jsonReadStateGraph.StartObject(Name);
                 var pt = new IntegerValueNode("PlayTime", 0);
                 pt.ReadStateFromJson(jsonReadStateGraph);
                 PlayTime = pt.Value;
@@ -124,7 +124,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 p.ReadStateFromJson(jsonReadStateGraph);
                 Position = p.Value;
 
-                jsonReadStateGraph.EndChildGroup();
+                jsonReadStateGraph.EndObject();
             }
         }
     }

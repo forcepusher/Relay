@@ -23,9 +23,9 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _closers.Count > 0 && _closers.Peek() == ']';
 
-        public void StartChildGroup(string name) => StartChildContainer('{', '}', name);
+        public void StartObject(string name) => StartContainer('{', '}', name);
 
-        public void StartChildArray(string name) => StartChildContainer('[', ']', name);
+        public void StartArray(string name) => StartContainer('[', ']', name);
 
         public void WriteEntry(string name, string state, bool wrapStateInQuotes)
         {
@@ -38,9 +38,9 @@ namespace BananaParty.WebSocketRelay
                 _sb.Append(wrapStateInQuotes ? $"\"{name}\":\"{state}\"" : $"\"{name}\":{state}");
         }
 
-        public void EndChildGroup() => EndChildContainer('}');
+        public void EndObject() => EndContainer('}');
 
-        public void EndChildArray() => EndChildContainer(']');
+        public void EndArray() => EndContainer(']');
 
         public override string ToString()
         {
@@ -68,7 +68,7 @@ namespace BananaParty.WebSocketRelay
             return result.ToString();
         }
 
-        private void StartChildContainer(char open, char close, string name)
+        private void StartContainer(char open, char close, string name)
         {
             EnsureStarted(open, close);
             WriteItemSeparator();
@@ -88,7 +88,7 @@ namespace BananaParty.WebSocketRelay
             }
         }
 
-        private void EndChildContainer(char close)
+        private void EndContainer(char close)
         {
             if (_depth <= 1) return;
 
