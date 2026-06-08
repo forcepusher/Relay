@@ -134,5 +134,156 @@ namespace BananaParty.WebSocketRelay.Tests
             Assert.IsTrue(json.Contains("\n"));
             Assert.IsTrue(json.Contains("    \"Root\":"));
         }
+
+        [Test]
+        public void ShouldWriteSimpleArrayNode()
+        {
+            var scores = new List<INode>
+            {
+                new MockValueNode("", 10),
+                new MockValueNode("", 20),
+                new MockValueNode("", 30)
+            };
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Scores", scores)
+            });
+            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+
+            root.WriteStateToJson(graph);
+            string json = graph.ToString();
+
+            Assert.AreEqual("{\"GameState\":{\"Scores\":[10,20,30]}}", json);
+        }
+
+        [Test]
+        public void ShouldReadSimpleArrayNode()
+        {
+            var scores = new List<INode>
+            {
+                new MockValueNode("", 0),
+                new MockValueNode("", 0),
+                new MockValueNode("", 0)
+            };
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Scores", scores)
+            });
+            var graph = new JsonReadStateGraph("{\"GameState\":{\"Scores\":[10,20,30]}}");
+
+            root.ReadStateFromJson(graph);
+
+            Assert.AreEqual(10, ((MockValueNode)scores[0]).Value);
+            Assert.AreEqual(20, ((MockValueNode)scores[1]).Value);
+            Assert.AreEqual(30, ((MockValueNode)scores[2]).Value);
+        }
+
+        [Test]
+        public void ShouldWriteArrayOfObjectNodes()
+        {
+            var playerOne = new ObjectNode("", new List<INode>
+            {
+                new MockValueNode("Health", 100),
+                new MockValueNode("Mana", 50)
+            });
+            var playerTwo = new ObjectNode("", new List<INode>
+            {
+                new MockValueNode("Health", 80),
+                new MockValueNode("Mana", 20)
+            });
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Players", new List<INode> { playerOne, playerTwo })
+            });
+            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+
+            root.WriteStateToJson(graph);
+            string json = graph.ToString();
+
+            Assert.AreEqual("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}", json);
+        }
+
+        [Test]
+        public void ShouldReadArrayOfObjectNodes()
+        {
+            var playerOneNodes = new List<INode>
+            {
+                new MockValueNode("Health", 0),
+                new MockValueNode("Mana", 0)
+            };
+            var playerTwoNodes = new List<INode>
+            {
+                new MockValueNode("Health", 0),
+                new MockValueNode("Mana", 0)
+            };
+            var playerOne = new ObjectNode("", playerOneNodes);
+            var playerTwo = new ObjectNode("", playerTwoNodes);
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Players", new List<INode> { playerOne, playerTwo })
+            });
+            var graph = new JsonReadStateGraph("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
+
+            root.ReadStateFromJson(graph);
+
+            Assert.AreEqual(100, ((MockValueNode)playerOneNodes[0]).Value);
+            Assert.AreEqual(50, ((MockValueNode)playerOneNodes[1]).Value);
+            Assert.AreEqual(80, ((MockValueNode)playerTwoNodes[0]).Value);
+            Assert.AreEqual(20, ((MockValueNode)playerTwoNodes[1]).Value);
+        }
+
+        [Test]
+        public void ShouldWriteNestedArrayNodes()
+        {
+            var rowOne = new ArrayNode("", new List<INode>
+            {
+                new MockValueNode("", 1),
+                new MockValueNode("", 2)
+            });
+            var rowTwo = new ArrayNode("", new List<INode>
+            {
+                new MockValueNode("", 3),
+                new MockValueNode("", 4)
+            });
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Grid", new List<INode> { rowOne, rowTwo })
+            });
+            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+
+            root.WriteStateToJson(graph);
+            string json = graph.ToString();
+
+            Assert.AreEqual("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}", json);
+        }
+
+        [Test]
+        public void ShouldReadNestedArrayNodes()
+        {
+            var rowOneValues = new List<INode>
+            {
+                new MockValueNode("", 0),
+                new MockValueNode("", 0)
+            };
+            var rowTwoValues = new List<INode>
+            {
+                new MockValueNode("", 0),
+                new MockValueNode("", 0)
+            };
+            var rowOne = new ArrayNode("", rowOneValues);
+            var rowTwo = new ArrayNode("", rowTwoValues);
+            var root = new ObjectNode("GameState", new List<INode>
+            {
+                new ArrayNode("Grid", new List<INode> { rowOne, rowTwo })
+            });
+            var graph = new JsonReadStateGraph("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
+
+            root.ReadStateFromJson(graph);
+
+            Assert.AreEqual(1, ((MockValueNode)rowOneValues[0]).Value);
+            Assert.AreEqual(2, ((MockValueNode)rowOneValues[1]).Value);
+            Assert.AreEqual(3, ((MockValueNode)rowTwoValues[0]).Value);
+            Assert.AreEqual(4, ((MockValueNode)rowTwoValues[1]).Value);
+        }
     }
 }
