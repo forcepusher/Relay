@@ -1,4 +1,5 @@
-using System;
+using System.Threading.Tasks;
+using BananaParty.WebSocketRelay.Tests;
 using NUnit.Framework.Interfaces;
 using UnityEngine;
 using UnityEngine.TestRunner;
@@ -8,8 +9,9 @@ using UnityEngine.TestRunner;
 namespace BananaParty.WebSocketRelay.Tests.Editor
 {
     /// <summary>
-    /// Starts the relay server in the Editor before a test run that needs it.
-    /// Required for WebGL player tests, which cannot launch local processes themselves.
+    /// Starts the relay server when a test run begins in the Editor.
+    /// Uses fire-and-forget async so the main thread is never blocked on Task.Wait.
+    /// Tests that need the server also wait in UnitySetUp via RelayServerLauncher.StartCoroutine().
     /// </summary>
     public class RelayServerTestRunCallback : ITestRunCallback
     {
@@ -20,26 +22,14 @@ namespace BananaParty.WebSocketRelay.Tests.Editor
             if (testsToRun.Parent != null)
                 return;
 
-            var task = RelayServerLauncher.EnsureRunningAsync();
-            if (!task.Wait(TimeSpan.FromSeconds(15)))
-            {
-                Debug.LogError("RelayServerTestRunCallback: timed out waiting for relay server to start.");
-                return;
-            }
-
-            if (task.IsFaulted)
-            {
-                Debug.LogError($"RelayServerTestRunCallback: failed to start relay server: {task.Exception?.GetBaseException().Message}");
-                return;
-            }
-
-            if (!task.Result)
-            {
-                Debug.LogError("RelayServerTestRunCallback: relay server is not reachable.");
-                return;
-            }
-
             _serverStartedForRun = true;
+            RelayServerLauncher.EnsureRunningAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                    Debug.LogError($"RelayServerTestRunCallback: failed to start relay server: {task.Exception?.GetBaseException().Message}");
+                else if (!task.Result)
+                    Debug.LogError("RelayServerTestRunCallback: relay server is not reachable.");
+            }, TaskScheduler.Default);
         }
 
         public void RunFinished(ITestResult testResults)
@@ -48,10 +38,11 @@ namespace BananaParty.WebSocketRelay.Tests.Editor
                 return;
 
             _serverStartedForRun = false;
-
-            var task = RelayServerLauncher.StopAsync();
-            if (!task.Wait(TimeSpan.FromSeconds(10)) && !task.IsCompleted)
-                Debug.LogError("RelayServerTestRunCallback: timed out waiting for relay server to stop.");
+            RelayServerLauncher.StopAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                    Debug.LogError($"RelayServerTestRunCallback: failed to stop relay server: {task.Exception?.GetBaseException().Message}");
+            }, TaskScheduler.Default);
         }
 
         public void TestStarted(ITest test) { }

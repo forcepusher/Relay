@@ -24,7 +24,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 if (!_stopwatch.IsRunning)
                     _stopwatch.Start();
 
-                return _conditionFunc.Invoke() && _stopwatch.Elapsed.Seconds < _timeoutThreshold;
+                return _conditionFunc.Invoke() && _stopwatch.Elapsed.TotalSeconds < _timeoutThreshold;
             }
         }
 
