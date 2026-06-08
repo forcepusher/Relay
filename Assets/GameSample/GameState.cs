@@ -14,7 +14,7 @@ namespace BananaParty.WebSocketRelay.Samples
         [SerializeField]
         private List<ItemSpawn> _itemSpawns;
 
-        private IntegerValueNode _playTime = new(nameof(_playTime), 0);
+        private IntegerValueNode _playTimeNode = new(nameof(_playTimeNode), 0);
 
         private ArrayNode<ItemSpawn> _itemSpawnsNode;
 
@@ -25,25 +25,6 @@ namespace BananaParty.WebSocketRelay.Samples
             JsonWriteStateGraph _jsonStateGraph = new();
             WriteStateToJson(_jsonStateGraph);
             Debug.Log(_jsonStateGraph.ToString());
-
-
-            string sampleJson = @"{
-             ""GameState"": {
-               ""_playTime"": 0,
-               ""PlayerCharacter"": {
-                 ""_health"": 100.0,
-                 ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-               },
-               ""BotCharacter"": {
-                 ""_health"": 100.0,
-                 ""_position"": { ""x"": 0.0, ""y"": 0.0, ""z"": 0.0 }
-               }
-             }
-            }";
-
-            //INode parsedSampleJsonRoot = Json.Parse(sampleJson);
-
-            //Debug.Log(Json.Serialize(parsedSampleJsonRoot));
         }
 
         public string Name => transform.name;
@@ -52,7 +33,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             jsonStateGraph.StartObject(Name);
 
-            _playTime.WriteStateToJson(jsonStateGraph);
+            _playTimeNode.WriteStateToJson(jsonStateGraph);
             _playerCharacter.WriteStateToJson(jsonStateGraph);
             _botCharacter.WriteStateToJson(jsonStateGraph);
             _itemSpawnsNode.WriteStateToJson(jsonStateGraph);
@@ -64,7 +45,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             jsonReadStateGraph.StartObject(Name);
 
-            _playTime.ReadStateFromJson(jsonReadStateGraph);
+            _playTimeNode.ReadStateFromJson(jsonReadStateGraph);
             _playerCharacter.ReadStateFromJson(jsonReadStateGraph);
             _botCharacter.ReadStateFromJson(jsonReadStateGraph);
             _itemSpawnsNode.ReadStateFromJson(jsonReadStateGraph);
