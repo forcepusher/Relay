@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,6 +12,7 @@ namespace BananaParty.WebSocketRelay
         private int _depth = 0;
         private bool _hasStarted = false;
         private readonly Stack<bool> _firstItemScopes = new();
+        private readonly Stack<char> _closers = new();
 
         public JsonWriteStateGraph(bool prettyPrint = true, bool bracesOnNewLine = true, int spaceIndentationCount = 4)
         {
@@ -26,51 +26,17 @@ namespace BananaParty.WebSocketRelay
             _sb.Append(new string(' ', _depth * _indentationCount));
         }
 
-        public void StartChildGroup(string name)
+        private bool InArray => _closers.Count > 0 && _closers.Peek() == ']';
+
+        private void EnsureStarted(char open, char close)
         {
-            if (!_hasStarted)
-            {
-                _sb.Append("{");
-                _hasStarted = true;
-                _depth++;
-                _firstItemScopes.Push(true);
+            if (_hasStarted) return;
 
-                if (_prettyPrint)
-                {
-                    _sb.Append("\n");
-                    AppendIndent();
-                }
-            }
-
-            bool isFirst = _firstItemScopes.Pop();
-            if (!isFirst)
-            {
-                if (_prettyPrint)
-                {
-                    _sb.Append(",\n");
-                    AppendIndent();
-                }
-                else
-                {
-                    _sb.Append(",");
-                }
-            }
-            _firstItemScopes.Push(false);
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                _sb.Append($"\"{name}\":");
-            }
-
-            if (_prettyPrint && _bracesOnNewLine)
-            {
-                _sb.Append("\n");
-                AppendIndent();
-            }
-
-            _sb.Append("{");
+            _sb.Append(open);
+            _hasStarted = true;
             _depth++;
             _firstItemScopes.Push(true);
+            _closers.Push(close);
 
             if (_prettyPrint)
             {
@@ -79,24 +45,9 @@ namespace BananaParty.WebSocketRelay
             }
         }
 
-        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
+        private void WriteItemSeparator()
         {
-            if (!_hasStarted)
-            {
-                _sb.Append("{");
-                _hasStarted = true;
-                _depth++;
-                _firstItemScopes.Push(true);
-
-                if (_prettyPrint)
-                {
-                    _sb.Append("\n");
-                    AppendIndent();
-                }
-            }
-
             bool isFirst = _firstItemScopes.Pop();
-
             if (!isFirst)
             {
                 if (_prettyPrint)
@@ -109,18 +60,82 @@ namespace BananaParty.WebSocketRelay
                     _sb.Append(",");
                 }
             }
-
             _firstItemScopes.Push(false);
+        }
 
-            if (wrapStateInQuotes)
+        private void OpenContainer(char open, char close)
+        {
+            _sb.Append(open);
+            _depth++;
+            _firstItemScopes.Push(true);
+            _closers.Push(close);
+
+            if (_prettyPrint)
+            {
+                _sb.Append("\n");
+                AppendIndent();
+            }
+        }
+
+        public void StartChildGroup(string name)
+        {
+            EnsureStarted('{', '}');
+            WriteItemSeparator();
+
+            if (!InArray && !string.IsNullOrEmpty(name))
+                _sb.Append($"\"{name}\":");
+
+            if (_prettyPrint && _bracesOnNewLine)
+            {
+                _sb.Append("\n");
+                AppendIndent();
+            }
+
+            OpenContainer('{', '}');
+        }
+
+        public void StartChildArray(string name)
+        {
+            EnsureStarted('[', ']');
+            WriteItemSeparator();
+
+            if (!InArray && !string.IsNullOrEmpty(name))
+                _sb.Append($"\"{name}\":");
+
+            if (_prettyPrint && _bracesOnNewLine)
+            {
+                _sb.Append("\n");
+                AppendIndent();
+            }
+
+            OpenContainer('[', ']');
+        }
+
+        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
+        {
+            EnsureStarted('{', '}');
+            WriteItemSeparator();
+
+            if (InArray)
+            {
+                if (wrapStateInQuotes)
+                    _sb.Append($"\"{state}\"");
+                else
+                    _sb.Append(state);
+            }
+            else if (wrapStateInQuotes)
+            {
                 _sb.Append($"\"{name}\":\"{state}\"");
+            }
             else
+            {
                 _sb.Append($"\"{name}\":{state}");
+            }
         }
 
         public void EndChildGroup()
         {
-            if (_depth <= 1) return; // Cannot close implicit root here, handled in ToString
+            if (_depth <= 1) return;
 
             if (_prettyPrint)
             {
@@ -135,6 +150,27 @@ namespace BananaParty.WebSocketRelay
 
             _sb.Append("}");
             _firstItemScopes.Pop();
+            _closers.Pop();
+        }
+
+        public void EndChildArray()
+        {
+            if (_depth <= 1) return;
+
+            if (_prettyPrint)
+            {
+                _sb.Append("\n");
+                _depth--;
+                AppendIndent();
+            }
+            else
+            {
+                _depth--;
+            }
+
+            _sb.Append("]");
+            _firstItemScopes.Pop();
+            _closers.Pop();
         }
 
         public override string ToString()
@@ -142,23 +178,23 @@ namespace BananaParty.WebSocketRelay
             if (!_hasStarted) return "{}";
 
             StringBuilder result = new(_sb.ToString());
+            char[] remainingClosers = _closers.ToArray();
             int currentDepth = _depth;
-            while (currentDepth > 0)
+            for (int i = remainingClosers.Length - 1; i >= 0 && currentDepth > 0; i--)
             {
                 if (_prettyPrint)
                 {
                     result.Append("\n");
                     currentDepth--;
                     if (currentDepth > 0)
-                    {
                         result.Append(new string(' ', currentDepth * _indentationCount));
-                    }
                 }
                 else
                 {
                     currentDepth--;
                 }
-                result.Append("}");
+
+                result.Append(remainingClosers[i]);
             }
             return result.ToString();
         }
