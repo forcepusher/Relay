@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, IState, IJsonState
+    public class Character : MonoBehaviour, IJsonState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -71,20 +71,20 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void WriteToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonWriteGraph)
         {
-            jsonStateGraph.StartObject(Name);
-            _health.WriteStateToJson(jsonStateGraph);
-            _position.WriteStateToJson(jsonStateGraph);
-            jsonStateGraph.EndObject();
+            jsonWriteGraph.StartObject(Name);
+            _health.WriteStateToJson(jsonWriteGraph);
+            _position.WriteStateToJson(jsonWriteGraph);
+            jsonWriteGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadGraph)
         {
-            jsonReadStateGraph.StartObject(Name);
-            _health.ReadStateFromJson(jsonReadStateGraph);
-            _position.ReadStateFromJson(jsonReadStateGraph);
-            jsonReadStateGraph.EndObject();
+            jsonReadGraph.StartObject(Name);
+            _health.ReadStateFromJson(jsonReadGraph);
+            _position.ReadStateFromJson(jsonReadGraph);
+            jsonReadGraph.EndObject();
         }
     }
 }

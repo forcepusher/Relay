@@ -1,28 +1,26 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class ItemSpawn : MonoBehaviour, IState, IJsonState
+    public class ItemSpawn : MonoBehaviour, IJsonState
     {
         private const float RespawnDelay = 10f;
         private FloatValueNode _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
 
         public string Name => transform.name;
 
-        public void WriteToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonWriteGraph)
         {
-            jsonStateGraph.StartObject(Name);
-            _timeToSpawn.WriteStateToJson(jsonStateGraph);
-            jsonStateGraph.EndObject();
+            jsonWriteGraph.StartObject(Name);
+            _timeToSpawn.WriteStateToJson(jsonWriteGraph);
+            jsonWriteGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadGraph)
         {
-            jsonReadStateGraph.StartObject(Name);
-            _timeToSpawn.ReadStateFromJson(jsonReadStateGraph);
-            jsonReadStateGraph.EndObject();
+            jsonReadGraph.StartObject(Name);
+            _timeToSpawn.ReadStateFromJson(jsonReadGraph);
+            jsonReadGraph.EndObject();
         }
     }
 }

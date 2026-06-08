@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IState, IJsonState
+    public class GameState : MonoBehaviour, IJsonState
     {
         [SerializeField]
         private Character _playerCharacter;
@@ -29,28 +29,28 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public string Name => transform.name;
 
-        public void WriteToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonWriteGraph)
         {
-            jsonStateGraph.StartObject(Name);
+            jsonWriteGraph.StartObject(Name);
 
-            _playTimeNode.WriteStateToJson(jsonStateGraph);
-            _playerCharacter.WriteToJson(jsonStateGraph);
-            _botCharacter.WriteToJson(jsonStateGraph);
-            _itemSpawnsNode.WriteToJson(jsonStateGraph);
+            _playTimeNode.WriteStateToJson(jsonWriteGraph);
+            _playerCharacter.WriteToJson(jsonWriteGraph);
+            _botCharacter.WriteToJson(jsonWriteGraph);
+            _itemSpawnsNode.WriteToJson(jsonWriteGraph);
 
-            jsonStateGraph.EndObject();
+            jsonWriteGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadGraph)
         {
-            jsonReadStateGraph.StartObject(Name);
+            jsonReadGraph.StartObject(Name);
 
-            _playTimeNode.ReadStateFromJson(jsonReadStateGraph);
-            _playerCharacter.ReadFromJson(jsonReadStateGraph);
-            _botCharacter.ReadFromJson(jsonReadStateGraph);
-            _itemSpawnsNode.ReadFromJson(jsonReadStateGraph);
+            _playTimeNode.ReadStateFromJson(jsonReadGraph);
+            _playerCharacter.ReadFromJson(jsonReadGraph);
+            _botCharacter.ReadFromJson(jsonReadGraph);
+            _itemSpawnsNode.ReadFromJson(jsonReadGraph);
 
-            jsonReadStateGraph.EndObject();
+            jsonReadGraph.EndObject();
         }
     }
 }
