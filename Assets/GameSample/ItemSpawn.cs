@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    [RequireComponent(typeof(CharacterController))]
     public class ItemSpawn : MonoBehaviour, IObjectNode, IJsonState
     {
         private const float RespawnDelay = 10f;
