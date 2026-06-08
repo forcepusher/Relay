@@ -51,7 +51,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Act: Client A serializes and sends state
             JsonWriteGraph writeGraph = new();
-            stateA.WriteStateToJson(writeGraph);
+            stateA.WriteToJson(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
 
@@ -71,7 +71,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Client B deserializes the state
             JsonReadGraph readGraph = new JsonReadGraph(receivedJson);
-            stateB.ReadStateFromJson(readGraph);
+            stateB.ReadFromJson(readGraph);
 
             // Assert: Verify values were synchronized
             Assert.AreEqual(stateA.PlayTime, stateB.PlayTime, "PlayTime should be synchronized");
@@ -95,7 +95,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public string Name => "MockGameState";
 
-            public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
+            public void WriteToJson(JsonWriteGraph jsonStateGraph)
             {
                 jsonStateGraph.StartObject(Name);
                 _playTimeNode.WriteStateToJson(jsonStateGraph);
@@ -104,7 +104,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 jsonStateGraph.EndObject();
             }
 
-            public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
+            public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
             {
                 jsonReadStateGraph.StartObject(Name);
                 var pt = new IntegerValueNode("PlayTime", 0);

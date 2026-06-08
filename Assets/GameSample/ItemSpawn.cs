@@ -11,14 +11,14 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public string Name => transform.name;
 
-        public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonStateGraph)
         {
             jsonStateGraph.StartObject(Name);
             _timeToSpawn.WriteStateToJson(jsonStateGraph);
             jsonStateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
         {
             jsonReadStateGraph.StartObject(Name);
             _timeToSpawn.ReadStateFromJson(jsonReadStateGraph);

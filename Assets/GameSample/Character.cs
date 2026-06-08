@@ -71,7 +71,7 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonStateGraph)
         {
             jsonStateGraph.StartObject(Name);
             _health.WriteStateToJson(jsonStateGraph);
@@ -79,7 +79,7 @@ namespace BananaParty.WebSocketRelay.Samples
             jsonStateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
         {
             jsonReadStateGraph.StartObject(Name);
             _health.ReadStateFromJson(jsonReadStateGraph);

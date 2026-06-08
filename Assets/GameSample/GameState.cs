@@ -23,32 +23,32 @@ namespace BananaParty.WebSocketRelay.Samples
             _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
 
             JsonWriteGraph _jsonStateGraph = new();
-            WriteStateToJson(_jsonStateGraph);
+            WriteToJson(_jsonStateGraph);
             Debug.Log(_jsonStateGraph.ToString());
         }
 
         public string Name => transform.name;
 
-        public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
+        public void WriteToJson(JsonWriteGraph jsonStateGraph)
         {
             jsonStateGraph.StartObject(Name);
 
             _playTimeNode.WriteStateToJson(jsonStateGraph);
-            _playerCharacter.WriteStateToJson(jsonStateGraph);
-            _botCharacter.WriteStateToJson(jsonStateGraph);
-            _itemSpawnsNode.WriteStateToJson(jsonStateGraph);
+            _playerCharacter.WriteToJson(jsonStateGraph);
+            _botCharacter.WriteToJson(jsonStateGraph);
+            _itemSpawnsNode.WriteToJson(jsonStateGraph);
 
             jsonStateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
+        public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
         {
             jsonReadStateGraph.StartObject(Name);
 
             _playTimeNode.ReadStateFromJson(jsonReadStateGraph);
-            _playerCharacter.ReadStateFromJson(jsonReadStateGraph);
-            _botCharacter.ReadStateFromJson(jsonReadStateGraph);
-            _itemSpawnsNode.ReadStateFromJson(jsonReadStateGraph);
+            _playerCharacter.ReadFromJson(jsonReadStateGraph);
+            _botCharacter.ReadFromJson(jsonReadStateGraph);
+            _itemSpawnsNode.ReadFromJson(jsonReadStateGraph);
 
             jsonReadStateGraph.EndObject();
         }
