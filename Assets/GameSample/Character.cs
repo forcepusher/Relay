@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, INode, IJsonState
+    public class Character : MonoBehaviour, IState, IJsonState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -71,7 +71,7 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
+        public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
         {
             jsonStateGraph.StartObject(Name);
             _health.WriteStateToJson(jsonStateGraph);
@@ -79,7 +79,7 @@ namespace BananaParty.WebSocketRelay.Samples
             jsonStateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
+        public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
         {
             jsonReadStateGraph.StartObject(Name);
             _health.ReadStateFromJson(jsonReadStateGraph);

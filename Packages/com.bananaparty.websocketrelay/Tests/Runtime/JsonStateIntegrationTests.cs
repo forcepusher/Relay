@@ -50,7 +50,7 @@ namespace BananaParty.WebSocketRelay.Tests
             }
 
             // Act: Client A serializes and sends state
-            JsonWriteStateGraph writeGraph = new();
+            JsonWriteGraph writeGraph = new();
             stateA.WriteStateToJson(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
@@ -70,7 +70,7 @@ namespace BananaParty.WebSocketRelay.Tests
             string receivedJson = Encoding.UTF8.GetString(receivedBytes);
 
             // Client B deserializes the state
-            JsonReadStateGraph readGraph = new JsonReadStateGraph(receivedJson);
+            JsonReadGraph readGraph = new JsonReadGraph(receivedJson);
             stateB.ReadStateFromJson(readGraph);
 
             // Assert: Verify values were synchronized
@@ -83,7 +83,7 @@ namespace BananaParty.WebSocketRelay.Tests
             UnityEngine.Object.DestroyImmediate(clientBObj);
         }
 
-        private class MockGameState : MonoBehaviour, INode, IJsonState
+        private class MockGameState : MonoBehaviour, IState, IJsonState
         {
             public int PlayTime { get; set; }
             public float Health { get; set; }
@@ -95,7 +95,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public string Name => "MockGameState";
 
-            public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
+            public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
             {
                 jsonStateGraph.StartObject(Name);
                 _playTimeNode.WriteStateToJson(jsonStateGraph);
@@ -104,7 +104,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 jsonStateGraph.EndObject();
             }
 
-            public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
+            public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
             {
                 jsonReadStateGraph.StartObject(Name);
                 var pt = new IntegerValueNode("PlayTime", 0);

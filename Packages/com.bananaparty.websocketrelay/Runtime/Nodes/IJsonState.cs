@@ -1,8 +1,8 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IJsonState
+    public interface IJsonState : IState
     {
-        void WriteStateToJson(JsonWriteStateGraph stateGraph);
-        void ReadStateFromJson(JsonReadStateGraph stateGraph);
+        void WriteStateToJson(JsonWriteGraph jsonStateGraph);
+        void ReadStateFromJson(JsonReadGraph jsonReadStateGraph);
     }
 }

@@ -2,32 +2,32 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ObjectNode : INode
+    public class ObjectNode : IJsonState
     {
         public string Name { get; }
-        private readonly List<INode> _nodes;
+        private readonly List<IJsonState> _nodes;
 
-        public ObjectNode(string name, List<INode> nodes)
+        public ObjectNode(string name, List<IJsonState> nodes)
         {
             Name = name;
             _nodes = nodes;
         }
 
-        public void WriteStateToJson(JsonWriteStateGraph stateGraph)
+        public void WriteStateToJson(JsonWriteGraph stateGraph)
         {
             stateGraph.StartObject(Name);
 
-            foreach (INode node in _nodes)
+            foreach (IJsonState node in _nodes)
                 node.WriteStateToJson(stateGraph);
 
             stateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadStateGraph stateGraph)
+        public void ReadStateFromJson(JsonReadGraph stateGraph)
         {
             stateGraph.StartObject(Name);
 
-            foreach (INode node in _nodes)
+            foreach (IJsonState node in _nodes)
                 node.ReadStateFromJson(stateGraph);
 
             stateGraph.EndObject();

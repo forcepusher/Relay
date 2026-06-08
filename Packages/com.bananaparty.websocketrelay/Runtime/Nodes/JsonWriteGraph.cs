@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonWriteStateGraph
+    public class JsonWriteGraph
     {
         private readonly bool _prettyPrint;
         private readonly bool _bracesOnNewLine;
@@ -14,7 +14,7 @@ namespace BananaParty.WebSocketRelay
         private readonly Stack<bool> _firstItemScopes = new();
         private readonly Stack<char> _closers = new();
 
-        public JsonWriteStateGraph(bool prettyPrint = true, bool bracesOnNewLine = true, int spaceIndentationCount = 4)
+        public JsonWriteGraph(bool prettyPrint = true, bool bracesOnNewLine = true, int spaceIndentationCount = 4)
         {
             _prettyPrint = prettyPrint;
             _bracesOnNewLine = bracesOnNewLine;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ArrayNode<T> : INode where T : INode
+    public class ArrayNode<T> : IJsonState where T : IJsonState
     {
         public string Name { get; }
         private readonly List<T> _nodes;
@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
             _nodes = nodes;
         }
 
-        public void WriteStateToJson(JsonWriteStateGraph stateGraph)
+        public void WriteStateToJson(JsonWriteGraph stateGraph)
         {
             stateGraph.StartArray(Name);
 
@@ -23,7 +23,7 @@ namespace BananaParty.WebSocketRelay
             stateGraph.EndArray();
         }
 
-        public void ReadStateFromJson(JsonReadStateGraph stateGraph)
+        public void ReadStateFromJson(JsonReadGraph stateGraph)
         {
             stateGraph.StartArray(Name);
 

@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonReadStateGraph
+    public class JsonReadGraph
     {
         private readonly string _json;
         private int _pos = 0;
         private readonly Stack<bool> _inArrayStack = new();
 
-        public JsonReadStateGraph(string json)
+        public JsonReadGraph(string json)
         {
             _json = json ?? "{}";
         }

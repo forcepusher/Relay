@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay.Tests
 {
     public class JsonStateTests
     {
-        private class MockValueNode : INode
+        private class MockValueNode : IJsonState
         {
             public string Name { get; }
             public int Value { get; set; }
@@ -16,12 +16,12 @@ namespace BananaParty.WebSocketRelay.Tests
                 Value = value;
             }
 
-            public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
+            public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
             {
                 jsonStateGraph.WriteEntry(Name, Value.ToString(), false);
             }
 
-            public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
+            public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
             {
                 string val = jsonReadStateGraph.ReadEntry(Name);
                 if (val != null && int.TryParse(val, out int result))
@@ -34,13 +34,13 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldWriteSimpleObjectNode()
         {
-            var nodes = new List<INode>
+            var nodes = new List<IJsonState>
             {
                 new MockValueNode("Score", 10),
                 new MockValueNode("Level", 5)
             };
             var root = new ObjectNode("GameState", nodes);
-            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -51,13 +51,13 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldReadSimpleObjectNode()
         {
-            var nodes = new List<INode>
+            var nodes = new List<IJsonState>
             {
                 new MockValueNode("Score", 0),
                 new MockValueNode("Level", 0)
             };
             var root = new ObjectNode("GameState", nodes);
-            var graph = new JsonReadStateGraph("{\"GameState\":{\"Score\":10,\"Level\":5}}");
+            var graph = new JsonReadGraph("{\"GameState\":{\"Score\":10,\"Level\":5}}");
 
             root.ReadStateFromJson(graph);
 
@@ -68,23 +68,23 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldWriteNestedObjectNodes()
         {
-            var playerNodes = new List<INode>
+            var playerNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 100),
                 new MockValueNode("Mana", 50)
             };
             var player = new ObjectNode("Player", playerNodes);
 
-            var botNodes = new List<INode>
+            var botNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 80),
                 new MockValueNode("Mana", 20)
             };
             var bot = new ObjectNode("Bot", botNodes);
 
-            var rootNodes = new List<INode> { player, bot };
+            var rootNodes = new List<IJsonState> { player, bot };
             var root = new ObjectNode("GameState", rootNodes);
-            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -95,23 +95,23 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldReadNestedObjectNodes()
         {
-            var playerNodes = new List<INode>
+            var playerNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 0),
                 new MockValueNode("Mana", 0)
             };
             var player = new ObjectNode("Player", playerNodes);
 
-            var botNodes = new List<INode>
+            var botNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 0),
                 new MockValueNode("Mana", 0)
             };
             var bot = new ObjectNode("Bot", botNodes);
 
-            var rootNodes = new List<INode> { player, bot };
+            var rootNodes = new List<IJsonState> { player, bot };
             var root = new ObjectNode("GameState", rootNodes);
-            var graph = new JsonReadStateGraph("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}");
+            var graph = new JsonReadGraph("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}");
 
             root.ReadStateFromJson(graph);
 
@@ -124,9 +124,9 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldHandlePrettyPrint()
         {
-            var nodes = new List<INode> { new MockValueNode("X", 1) };
+            var nodes = new List<IJsonState> { new MockValueNode("X", 1) };
             var root = new ObjectNode("Root", nodes);
-            var graph = new JsonWriteStateGraph(prettyPrint: true, bracesOnNewLine: true);
+            var graph = new JsonWriteGraph(prettyPrint: true, bracesOnNewLine: true);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -144,11 +144,11 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockValueNode("", 20),
                 new MockValueNode("", 30)
             };
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<MockValueNode>("Scores", scores)
             });
-            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -165,11 +165,11 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockValueNode("", 0),
                 new MockValueNode("", 0)
             };
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<MockValueNode>("Scores", scores)
             });
-            var graph = new JsonReadStateGraph("{\"GameState\":{\"Scores\":[10,20,30]}}");
+            var graph = new JsonReadGraph("{\"GameState\":{\"Scores\":[10,20,30]}}");
 
             root.ReadStateFromJson(graph);
 
@@ -181,21 +181,21 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldWriteArrayOfObjectNodes()
         {
-            var playerOne = new ObjectNode("", new List<INode>
+            var playerOne = new ObjectNode("", new List<IJsonState>
             {
                 new MockValueNode("Health", 100),
                 new MockValueNode("Mana", 50)
             });
-            var playerTwo = new ObjectNode("", new List<INode>
+            var playerTwo = new ObjectNode("", new List<IJsonState>
             {
                 new MockValueNode("Health", 80),
                 new MockValueNode("Mana", 20)
             });
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<ObjectNode>("Players", new List<ObjectNode> { playerOne, playerTwo })
             });
-            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -206,23 +206,23 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldReadArrayOfObjectNodes()
         {
-            var playerOneNodes = new List<INode>
+            var playerOneNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 0),
                 new MockValueNode("Mana", 0)
             };
-            var playerTwoNodes = new List<INode>
+            var playerTwoNodes = new List<IJsonState>
             {
                 new MockValueNode("Health", 0),
                 new MockValueNode("Mana", 0)
             };
             var playerOne = new ObjectNode("", playerOneNodes);
             var playerTwo = new ObjectNode("", playerTwoNodes);
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<ObjectNode>("Players", new List<ObjectNode> { playerOne, playerTwo })
             });
-            var graph = new JsonReadStateGraph("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
+            var graph = new JsonReadGraph("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
 
             root.ReadStateFromJson(graph);
 
@@ -245,11 +245,11 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockValueNode("", 3),
                 new MockValueNode("", 4)
             });
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<ArrayNode<MockValueNode>>("Grid", new List<ArrayNode<MockValueNode>> { rowOne, rowTwo })
             });
-            var graph = new JsonWriteStateGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
 
             root.WriteStateToJson(graph);
             string json = graph.ToString();
@@ -272,11 +272,11 @@ namespace BananaParty.WebSocketRelay.Tests
             };
             var rowOne = new ArrayNode<MockValueNode>("", rowOneValues);
             var rowTwo = new ArrayNode<MockValueNode>("", rowTwoValues);
-            var root = new ObjectNode("GameState", new List<INode>
+            var root = new ObjectNode("GameState", new List<IJsonState>
             {
                 new ArrayNode<ArrayNode<MockValueNode>>("Grid", new List<ArrayNode<MockValueNode>> { rowOne, rowTwo })
             });
-            var graph = new JsonReadStateGraph("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
+            var graph = new JsonReadGraph("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
 
             root.ReadStateFromJson(graph);
 

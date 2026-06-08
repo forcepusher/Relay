@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, INode, IJsonState
+    public class GameState : MonoBehaviour, IState, IJsonState
     {
         [SerializeField]
         private Character _playerCharacter;
@@ -22,14 +22,14 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
 
-            JsonWriteStateGraph _jsonStateGraph = new();
+            JsonWriteGraph _jsonStateGraph = new();
             WriteStateToJson(_jsonStateGraph);
             Debug.Log(_jsonStateGraph.ToString());
         }
 
         public string Name => transform.name;
 
-        public void WriteStateToJson(JsonWriteStateGraph jsonStateGraph)
+        public void WriteStateToJson(JsonWriteGraph jsonStateGraph)
         {
             jsonStateGraph.StartObject(Name);
 
@@ -41,7 +41,7 @@ namespace BananaParty.WebSocketRelay.Samples
             jsonStateGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadStateGraph jsonReadStateGraph)
+        public void ReadStateFromJson(JsonReadGraph jsonReadStateGraph)
         {
             jsonReadStateGraph.StartObject(Name);
 
