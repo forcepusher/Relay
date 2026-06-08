@@ -12,7 +12,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private Character _botCharacter;
 
         [SerializeField]
-        private List<ItemSpawn> _items;
+        private List<ItemSpawn> _itemSpawns;
 
         private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
