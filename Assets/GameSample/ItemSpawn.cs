@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class ItemSpawn : MonoBehaviour, IStateNode
+    public class ItemSpawn : MonoBehaviour, IState
     {
         private const float RespawnDelay = 10f;
-        private FloatValueNode _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
+        private FloatValueState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
 
         public string Name => transform.name;
 

@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, IStateNode
+    public class Character : MonoBehaviour, IState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -13,8 +13,8 @@ namespace BananaParty.WebSocketRelay.Samples
         private CharacterController controller;
         private float verticalVelocity;
 
-        private FloatValueNode _health = new(nameof(_health), 100f);
-        private Vector3ValueNode _position = new(nameof(_position), Vector3.zero);
+        private FloatValueState _health = new(nameof(_health), 100f);
+        private Vector3ValueState _position = new(nameof(_position), Vector3.zero);
 
         public string Name => transform.name;
 

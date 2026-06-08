@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class Item : MonoBehaviour, IStateNode
+    public class Item : MonoBehaviour, IState
     {
-        private FloatValueNode _timeToDisappear = new(nameof(_timeToDisappear), 5f);
+        private FloatValueState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
 
         public string Name => transform.name;
 

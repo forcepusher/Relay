@@ -83,39 +83,39 @@ namespace BananaParty.WebSocketRelay.Tests
             UnityEngine.Object.DestroyImmediate(clientBObj);
         }
 
-        private class MockGameState : MonoBehaviour, IStateNode
+        private class MockGameState : MonoBehaviour, IState
         {
             public int PlayTime { get; set; }
             public float Health { get; set; }
             public Vector3 Position { get; set; }
 
-            private IntegerValueNode _playTimeNode => new("PlayTime", PlayTime);
-            private FloatValueNode _healthNode => new("Health", Health);
-            private Vector3ValueNode _positionNode => new("Position", Position);
+            private IntegerValueState _playTimeState => new("PlayTime", PlayTime);
+            private FloatValueState _healthState => new("Health", Health);
+            private Vector3ValueState _positionState => new("Position", Position);
 
             public string Name => "MockGameState";
 
             public void Write(IWriteGraph writeGraph)
             {
                 writeGraph.StartObject(Name);
-                _playTimeNode.Write(writeGraph);
-                _healthNode.Write(writeGraph);
-                _positionNode.Write(writeGraph);
+                _playTimeState.Write(writeGraph);
+                _healthState.Write(writeGraph);
+                _positionState.Write(writeGraph);
                 writeGraph.EndObject();
             }
 
             public void Read(IReadGraph readGraph)
             {
                 readGraph.StartObject(Name);
-                var pt = new IntegerValueNode("PlayTime", 0);
+                var pt = new IntegerValueState("PlayTime", 0);
                 pt.Read(readGraph);
                 PlayTime = pt.Value;
 
-                var h = new FloatValueNode("Health", 0f);
+                var h = new FloatValueState("Health", 0f);
                 h.Read(readGraph);
                 Health = h.Value;
 
-                var p = new Vector3ValueNode("Position", Vector3.zero);
+                var p = new Vector3ValueState("Position", Vector3.zero);
                 p.Read(readGraph);
                 Position = p.Value;
 

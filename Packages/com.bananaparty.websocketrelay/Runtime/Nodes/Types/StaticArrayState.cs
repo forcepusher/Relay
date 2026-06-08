@@ -2,23 +2,23 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class StaticArrayNode<T> : IStateNode where T : IStateNode
+    public class StaticArrayState<T> : IState where T : IState
     {
         public string Name { get; }
-        private readonly List<T> _nodes;
+        private readonly List<T> _states;
 
-        public StaticArrayNode(string name, List<T> nodes)
+        public StaticArrayState(string name, List<T> states)
         {
             Name = name;
-            _nodes = nodes;
+            _states = states;
         }
 
         public void Write(IWriteGraph writeGraph)
         {
             writeGraph.StartArray(Name);
 
-            foreach (T node in _nodes)
-                node.Write(writeGraph);
+            foreach (T state in _states)
+                state.Write(writeGraph);
 
             writeGraph.EndArray();
         }
@@ -27,8 +27,8 @@ namespace BananaParty.WebSocketRelay
         {
             readGraph.StartArray(Name);
 
-            foreach (T node in _nodes)
-                node.Read(readGraph);
+            foreach (T state in _states)
+                state.Read(readGraph);
 
             readGraph.EndArray();
         }

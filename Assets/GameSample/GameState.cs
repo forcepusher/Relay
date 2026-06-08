@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IStateNode
+    public class GameState : MonoBehaviour, IState
     {
         [SerializeField]
         private Character _playerCharacter;
@@ -20,16 +20,16 @@ namespace BananaParty.WebSocketRelay.Samples
         [SerializeField]
         private Item _itemPrefab;
 
-        private IntegerValueNode _playTime = new(nameof(_playTime), 0);
+        private IntegerValueState _playTime = new(nameof(_playTime), 0);
 
-        private StaticArrayNode<ItemSpawn> _itemSpawnsNode;
-        private DynamicArrayNode<Item> _itemsNode;
+        private StaticArrayState<ItemSpawn> _itemSpawnsState;
+        private DynamicArrayState<Item> _itemsState;
         private int _nextItemId;
 
         private void Awake()
         {
-            _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
-            _itemsNode = new(nameof(_items), _items);
+            _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
+            _itemsState = new(nameof(_items), _items);
 
             JsonWriteGraph jsonWriteGraph = new();
             Write(jsonWriteGraph);
@@ -45,8 +45,8 @@ namespace BananaParty.WebSocketRelay.Samples
             _playTime.Write(writeGraph);
             _playerCharacter.Write(writeGraph);
             _botCharacter.Write(writeGraph);
-            _itemSpawnsNode.Write(writeGraph);
-            _itemsNode.Write(writeGraph);
+            _itemSpawnsState.Write(writeGraph);
+            _itemsState.Write(writeGraph);
 
             writeGraph.EndObject();
         }
@@ -58,8 +58,8 @@ namespace BananaParty.WebSocketRelay.Samples
             _playTime.Read(readGraph);
             _playerCharacter.Read(readGraph);
             _botCharacter.Read(readGraph);
-            _itemSpawnsNode.Read(readGraph);
-            _itemsNode.Read(readGraph, CreateItem);
+            _itemSpawnsState.Read(readGraph);
+            _itemsState.Read(readGraph, CreateItem);
             ApplyItemReconcile();
 
             readGraph.EndObject();
@@ -74,16 +74,16 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void ApplyItemReconcile()
         {
-            foreach (Item item in _itemsNode.GetEntriesToDelete())
+            foreach (Item item in _itemsState.GetEntriesToDelete())
             {
                 _items.Remove(item);
                 Destroy(item.gameObject);
             }
 
-            foreach (Item item in _itemsNode.GetEntriesToAdd())
+            foreach (Item item in _itemsState.GetEntriesToAdd())
                 _items.Add(item);
 
-            foreach ((Item current, Item desired) in _itemsNode.GetEntriesToWrite())
+            foreach ((Item current, Item desired) in _itemsState.GetEntriesToWrite())
             {
                 current.ApplyStateFrom(desired);
                 Destroy(desired.gameObject);

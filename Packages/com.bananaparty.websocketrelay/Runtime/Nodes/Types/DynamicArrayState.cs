@@ -3,29 +3,29 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class DynamicArrayNode<T> : IStateNode where T : IStateNode
+    public class DynamicArrayState<T> : IState where T : IState
     {
         public string Name { get; }
-        private readonly List<T> _nodes;
+        private readonly List<T> _states;
         private readonly List<T> _entriesToDelete = new();
         private readonly List<T> _entriesToAdd = new();
         private readonly List<(T Current, T Desired)> _entriesToWrite = new();
 
-        public DynamicArrayNode(string name, List<T> nodes)
+        public DynamicArrayState(string name, List<T> states)
         {
             Name = name;
-            _nodes = nodes;
+            _states = states;
         }
 
-        public IReadOnlyList<T> Items => _nodes;
+        public IReadOnlyList<T> Items => _states;
 
         public void Write(IWriteGraph writeGraph)
         {
             writeGraph.StartArray(Name);
-            writeGraph.WriteEntry(_nodes.Count);
+            writeGraph.WriteEntry(_states.Count);
 
-            foreach (T node in _nodes)
-                node.Write(writeGraph);
+            foreach (T state in _states)
+                state.Write(writeGraph);
 
             writeGraph.EndArray();
         }
@@ -33,7 +33,7 @@ namespace BananaParty.WebSocketRelay
         public void Read(IReadGraph readGraph)
         {
             throw new NotSupportedException(
-                $"Use {nameof(Read)}({nameof(IReadGraph)}, {nameof(Func<T>)}) on {nameof(DynamicArrayNode<T>)}.");
+                $"Use {nameof(Read)}({nameof(IReadGraph)}, {nameof(Func<T>)}) on {nameof(DynamicArrayState<T>)}.");
         }
 
         public void Read(IReadGraph readGraph, Func<T> createEntry)
@@ -54,7 +54,7 @@ namespace BananaParty.WebSocketRelay
         }
 
         public void ReconcileAgainst(IReadOnlyList<T> desired) =>
-            ReconcileAgainst(desired, _nodes);
+            ReconcileAgainst(desired, _states);
 
         public void ReconcileAgainst(IReadOnlyList<T> desired, IReadOnlyList<T> current)
         {

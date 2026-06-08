@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IStateNode
+    public interface IState
     {
         string Name { get; }
         void Write(IWriteGraph writeGraph);

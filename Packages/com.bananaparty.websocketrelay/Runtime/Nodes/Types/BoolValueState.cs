@@ -1,11 +1,11 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class IntegerValueNode : IStateNode
+    public class BoolValueState : IState
     {
-        public int Value { get; set; }
         public string Name { get; private set; }
+        public bool Value { get; set; }
 
-        public IntegerValueNode(string name, int initialValue)
+        public BoolValueState(string name, bool initialValue)
         {
             Name = name;
             Value = initialValue;
@@ -18,7 +18,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Read(IReadGraph readGraph)
         {
-            Value = readGraph.ReadIntEntry(Name);
+            Value = readGraph.ReadBoolEntry(Name);
         }
     }
 }
