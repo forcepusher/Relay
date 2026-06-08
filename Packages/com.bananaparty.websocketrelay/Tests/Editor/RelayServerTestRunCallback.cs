@@ -1,5 +1,4 @@
 using System;
-using BananaParty.WebSocketRelay.Tests;
 using NUnit.Framework.Interfaces;
 using UnityEngine;
 using UnityEngine.TestRunner;
@@ -18,7 +17,7 @@ namespace BananaParty.WebSocketRelay.Tests.Editor
 
         public void RunStarted(ITest testsToRun)
         {
-            if (testsToRun.Parent != null || !RequiresRelayServer(testsToRun))
+            if (testsToRun.Parent != null)
                 return;
 
             var task = RelayServerLauncher.EnsureRunningAsync();
@@ -58,27 +57,5 @@ namespace BananaParty.WebSocketRelay.Tests.Editor
         public void TestStarted(ITest test) { }
 
         public void TestFinished(ITestResult result) { }
-
-        private static bool RequiresRelayServer(ITest test)
-        {
-            if (test == null)
-                return false;
-
-            if (!test.HasChildren)
-            {
-                string fullName = test.FullName;
-                return fullName.Contains(nameof(BinarySocketTests))
-                    || fullName.Contains(nameof(TextSocketTests))
-                    || fullName.Contains(nameof(JsonStateIntegrationTests));
-            }
-
-            foreach (ITest child in test.Tests)
-            {
-                if (RequiresRelayServer(child))
-                    return true;
-            }
-
-            return false;
-        }
     }
 }
