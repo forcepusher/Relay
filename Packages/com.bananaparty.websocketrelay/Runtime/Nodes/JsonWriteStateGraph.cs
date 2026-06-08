@@ -85,7 +85,7 @@ namespace BananaParty.WebSocketRelay
             if (!InArray && !string.IsNullOrEmpty(name))
                 _sb.Append($"\"{name}\":");
 
-            if (_prettyPrint && _bracesOnNewLine)
+            if (_prettyPrint && _bracesOnNewLine && !InArray)
             {
                 _sb.Append("\n");
                 AppendIndent();
@@ -102,7 +102,7 @@ namespace BananaParty.WebSocketRelay
             if (!InArray && !string.IsNullOrEmpty(name))
                 _sb.Append($"\"{name}\":");
 
-            if (_prettyPrint && _bracesOnNewLine)
+            if (_prettyPrint && _bracesOnNewLine && !InArray)
             {
                 _sb.Append("\n");
                 AppendIndent();
