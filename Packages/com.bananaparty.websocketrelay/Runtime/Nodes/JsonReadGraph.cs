@@ -5,13 +5,13 @@ namespace BananaParty.WebSocketRelay
 {
     public class JsonReadGraph : IReadGraph
     {
-        private readonly string _json;
-        private int _pos;
+        private readonly string _jsonString;
+        private int _position;
         private readonly Stack<bool> _inArrayStack = new();
 
         public JsonReadGraph(string json)
         {
-            _json = json ?? "{}";
+            _jsonString = json ?? "{}";
         }
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
@@ -119,8 +119,8 @@ namespace BananaParty.WebSocketRelay
             if (!InArray && !string.IsNullOrEmpty(name))
             {
                 SkipWhitespace();
-                if (_pos < _json.Length && _json[_pos] == open)
-                    _pos++;
+                if (_position < _jsonString.Length && _jsonString[_position] == open)
+                    _position++;
 
                 SkipItemSeparator();
                 ReadContainerName(name);
@@ -132,15 +132,15 @@ namespace BananaParty.WebSocketRelay
             }
 
             SkipWhitespace();
-            if (_pos < _json.Length && _json[_pos] == open)
-                _pos++;
+            if (_position < _jsonString.Length && _jsonString[_position] == open)
+                _position++;
         }
 
         private void ReadContainerClose(char close)
         {
             SkipWhitespace();
-            if (_pos < _json.Length && _json[_pos] == close)
-                _pos++;
+            if (_position < _jsonString.Length && _jsonString[_position] == close)
+                _position++;
         }
 
         private void ReadContainerName(string expectedName)
@@ -168,32 +168,32 @@ namespace BananaParty.WebSocketRelay
         private void SkipItemSeparator()
         {
             SkipWhitespace();
-            if (_pos < _json.Length && _json[_pos] == ',')
-                _pos++;
+            if (_position < _jsonString.Length && _jsonString[_position] == ',')
+                _position++;
             SkipWhitespace();
         }
 
         private void SkipColon()
         {
             SkipWhitespace();
-            if (_pos < _json.Length && _json[_pos] == ':')
-                _pos++;
+            if (_position < _jsonString.Length && _jsonString[_position] == ':')
+                _position++;
             SkipWhitespace();
         }
 
         private string ReadQuotedString()
         {
-            if (_pos >= _json.Length || _json[_pos] != '"')
+            if (_position >= _jsonString.Length || _jsonString[_position] != '"')
                 return null;
 
-            _pos++;
-            int start = _pos;
-            while (_pos < _json.Length && _json[_pos] != '"')
-                _pos++;
+            _position++;
+            int start = _position;
+            while (_position < _jsonString.Length && _jsonString[_position] != '"')
+                _position++;
 
-            string value = _json.Substring(start, _pos - start);
-            if (_pos < _json.Length)
-                _pos++;
+            string value = _jsonString.Substring(start, _position - start);
+            if (_position < _jsonString.Length)
+                _position++;
 
             return value;
         }
@@ -202,14 +202,14 @@ namespace BananaParty.WebSocketRelay
         {
             SkipWhitespace();
 
-            if (_pos < _json.Length && _json[_pos] == '"')
+            if (_position < _jsonString.Length && _jsonString[_position] == '"')
                 return ReadQuotedString();
 
-            int valueStart = _pos;
-            while (_pos < _json.Length && _json[_pos] != ',' && _json[_pos] != '}' && _json[_pos] != ']' && !char.IsWhiteSpace(_json[_pos]))
-                _pos++;
+            int valueStart = _position;
+            while (_position < _jsonString.Length && _jsonString[_position] != ',' && _jsonString[_position] != '}' && _jsonString[_position] != ']' && !char.IsWhiteSpace(_jsonString[_position]))
+                _position++;
 
-            return _json.Substring(valueStart, _pos - valueStart).Trim();
+            return _jsonString.Substring(valueStart, _position - valueStart).Trim();
         }
 
         private int ReadIntAtPosition()
@@ -235,7 +235,7 @@ namespace BananaParty.WebSocketRelay
 
         private string ReadStringAtPosition()
         {
-            if (_pos < _json.Length && _json[_pos] == '"')
+            if (_position < _jsonString.Length && _jsonString[_position] == '"')
                 return ReadQuotedString();
 
             return ReadValueAsString();
@@ -243,8 +243,8 @@ namespace BananaParty.WebSocketRelay
 
         private void SkipWhitespace()
         {
-            while (_pos < _json.Length && char.IsWhiteSpace(_json[_pos]))
-                _pos++;
+            while (_position < _jsonString.Length && char.IsWhiteSpace(_jsonString[_position]))
+                _position++;
         }
     }
 }
