@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace BananaParty.WebSocketRelay
@@ -19,7 +20,7 @@ namespace BananaParty.WebSocketRelay
 
         public void StartObject(string name)
         {
-            ReadContainerName(name);
+            VerifyNameHash(name);
             _inArrayStack.Push(false);
         }
 
@@ -31,7 +32,7 @@ namespace BananaParty.WebSocketRelay
 
         public void StartArray(string name)
         {
-            ReadContainerName(name);
+            VerifyNameHash(name);
             _inArrayStack.Push(true);
         }
 
@@ -43,89 +44,73 @@ namespace BananaParty.WebSocketRelay
 
         public string ReadEntry(string name)
         {
-            if (!TryMatchEntryName(name))
-                return null;
-
+            VerifyEntryName(name);
             return ReadInt32().ToString();
         }
 
         public int ReadIntEntry(string name)
         {
-            if (!TryMatchEntryName(name))
-                return 0;
-
+            VerifyEntryName(name);
             return ReadInt32();
         }
 
         public float ReadFloatEntry(string name)
         {
-            if (!TryMatchEntryName(name))
-                return 0f;
-
+            VerifyEntryName(name);
             return ReadFloat32();
         }
 
         public bool ReadBoolEntry(string name)
         {
-            if (!TryMatchEntryName(name))
-                return false;
-
+            VerifyEntryName(name);
             return ReadBool();
         }
 
         public string ReadStringEntry(string name)
         {
-            if (!TryMatchEntryName(name))
-                return null;
-
+            VerifyEntryName(name);
             return ReadString();
         }
 
         public int ReadIntArrayEntry()
         {
-            if (!TryMatchEntryName(null))
-                return 0;
-
+            VerifyEntryName(null);
             return ReadInt32();
         }
 
         public float ReadFloatArrayEntry()
         {
-            if (!TryMatchEntryName(null))
-                return 0f;
-
+            VerifyEntryName(null);
             return ReadFloat32();
         }
 
         public bool ReadBoolArrayEntry()
         {
-            if (!TryMatchEntryName(null))
-                return false;
-
+            VerifyEntryName(null);
             return ReadBool();
         }
 
         public string ReadStringArrayEntry()
         {
-            if (!TryMatchEntryName(null))
-                return null;
-
+            VerifyEntryName(null);
             return ReadString();
         }
 
-        private void ReadContainerName(string expectedName)
+        private void VerifyEntryName(string expectedName)
         {
-            ReadNameHash();
+            VerifyNameHash(InArray ? null : expectedName);
         }
 
-        private bool TryMatchEntryName(string expectedName)
+        private void VerifyNameHash(string expectedName)
         {
             int nameHash = ReadNameHash();
+            int expectedHash = GetNameHash(expectedName);
 
-            if (InArray || string.IsNullOrEmpty(expectedName))
-                return true;
-
-            return nameHash == GetNameHash(expectedName);
+            if (nameHash != expectedHash)
+            {
+                throw new InvalidDataException(
+                    $"Name hash mismatch. Expected '{expectedName ?? string.Empty}' ({expectedHash}), got {nameHash}.");
+            }
         }
 
         private int ReadNameHash()
