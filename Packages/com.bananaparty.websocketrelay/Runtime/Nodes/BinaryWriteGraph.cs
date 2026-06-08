@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class BinaryWriteGraph
+    public class BinaryWriteGraph : IWriteGraph
     {
         private readonly List<byte> _buffer = new();
         private readonly Stack<bool> _inArrayStack = new();

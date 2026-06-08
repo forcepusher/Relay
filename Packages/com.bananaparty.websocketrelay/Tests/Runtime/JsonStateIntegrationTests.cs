@@ -51,7 +51,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Act: Client A serializes and sends state
             JsonWriteGraph writeGraph = new();
-            stateA.WriteToJson(writeGraph);
+            stateA.Write(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
 
@@ -71,7 +71,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Client B deserializes the state
             JsonReadGraph readGraph = new JsonReadGraph(receivedJson);
-            stateB.ReadFromJson(readGraph);
+            stateB.Read(readGraph);
 
             // Assert: Verify values were synchronized
             Assert.AreEqual(stateA.PlayTime, stateB.PlayTime, "PlayTime should be synchronized");
@@ -83,7 +83,7 @@ namespace BananaParty.WebSocketRelay.Tests
             UnityEngine.Object.DestroyImmediate(clientBObj);
         }
 
-        private class MockGameState : MonoBehaviour, IState, IJsonState
+        private class MockGameState : MonoBehaviour, IStateNode
         {
             public int PlayTime { get; set; }
             public float Health { get; set; }
@@ -95,31 +95,31 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public string Name => "MockGameState";
 
-            public void WriteToJson(JsonWriteGraph jsonStateGraph)
+            public void Write(IWriteGraph writeGraph)
             {
-                jsonStateGraph.StartObject(Name);
-                _playTimeNode.WriteStateToJson(jsonStateGraph);
-                _healthNode.WriteStateToJson(jsonStateGraph);
-                _positionNode.WriteStateToJson(jsonStateGraph);
-                jsonStateGraph.EndObject();
+                writeGraph.StartObject(Name);
+                _playTimeNode.Write(writeGraph);
+                _healthNode.Write(writeGraph);
+                _positionNode.Write(writeGraph);
+                writeGraph.EndObject();
             }
 
-            public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
+            public void Read(IReadGraph readGraph)
             {
-                jsonReadStateGraph.StartObject(Name);
+                readGraph.StartObject(Name);
                 var pt = new IntegerValueNode("PlayTime", 0);
-                pt.ReadStateFromJson(jsonReadStateGraph);
+                pt.Read(readGraph);
                 PlayTime = pt.Value;
 
                 var h = new FloatValueNode("Health", 0f);
-                h.ReadStateFromJson(jsonReadStateGraph);
+                h.Read(readGraph);
                 Health = h.Value;
 
                 var p = new Vector3ValueNode("Position", Vector3.zero);
-                p.ReadStateFromJson(jsonReadStateGraph);
+                p.Read(readGraph);
                 Position = p.Value;
 
-                jsonReadStateGraph.EndObject();
+                readGraph.EndObject();
             }
         }
     }

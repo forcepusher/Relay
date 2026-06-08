@@ -2,55 +2,35 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ObjectNode : IJsonState, IBinaryState
+    public class ObjectNode : IStateNode
     {
         public string Name { get; }
-        private readonly List<IJsonState> _nodes;
+        private readonly List<IStateNode> _nodes;
 
-        public ObjectNode(string name, List<IJsonState> nodes)
+        public ObjectNode(string name, List<IStateNode> nodes)
         {
             Name = name;
             _nodes = nodes;
         }
 
-        public void WriteToJson(JsonWriteGraph stateGraph)
+        public void Write(IWriteGraph writeGraph)
         {
-            stateGraph.StartObject(Name);
+            writeGraph.StartObject(Name);
 
-            foreach (IJsonState node in _nodes)
-                node.WriteToJson(stateGraph);
+            foreach (IStateNode node in _nodes)
+                node.Write(writeGraph);
 
-            stateGraph.EndObject();
+            writeGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph stateGraph)
+        public void Read(IReadGraph readGraph)
         {
-            stateGraph.StartObject(Name);
+            readGraph.StartObject(Name);
 
-            foreach (IJsonState node in _nodes)
-                node.ReadFromJson(stateGraph);
+            foreach (IStateNode node in _nodes)
+                node.Read(readGraph);
 
-            stateGraph.EndObject();
-        }
-
-        public void WriteToBinary(BinaryWriteGraph stateGraph)
-        {
-            stateGraph.StartObject(Name);
-
-            foreach (IJsonState node in _nodes)
-                ((IBinaryState)node).WriteToBinary(stateGraph);
-
-            stateGraph.EndObject();
-        }
-
-        public void ReadFromBinary(BinaryReadGraph stateGraph)
-        {
-            stateGraph.StartObject(Name);
-
-            foreach (IJsonState node in _nodes)
-                ((IBinaryState)node).ReadFromBinary(stateGraph);
-
-            stateGraph.EndObject();
+            readGraph.EndObject();
         }
     }
 }

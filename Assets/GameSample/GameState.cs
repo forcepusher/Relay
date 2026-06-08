@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IJsonState
+    public class GameState : MonoBehaviour, IStateNode
     {
         [SerializeField]
         private Character _playerCharacter;
@@ -22,35 +22,35 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
 
-            JsonWriteGraph _jsonStateGraph = new();
-            WriteToJson(_jsonStateGraph);
-            Debug.Log(_jsonStateGraph.ToString());
+            JsonWriteGraph jsonWriteGraph = new();
+            Write(jsonWriteGraph);
+            Debug.Log(jsonWriteGraph.ToString());
         }
 
         public string Name => transform.name;
 
-        public void WriteToJson(JsonWriteGraph jsonWriteGraph)
+        public void Write(IWriteGraph writeGraph)
         {
-            jsonWriteGraph.StartObject(Name);
+            writeGraph.StartObject(Name);
 
-            _playTimeNode.WriteStateToJson(jsonWriteGraph);
-            _playerCharacter.WriteToJson(jsonWriteGraph);
-            _botCharacter.WriteToJson(jsonWriteGraph);
-            _itemSpawnsNode.WriteToJson(jsonWriteGraph);
+            _playTimeNode.Write(writeGraph);
+            _playerCharacter.Write(writeGraph);
+            _botCharacter.Write(writeGraph);
+            _itemSpawnsNode.Write(writeGraph);
 
-            jsonWriteGraph.EndObject();
+            writeGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph jsonReadGraph)
+        public void Read(IReadGraph readGraph)
         {
-            jsonReadGraph.StartObject(Name);
+            readGraph.StartObject(Name);
 
-            _playTimeNode.ReadStateFromJson(jsonReadGraph);
-            _playerCharacter.ReadFromJson(jsonReadGraph);
-            _botCharacter.ReadFromJson(jsonReadGraph);
-            _itemSpawnsNode.ReadFromJson(jsonReadGraph);
+            _playTimeNode.Read(readGraph);
+            _playerCharacter.Read(readGraph);
+            _botCharacter.Read(readGraph);
+            _itemSpawnsNode.Read(readGraph);
 
-            jsonReadGraph.EndObject();
+            readGraph.EndObject();
         }
     }
 }

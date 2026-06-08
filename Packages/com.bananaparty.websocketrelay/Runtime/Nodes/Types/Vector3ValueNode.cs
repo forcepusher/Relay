@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector3ValueNode : IBinaryState
+    public class Vector3ValueNode : IStateNode
     {
         public string Name { get; private set; }
         public Vector3 Value { get; set; }
@@ -13,42 +13,23 @@ namespace BananaParty.WebSocketRelay
             Value = initialValue;
         }
 
-        public void WriteStateToJson(JsonWriteGraph stateGraph)
+        public void Write(IWriteGraph writeGraph)
         {
-            stateGraph.StartObject(Name);
-            stateGraph.WriteEntry("x", Value.x);
-            stateGraph.WriteEntry("y", Value.y);
-            stateGraph.WriteEntry("z", Value.z);
-            stateGraph.EndObject();
+            writeGraph.StartObject(Name);
+            writeGraph.WriteEntry("x", Value.x);
+            writeGraph.WriteEntry("y", Value.y);
+            writeGraph.WriteEntry("z", Value.z);
+            writeGraph.EndObject();
         }
 
-        public void ReadStateFromJson(JsonReadGraph stateGraph)
+        public void Read(IReadGraph readGraph)
         {
-            stateGraph.StartObject(Name);
+            readGraph.StartObject(Name);
             Value = new Vector3(
-                stateGraph.ReadFloatEntry("x"),
-                stateGraph.ReadFloatEntry("y"),
-                stateGraph.ReadFloatEntry("z"));
-            stateGraph.EndObject();
-        }
-
-        public void WriteToBinary(BinaryWriteGraph stateGraph)
-        {
-            stateGraph.StartObject(Name);
-            stateGraph.WriteEntry("x", Value.x);
-            stateGraph.WriteEntry("y", Value.y);
-            stateGraph.WriteEntry("z", Value.z);
-            stateGraph.EndObject();
-        }
-
-        public void ReadFromBinary(BinaryReadGraph stateGraph)
-        {
-            stateGraph.StartObject(Name);
-            Value = new Vector3(
-                stateGraph.ReadFloatEntry("x"),
-                stateGraph.ReadFloatEntry("y"),
-                stateGraph.ReadFloatEntry("z"));
-            stateGraph.EndObject();
+                readGraph.ReadFloatEntry("x"),
+                readGraph.ReadFloatEntry("y"),
+                readGraph.ReadFloatEntry("z"));
+            readGraph.EndObject();
         }
     }
 }

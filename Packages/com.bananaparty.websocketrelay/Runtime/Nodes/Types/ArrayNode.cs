@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ArrayNode<T> : IJsonState, IBinaryState where T : IJsonState
+    public class ArrayNode<T> : IStateNode where T : IStateNode
     {
         public string Name { get; }
         private readonly List<T> _nodes;
@@ -13,44 +13,24 @@ namespace BananaParty.WebSocketRelay
             _nodes = nodes;
         }
 
-        public void WriteToJson(JsonWriteGraph stateGraph)
+        public void Write(IWriteGraph writeGraph)
         {
-            stateGraph.StartArray(Name);
+            writeGraph.StartArray(Name);
 
             foreach (T node in _nodes)
-                node.WriteToJson(stateGraph);
+                node.Write(writeGraph);
 
-            stateGraph.EndArray();
+            writeGraph.EndArray();
         }
 
-        public void ReadFromJson(JsonReadGraph stateGraph)
+        public void Read(IReadGraph readGraph)
         {
-            stateGraph.StartArray(Name);
+            readGraph.StartArray(Name);
 
             foreach (T node in _nodes)
-                node.ReadFromJson(stateGraph);
+                node.Read(readGraph);
 
-            stateGraph.EndArray();
-        }
-
-        public void WriteToBinary(BinaryWriteGraph stateGraph)
-        {
-            stateGraph.StartArray(Name);
-
-            foreach (T node in _nodes)
-                ((IBinaryState)node).WriteToBinary(stateGraph);
-
-            stateGraph.EndArray();
-        }
-
-        public void ReadFromBinary(BinaryReadGraph stateGraph)
-        {
-            stateGraph.StartArray(Name);
-
-            foreach (T node in _nodes)
-                ((IBinaryState)node).ReadFromBinary(stateGraph);
-
-            stateGraph.EndArray();
+            readGraph.EndArray();
         }
     }
 }

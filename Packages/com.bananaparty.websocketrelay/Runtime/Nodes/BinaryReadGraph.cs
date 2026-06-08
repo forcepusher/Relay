@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class BinaryReadGraph
+    public class BinaryReadGraph : IReadGraph
     {
         private readonly byte[] _data;
         private int _pos;

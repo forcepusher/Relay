@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, IJsonState
+    public class Character : MonoBehaviour, IStateNode
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -50,18 +49,15 @@ namespace BananaParty.WebSocketRelay.Samples
 
             if (moveDirection != Vector3.zero)
             {
-                // Move the character
                 controller.Move(moveDirection * moveSpeed * Time.deltaTime);
 
-                // Rotate to face movement direction
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
 
-            // Gravity and Jumping
             if (controller.isGrounded && verticalVelocity < 0)
             {
-                verticalVelocity = -2f; // Small negative value to keep grounded
+                verticalVelocity = -2f;
             }
             else
             {
@@ -71,20 +67,20 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void WriteToJson(JsonWriteGraph jsonWriteGraph)
+        public void Write(IWriteGraph writeGraph)
         {
-            jsonWriteGraph.StartObject(Name);
-            _health.WriteStateToJson(jsonWriteGraph);
-            _position.WriteStateToJson(jsonWriteGraph);
-            jsonWriteGraph.EndObject();
+            writeGraph.StartObject(Name);
+            _health.Write(writeGraph);
+            _position.Write(writeGraph);
+            writeGraph.EndObject();
         }
 
-        public void ReadFromJson(JsonReadGraph jsonReadGraph)
+        public void Read(IReadGraph readGraph)
         {
-            jsonReadGraph.StartObject(Name);
-            _health.ReadStateFromJson(jsonReadGraph);
-            _position.ReadStateFromJson(jsonReadGraph);
-            jsonReadGraph.EndObject();
+            readGraph.StartObject(Name);
+            _health.Read(readGraph);
+            _position.Read(readGraph);
+            readGraph.EndObject();
         }
     }
 }
