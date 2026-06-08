@@ -91,8 +91,6 @@ namespace BananaParty.WebSocketRelay.Tests
 
             Assert.IsFalse(_socketA.IsConnected, $"{nameof(_socketA.Disconnect)} did not flip {nameof(_socketA.IsConnected)} to {false} within {nameof(TestParameters.DisconnectTimeoutThreshold)} of {TestParameters.DisconnectTimeoutThreshold} seconds.");
             Assert.IsFalse(_socketB.IsConnected, $"{nameof(_socketB.Disconnect)} did not flip {nameof(_socketB.IsConnected)} to {false} within {nameof(TestParameters.DisconnectTimeoutThreshold)} of {TestParameters.DisconnectTimeoutThreshold} seconds.");
-
-            yield return RelayServerLauncher.StopCoroutine();
         }
     }
 }

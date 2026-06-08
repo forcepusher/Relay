@@ -19,12 +19,6 @@ namespace BananaParty.WebSocketRelay.Tests
             yield return RelayServerLauncher.StartCoroutine();
         }
 
-        [UnityTearDown]
-        public IEnumerator TearDown()
-        {
-            yield return RelayServerLauncher.StopCoroutine();
-        }
-
         [UnityTest]
         public IEnumerator FullSerializationDeserializationFlow_OverRelay_Success()
         {

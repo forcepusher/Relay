@@ -1,41 +1,55 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
+using UnityEngine;
+#if !UNITY_WEBGL || UNITY_EDITOR
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
-using System.Threading.Tasks;
-using UnityEngine;
+#endif
 
 namespace BananaParty.WebSocketRelay.Tests
 {
     public static class RelayServerLauncher
     {
+#if !UNITY_WEBGL || UNITY_EDITOR
         private static Process _serverProcess;
+        private static bool _weOwnProcess;
+#endif
 
-        public static async Task StartAsync()
+        public static Task StartAsync() => EnsureRunningAsync();
+
+        public static Task<bool> EnsureRunningAsync()
         {
-            if (_serverProcess != null && !_serverProcess.HasExited) return;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return Task.FromResult(true);
+#else
+            return EnsureRunningInternalAsync();
+#endif
+        }
 
-            if (Application.platform == RuntimePlatform.WebGLPlayer)
+#if !UNITY_WEBGL || UNITY_EDITOR
+        private static async Task<bool> EnsureRunningInternalAsync()
+        {
+            if (await IsPortOpenAsync(TestParameters.RelayServerPort))
+                return true;
+
+            if (_serverProcess != null && !_serverProcess.HasExited)
+                return await WaitForPortAsync(TestParameters.RelayServerPort, 5000);
+
+            string scriptName = Application.platform switch
             {
-                UnityEngine.Debug.LogWarning("RelayServerLauncher: Cannot start server from WebGL. Assuming server is already running.");
-                return;
-            }
-
-            string scriptName = "";
-            if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
-                scriptName = "LaunchServer-Windows.bat";
-            else if (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer)
-                scriptName = "LaunchServer-MacOS.sh";
-            else
-                scriptName = "LaunchServer-Linux.sh";
+                RuntimePlatform.WindowsEditor or RuntimePlatform.WindowsPlayer => "LaunchServer-Windows.bat",
+                RuntimePlatform.OSXEditor or RuntimePlatform.OSXPlayer => "LaunchServer-MacOS.sh",
+                _ => "LaunchServer-Linux.sh"
+            };
 
             string scriptPath = Path.Combine(Environment.CurrentDirectory, "Packages", "com.bananaparty.websocketrelay", "Server", scriptName);
 
             if (!File.Exists(scriptPath))
             {
                 UnityEngine.Debug.LogError($"Relay Server script not found at: {scriptPath}");
-                return;
+                return false;
             }
 
             ProcessStartInfo startInfo = new ProcessStartInfo
@@ -60,56 +74,82 @@ namespace BananaParty.WebSocketRelay.Tests
             try
             {
                 _serverProcess = Process.Start(startInfo);
-                UnityEngine.Debug.Log($"Started local relay server using {scriptName}. Waiting for port 23144...");
+                _weOwnProcess = true;
+                UnityEngine.Debug.Log($"Started local relay server using {scriptName}. Waiting for port {TestParameters.RelayServerPort}...");
 
-                if (!await WaitForPortAsync(23144, 5000))
-                {
-                    UnityEngine.Debug.LogError("Relay Server failed to open port 23144 within timeout.");
-                }
+                if (await WaitForPortAsync(TestParameters.RelayServerPort, 5000))
+                    return true;
+
+                UnityEngine.Debug.LogError($"Relay Server failed to open port {TestParameters.RelayServerPort} within timeout.");
+                return false;
             }
             catch (Exception e)
             {
                 UnityEngine.Debug.LogError($"Failed to start Relay Server: {e.Message}");
+                return false;
             }
+        }
+
+        private static async Task<bool> IsPortOpenAsync(int port)
+        {
+            try
+            {
+                using TcpClient client = new TcpClient();
+                Task connectTask = client.ConnectAsync("127.0.0.1", port);
+                if (await Task.WhenAny(connectTask, Task.Delay(100)) == connectTask && !connectTask.IsFaulted)
+                    return client.Connected;
+            }
+            catch { }
+
+            return false;
         }
 
         private static async Task<bool> WaitForPortAsync(int port, int timeoutMs)
         {
-            var startTime = DateTime.Now;
+            DateTime startTime = DateTime.Now;
             while ((DateTime.Now - startTime).TotalMilliseconds < timeoutMs)
             {
-                try
-                {
-                    using (var client = new TcpClient())
-                    {
-                        var connectTask = client.ConnectAsync("127.0.0.1", port);
-                        if (await Task.WhenAny(connectTask, Task.Delay(100)) == connectTask)
-                            return true;
-                    }
-                }
-                catch { }
+                if (await IsPortOpenAsync(port))
+                    return true;
+
                 await Task.Delay(100);
             }
+
             return false;
         }
+#endif
 
         public static IEnumerator StartCoroutine()
         {
-            var task = StartAsync();
+            Task<bool> task = EnsureRunningAsync();
             while (!task.IsCompleted) yield return null;
             if (task.IsFaulted) throw task.Exception;
         }
 
         public static IEnumerator StopCoroutine()
         {
-            var task = StopAsync();
+            Task task = StopAsync();
             while (!task.IsCompleted) yield return null;
             if (task.IsFaulted) throw task.Exception;
         }
 
-        public static async Task StopAsync()
+        public static Task StopAsync()
         {
-            if (_serverProcess == null || _serverProcess.HasExited) return;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return Task.CompletedTask;
+#else
+            return StopInternalAsync();
+#endif
+        }
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+        private static async Task StopInternalAsync()
+        {
+            if (!_weOwnProcess || _serverProcess == null || _serverProcess.HasExited)
+            {
+                _weOwnProcess = false;
+                return;
+            }
 
             try
             {
@@ -125,7 +165,9 @@ namespace BananaParty.WebSocketRelay.Tests
             finally
             {
                 _serverProcess = null;
+                _weOwnProcess = false;
             }
         }
+#endif
     }
 }

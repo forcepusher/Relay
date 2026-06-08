@@ -23,7 +23,16 @@ namespace BananaParty.WebSocketRelay
 
         public bool HasUnreadPayloadQueue => _webSocketClient?.HasUnreadPayloadQueue ?? false;
 
-        public byte[] ReadPayloadQueue() => _webSocketClient?.ReadPayloadQueue() ?? throw new InvalidOperationException($"Trying to use {nameof(ReadPayloadQueue)} before calling {nameof(Connect)}.");
+        public byte[] ReadPayloadQueue()
+        {
+            if (_webSocketClient == null)
+                throw new InvalidOperationException($"Trying to use {nameof(ReadPayloadQueue)} before calling {nameof(Connect)}.");
+
+            if (!IsConnected)
+                throw new InvalidOperationException($"Trying to use {nameof(ReadPayloadQueue)} while not {nameof(IsConnected)}.");
+
+            return _webSocketClient.ReadPayloadQueue();
+        }
 
         /// <remarks>
         /// This is not a Factory Method anti-pattern, since it doesn't return anything.
