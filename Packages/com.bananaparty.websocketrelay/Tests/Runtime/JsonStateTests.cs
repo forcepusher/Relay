@@ -18,16 +18,12 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public void WriteToJson(JsonWriteGraph jsonStateGraph)
             {
-                jsonStateGraph.WriteEntry(Name, Value.ToString(), false);
+                jsonStateGraph.WriteEntry(Name, Value);
             }
 
             public void ReadFromJson(JsonReadGraph jsonReadStateGraph)
             {
-                string val = jsonReadStateGraph.ReadEntry(Name);
-                if (val != null && int.TryParse(val, out int result))
-                {
-                    Value = result;
-                }
+                Value = jsonReadStateGraph.ReadIntEntry(Name);
             }
         }
 

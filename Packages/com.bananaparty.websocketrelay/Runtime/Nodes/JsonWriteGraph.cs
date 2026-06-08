@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace BananaParty.WebSocketRelay
@@ -27,16 +28,21 @@ namespace BananaParty.WebSocketRelay
 
         public void StartArray(string name) => StartContainer('[', ']', name);
 
-        public void WriteEntry(string name, string state, bool wrapStateInQuotes)
-        {
-            EnsureStarted('{', '}');
-            WriteItemSeparator();
+        public void WriteEntry(string name, int value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
 
-            if (InArray)
-                _sb.Append(wrapStateInQuotes ? $"\"{state}\"" : state);
-            else
-                _sb.Append(wrapStateInQuotes ? $"\"{name}\":\"{state}\"" : $"\"{name}\":{state}");
-        }
+        public void WriteEntry(string name, float value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+
+        public void WriteEntry(string name, bool value) => WritePrimitiveEntry(name, value ? "true" : "false", false);
+
+        public void WriteEntry(string name, string value) => WritePrimitiveEntry(name, value ?? string.Empty, true);
+
+        public void WriteEntry(int value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
+
+        public void WriteEntry(float value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
+
+        public void WriteEntry(bool value) => WritePrimitiveEntry(null, value ? "true" : "false", false);
+
+        public void WriteArrayEntry(string value) => WritePrimitiveEntry(null, value ?? string.Empty, true);
 
         public void EndObject() => EndContainer('}');
 
@@ -66,6 +72,17 @@ namespace BananaParty.WebSocketRelay
                 result.Append(remainingClosers[i]);
             }
             return result.ToString();
+        }
+
+        private void WritePrimitiveEntry(string name, string serializedValue, bool quoteValue)
+        {
+            EnsureStarted('{', '}');
+            WriteItemSeparator();
+
+            if (InArray)
+                _sb.Append(quoteValue ? $"\"{serializedValue}\"" : serializedValue);
+            else
+                _sb.Append(quoteValue ? $"\"{name}\":\"{serializedValue}\"" : $"\"{name}\":{serializedValue}");
         }
 
         private void StartContainer(char open, char close, string name)

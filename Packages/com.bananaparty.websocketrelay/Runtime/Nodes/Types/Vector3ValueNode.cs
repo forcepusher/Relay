@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector3ValueNode
+    public class Vector3ValueNode : IBinaryState
     {
         public string Name { get; private set; }
         public Vector3 Value { get; set; }
@@ -15,32 +15,40 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteStateToJson(JsonWriteGraph stateGraph)
         {
-            stateGraph.WriteEntry(Name, Value.ToString(), true);
+            stateGraph.StartObject(Name);
+            stateGraph.WriteEntry("x", Value.x);
+            stateGraph.WriteEntry("y", Value.y);
+            stateGraph.WriteEntry("z", Value.z);
+            stateGraph.EndObject();
         }
 
         public void ReadStateFromJson(JsonReadGraph stateGraph)
         {
-            string val = stateGraph.ReadEntry(Name);
-            if (string.IsNullOrEmpty(val)) return;
+            stateGraph.StartObject(Name);
+            Value = new Vector3(
+                stateGraph.ReadFloatEntry("x"),
+                stateGraph.ReadFloatEntry("y"),
+                stateGraph.ReadFloatEntry("z"));
+            stateGraph.EndObject();
+        }
 
-            try
-            {
-                // Expects format like "(0.0, 1.0, 2.0)"
-                val = val.Trim('(', ')');
-                string[] parts = val.Split(',');
-                if (parts.Length == 3)
-                {
-                    Value = new Vector3(
-                        float.Parse(parts[0]),
-                        float.Parse(parts[1]),
-                        float.Parse(parts[2])
-                    );
-                }
-            }
-            catch
-            {
-                // Log or ignore parse error
-            }
+        public void WriteToBinary(BinaryWriteGraph stateGraph)
+        {
+            stateGraph.StartObject(Name);
+            stateGraph.WriteEntry("x", Value.x);
+            stateGraph.WriteEntry("y", Value.y);
+            stateGraph.WriteEntry("z", Value.z);
+            stateGraph.EndObject();
+        }
+
+        public void ReadFromBinary(BinaryReadGraph stateGraph)
+        {
+            stateGraph.StartObject(Name);
+            Value = new Vector3(
+                stateGraph.ReadFloatEntry("x"),
+                stateGraph.ReadFloatEntry("y"),
+                stateGraph.ReadFloatEntry("z"));
+            stateGraph.EndObject();
         }
     }
 }

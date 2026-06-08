@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class FloatValueNode
+    public class FloatValueNode : IBinaryState
     {
         public string Name { get; private set; }
         public float Value { get; set; }
@@ -13,14 +13,22 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteStateToJson(JsonWriteGraph stateGraph)
         {
-            stateGraph.WriteEntry(Name, Value.ToString(), false);
+            stateGraph.WriteEntry(Name, Value);
         }
 
         public void ReadStateFromJson(JsonReadGraph stateGraph)
         {
-            string val = stateGraph.ReadEntry(Name);
-            if (val != null && float.TryParse(val, out float result))
-                Value = result;
+            Value = stateGraph.ReadFloatEntry(Name);
+        }
+
+        public void WriteToBinary(BinaryWriteGraph stateGraph)
+        {
+            stateGraph.WriteEntry(Name, Value);
+        }
+
+        public void ReadFromBinary(BinaryReadGraph stateGraph)
+        {
+            Value = stateGraph.ReadFloatEntry(Name);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class BoolValueNode
+    public class BoolValueNode : IBinaryState
     {
         public string Name { get; private set; }
         public bool Value { get; set; }
@@ -13,14 +13,22 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteStateToJson(JsonWriteGraph stateGraph)
         {
-            stateGraph.WriteEntry(Name, Value.ToString().ToLowerInvariant(), false);
+            stateGraph.WriteEntry(Name, Value);
         }
 
         public void ReadStateFromJson(JsonReadGraph stateGraph)
         {
-            string val = stateGraph.ReadEntry(Name);
-            if (val != null && bool.TryParse(val, out bool result))
-                Value = result;
+            Value = stateGraph.ReadBoolEntry(Name);
+        }
+
+        public void WriteToBinary(BinaryWriteGraph stateGraph)
+        {
+            stateGraph.WriteEntry(Name, Value);
+        }
+
+        public void ReadFromBinary(BinaryReadGraph stateGraph)
+        {
+            Value = stateGraph.ReadBoolEntry(Name);
         }
     }
 }
