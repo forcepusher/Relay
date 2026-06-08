@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IObjectNode, IJsonState
+    public class GameState : MonoBehaviour, INode, IJsonState
     {
         [SerializeField]
         private Character _playerCharacter;

@@ -83,7 +83,7 @@ namespace BananaParty.WebSocketRelay.Tests
             UnityEngine.Object.DestroyImmediate(clientBObj);
         }
 
-        private class MockGameState : MonoBehaviour, IObjectNode, IJsonState
+        private class MockGameState : MonoBehaviour, INode, IJsonState
         {
             public int PlayTime { get; set; }
             public float Health { get; set; }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ObjectNode : IObjectNode
+    public class ObjectNode : INode
     {
         public string Name { get; }
         private readonly List<INode> _nodes;
