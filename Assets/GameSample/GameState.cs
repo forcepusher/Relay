@@ -11,6 +11,9 @@ namespace BananaParty.WebSocketRelay.Samples
         [SerializeField]
         private Character _botCharacter;
 
+        [SerializeField]
+        private List<ItemSpawn> _items;
+
         private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
         public string Name => transform.name;
