@@ -41,9 +41,4 @@ namespace BananaParty.WebSocketRelay
             stateGraph.EndChildArray();
         }
     }
-
-    public class ArrayNode : ArrayNode<INode>
-    {
-        public ArrayNode(string name, List<INode> nodes) : base(name, nodes) { }
-    }
 }
