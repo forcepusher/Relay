@@ -8,6 +8,14 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public string Name => transform.name;
 
+        public float TimeToDisappear
+        {
+            get => _timeToDisappear.Value;
+            set => _timeToDisappear.Value = value;
+        }
+
+        public void ApplyStateFrom(Item source) => TimeToDisappear = source.TimeToDisappear;
+
         public void Write(IWriteGraph writeGraph)
         {
             writeGraph.StartObject(Name);
