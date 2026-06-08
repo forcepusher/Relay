@@ -59,21 +59,17 @@ namespace BananaParty.WebSocketRelay.Samples
             _playerCharacter.Read(readGraph);
             _botCharacter.Read(readGraph);
             _itemSpawnsState.Read(readGraph);
-            _itemsState.Read(readGraph, CreateItem);
-            ApplyItemReconcile();
 
-            readGraph.EndObject();
-        }
+            int itemCount = _itemsState.BeginRead(readGraph);
+            var desiredItems = new List<Item>(itemCount);
+            for (int i = 0; i < itemCount; i++)
+            {
+                Item item = Instantiate(_itemPrefab);
+                item.Read(readGraph);
+                desiredItems.Add(item);
+            }
+            _itemsState.FinishRead(readGraph, desiredItems);
 
-        private Item CreateItem()
-        {
-            Item item = Instantiate(_itemPrefab);
-            item.name = $"Item_{_nextItemId++}";
-            return item;
-        }
-
-        private void ApplyItemReconcile()
-        {
             foreach (Item item in _itemsState.GetEntriesToDelete())
             {
                 _items.Remove(item);
@@ -88,6 +84,8 @@ namespace BananaParty.WebSocketRelay.Samples
                 current.ApplyStateFrom(desired);
                 Destroy(desired.gameObject);
             }
+
+            readGraph.EndObject();
         }
     }
 }

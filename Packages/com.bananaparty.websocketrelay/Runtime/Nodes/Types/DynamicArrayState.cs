@@ -33,22 +33,17 @@ namespace BananaParty.WebSocketRelay
         public void Read(IReadGraph readGraph)
         {
             throw new NotSupportedException(
-                $"Use {nameof(Read)}({nameof(IReadGraph)}, {nameof(Func<T>)}) on {nameof(DynamicArrayState<T>)}.");
+                $"Use {nameof(BeginRead)} and {nameof(FinishRead)} on {nameof(DynamicArrayState<T>)}.");
         }
 
-        public void Read(IReadGraph readGraph, Func<T> createEntry)
+        public int BeginRead(IReadGraph readGraph)
         {
             readGraph.StartArray(Name);
-            int count = readGraph.ReadIntArrayEntry();
-            var desired = new List<T>(count);
+            return readGraph.ReadIntArrayEntry();
+        }
 
-            for (int i = 0; i < count; i++)
-            {
-                T entry = createEntry();
-                entry.Read(readGraph);
-                desired.Add(entry);
-            }
-
+        public void FinishRead(IReadGraph readGraph, IReadOnlyList<T> desired)
+        {
             readGraph.EndArray();
             ReconcileAgainst(desired);
         }
