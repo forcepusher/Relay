@@ -14,13 +14,16 @@ namespace BananaParty.WebSocketRelay.Samples
         [SerializeField]
         private List<ItemSpawn> _itemSpawns;
 
-        private IntegerValueNode _playTimeNode = new(nameof(_playTimeNode), 0);
+        private IntegerValueNode _playTime = new(nameof(_playTime), 0);
 
-        private ArrayNode<ItemSpawn> _itemSpawnsNode;
+        private StaticArrayNode<ItemSpawn> _itemSpawnsNode;
+
+        private DynamicArrayNode<Item> _items;
 
         private void Awake()
         {
             _itemSpawnsNode = new(nameof(_itemSpawns), _itemSpawns);
+            _items = new(nameof(_items), new List<Item>());
 
             JsonWriteGraph jsonWriteGraph = new();
             Write(jsonWriteGraph);
@@ -33,7 +36,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             writeGraph.StartObject(Name);
 
-            _playTimeNode.Write(writeGraph);
+            _playTime.Write(writeGraph);
             _playerCharacter.Write(writeGraph);
             _botCharacter.Write(writeGraph);
             _itemSpawnsNode.Write(writeGraph);
@@ -45,7 +48,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             readGraph.StartObject(Name);
 
-            _playTimeNode.Read(readGraph);
+            _playTime.Read(readGraph);
             _playerCharacter.Read(readGraph);
             _botCharacter.Read(readGraph);
             _itemSpawnsNode.Read(readGraph);
