@@ -24,7 +24,7 @@ namespace BananaParty.WebSocketRelay.Samples
                 _playTime,
                 _playerCharacter,
                 _botCharacter,
-                new ArrayNode(nameof(_itemSpawns), _itemSpawns)
+                new ArrayNode<ItemSpawn>(nameof(_itemSpawns), _itemSpawns)
             }
         }
 
