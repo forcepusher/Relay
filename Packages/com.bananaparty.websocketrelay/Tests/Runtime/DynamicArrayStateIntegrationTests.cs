@@ -60,7 +60,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             Assert.AreEqual(3, target.Count);
             Assert.AreEqual(3, factory.CreateCount);
-            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.AreEqual(1, factory.DisposeCount);
             Assert.AreSame(existing, target[0]);
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);

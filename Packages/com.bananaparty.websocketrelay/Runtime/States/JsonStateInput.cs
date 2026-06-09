@@ -74,7 +74,7 @@ namespace BananaParty.WebSocketRelay
         {
             var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
             source.WriteState(output);
-            target.ReadState(new JsonStateInput(output.ToString()));
+            new JsonStateInput(output.ToString()).ReadObject(string.Empty, new List<IState> { target });
         }
 
         public string ReadString(string name)
