@@ -10,7 +10,7 @@ namespace BananaParty.WebSocketRelay
             List<T> states,
             IFactory<T> factory,
             Action<T> readEntry,
-            Action<T> disposeEntry) where T : IState
+            Action<T> disposeEntry) where T : IKeyedState
         {
             while (states.Count > count)
             {
@@ -32,7 +32,7 @@ namespace BananaParty.WebSocketRelay
             IFactory<T> factory,
             Action<T> readEntry,
             Action<IState, IState> copyState,
-            Action<T> disposeEntry) where T : IState
+            Action<T> disposeEntry) where T : IKeyedState
         {
             var incoming = new List<T>(count);
             for (int i = 0; i < count; i++)
@@ -44,11 +44,11 @@ namespace BananaParty.WebSocketRelay
 
             var incomingKeys = new HashSet<Guid>();
             foreach (T entry in incoming)
-                incomingKeys.Add(factory.GetKey(entry));
+                incomingKeys.Add(entry.Key);
 
             for (int i = states.Count - 1; i >= 0; i--)
             {
-                if (incomingKeys.Contains(factory.GetKey(states[i])))
+                if (incomingKeys.Contains(states[i].Key))
                     continue;
 
                 T removed = states[i];
@@ -59,8 +59,8 @@ namespace BananaParty.WebSocketRelay
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid entryKey = factory.GetKey(staging);
-                T existing = FindByKey(states, factory, entryKey);
+                Guid entryKey = staging.Key;
+                T existing = FindByKey(states, entryKey);
                 if (existing != null)
                 {
                     copyState(staging, existing);
@@ -80,11 +80,11 @@ namespace BananaParty.WebSocketRelay
             states.AddRange(next);
         }
 
-        private static T FindByKey<T>(List<T> states, IFactory<T> factory, Guid entryKey) where T : IState
+        private static T FindByKey<T>(List<T> states, Guid entryKey) where T : IKeyedState
         {
             foreach (T state in states)
             {
-                if (factory.GetKey(state) == entryKey)
+                if (state.Key == entryKey)
                     return state;
             }
 

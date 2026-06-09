@@ -7,8 +7,8 @@ namespace BananaParty.WebSocketRelay
     {
         void ReadObject(string name, List<IState> states);
         void ReadStaticArray(string name, List<IState> states);
-        void ReadDynamicArray<T>(string name, List<T> states) where T : IState;
-        void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IState;
+        void ReadDynamicArray<T>(string name, List<T> states) where T : IKeyedState;
+        void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IKeyedState;
         void CopyStateFrom(IState source, IState target);
         string ReadString(string name);
         byte ReadByte(string name);

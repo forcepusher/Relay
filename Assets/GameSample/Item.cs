@@ -4,13 +4,15 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class Item : MonoBehaviour, IState
+    public class Item : MonoBehaviour, IKeyedState
     {
         public GuidState Key = new(nameof(Key), Guid.Empty);
         public FloatState TimeToDisappear = new(nameof(TimeToDisappear), 5f);
         private List<IState> _states;
 
         public string StateName => transform.name;
+
+        Guid IKeyedState.Key => Key.Value;
 
         private void Awake()
         {

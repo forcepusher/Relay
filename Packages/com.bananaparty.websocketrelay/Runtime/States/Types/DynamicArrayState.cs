@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class DynamicArrayState<T> : IState where T : IState
+    public class DynamicArrayState<T> : IState where T : IKeyedState
     {
         public string StateName { get; }
         private readonly List<T> _states;

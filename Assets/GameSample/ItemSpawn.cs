@@ -45,8 +45,6 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void Dispose(Item item) => Destroy(item.gameObject);
 
-        public Guid GetKey(Item item) => item.Key.Value;
-
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
 
         public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);

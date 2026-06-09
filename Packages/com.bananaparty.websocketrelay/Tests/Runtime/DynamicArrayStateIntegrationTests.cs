@@ -268,10 +268,11 @@ namespace BananaParty.WebSocketRelay.Tests
             new ObjectState("Root", new List<IState> { targetState }).ReadState(new JsonStateInput(output.ToString()));
         }
 
-        private class MockEntry : IState
+        private class MockEntry : IKeyedState
         {
             public string StateName => string.Empty;
             public Guid Id { get; set; }
+            public Guid Key => Id;
             public int Value { get; set; }
 
             public void WriteState(IStateOutput stateOutput)
@@ -304,8 +305,6 @@ namespace BananaParty.WebSocketRelay.Tests
                 DisposeCount++;
                 Disposed.Add(entry);
             }
-
-            public Guid GetKey(MockEntry entry) => entry.Id;
         }
 
         private class MockGameStateWithDynamicItems : MonoBehaviour, IState, IFactory<MockEntry>
@@ -333,8 +332,6 @@ namespace BananaParty.WebSocketRelay.Tests
             }
 
             public void Dispose(MockEntry entry) => DisposeCount++;
-
-            public Guid GetKey(MockEntry entry) => entry.Id;
 
             public void SetItems(params (Guid id, int value)[] items)
             {
