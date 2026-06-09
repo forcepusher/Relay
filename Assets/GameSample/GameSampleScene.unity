@@ -260,13 +260,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 785604b5a364ec74c9a1363d923a180a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameState
-  _playerCharacterState: {fileID: 0}
-  _botCharacterState: {fileID: 0}
+  _playerCharacterState: {fileID: 1822008114}
+  _botCharacterState: {fileID: 389857435}
   _itemSpawns:
   - {fileID: 0}
   - {fileID: 472791616}
   - {fileID: 614933109}
-  _itemPrefab: {fileID: 0}
 --- !u!4 &306160918
 Transform:
   m_ObjectHideFlags: 0
@@ -282,6 +281,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &389857435 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874780850883058954, guid: e0b504692cc65ab448036b1fc974dd2d, type: 3}
+  m_PrefabInstance: {fileID: 550986348}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afcb542baf6bb5c4c85a47f7aeb6a989, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.Character
 --- !u!1 &419942227
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,6 +964,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1822008114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874780850883058954, guid: e0b504692cc65ab448036b1fc974dd2d, type: 3}
+  m_PrefabInstance: {fileID: 5557970400718775192}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afcb542baf6bb5c4c85a47f7aeb6a989, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.Character
 --- !u!1 &2122646711
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,8 +30,11 @@ namespace BananaParty.WebSocketRelay.Samples
                 _botCharacterState,
                 _itemSpawnsState
             };
+        }
 
-            JsonStateOutput jsonStateOutput = new();
+        private void Start()
+        {
+            var jsonStateOutput = new JsonStateOutput();
             WriteState(jsonStateOutput);
             Debug.Log(jsonStateOutput.ToString());
         }
