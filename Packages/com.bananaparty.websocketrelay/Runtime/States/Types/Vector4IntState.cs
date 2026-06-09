@@ -1,23 +1,39 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector3ValueState : IState
+    public readonly struct Vector4Int
+    {
+        public int x { get; }
+        public int y { get; }
+        public int z { get; }
+        public int w { get; }
+
+        public Vector4Int(int x, int y, int z, int w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+    }
+
+    public class Vector4IntState : IState
     {
         public string StateName { get; private set; }
-        public Vector3 Value { get; set; }
+        public Vector4Int Value { get; set; }
 
-        private readonly FloatValueState _x = new("x", 0f);
-        private readonly FloatValueState _y = new("y", 0f);
-        private readonly FloatValueState _z = new("z", 0f);
+        private readonly IntegerState _x = new("x", 0);
+        private readonly IntegerState _y = new("y", 0);
+        private readonly IntegerState _z = new("z", 0);
+        private readonly IntegerState _w = new("w", 0);
         private readonly List<IState> _components;
 
-        public Vector3ValueState(string name, Vector3 initialValue)
+        public Vector4IntState(string name, Vector4Int initialValue)
         {
             StateName = name;
             Value = initialValue;
-            _components = new List<IState> { _x, _y, _z };
+            _components = new List<IState> { _x, _y, _z, _w };
             SyncComponentsFromValue();
         }
 
@@ -38,11 +54,12 @@ namespace BananaParty.WebSocketRelay
             _x.Value = Value.x;
             _y.Value = Value.y;
             _z.Value = Value.z;
+            _w.Value = Value.w;
         }
 
         private void SyncValueFromComponents()
         {
-            Value = new Vector3(_x.Value, _y.Value, _z.Value);
+            Value = new Vector4Int(_x.Value, _y.Value, _z.Value, _w.Value);
         }
     }
 }

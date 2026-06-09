@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector2IntValueState : IState
+    public class Vector2IntState : IState
     {
         public string StateName { get; private set; }
         public Vector2Int Value { get; set; }
 
-        private readonly IntegerValueState _x = new("x", 0);
-        private readonly IntegerValueState _y = new("y", 0);
+        private readonly IntegerState _x = new("x", 0);
+        private readonly IntegerState _y = new("y", 0);
         private readonly List<IState> _components;
 
-        public Vector2IntValueState(string name, Vector2Int initialValue)
+        public Vector2IntState(string name, Vector2Int initialValue)
         {
             StateName = name;
             Value = initialValue;

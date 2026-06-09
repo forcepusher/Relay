@@ -2,12 +2,12 @@ using System;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class EnumValueState<T> : IState where T : struct, Enum
+    public class EnumState<T> : IState where T : struct, Enum
     {
         public string StateName { get; private set; }
         public T Value { get; set; }
 
-        public EnumValueState(string name, T initialValue)
+        public EnumState(string name, T initialValue)
         {
             StateName = name;
             Value = initialValue;

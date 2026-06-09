@@ -15,7 +15,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private List<ItemSpawn> _itemSpawns;
         private StaticArrayState<ItemSpawn> _itemSpawnsState;
 
-        private IntegerValueState _playTimeState = new(nameof(_playTimeState), 0);
+        private IntegerState _playTimeState = new(nameof(_playTimeState), 0);
 
         private List<Item> _items = new List<Item>();
         private DynamicArrayState<Item> _itemsState;

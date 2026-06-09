@@ -1,11 +1,11 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class FloatValueState : IState
+    public class FloatState : IState
     {
         public string StateName { get; private set; }
         public float Value { get; set; }
 
-        public FloatValueState(string name, float initialValue)
+        public FloatState(string name, float initialValue)
         {
             StateName = name;
             Value = initialValue;

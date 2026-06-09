@@ -6,7 +6,7 @@ namespace BananaParty.WebSocketRelay.Samples
     public class ItemSpawn : MonoBehaviour, IState
     {
         private const float RespawnDelay = 10f;
-        private FloatValueState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
+        private FloatState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
         private List<IState> _states;
 
         public string StateName => transform.name;

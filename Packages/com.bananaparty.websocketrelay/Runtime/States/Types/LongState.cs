@@ -1,11 +1,11 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class LongValueState : IState
+    public class LongState : IState
     {
         public long Value { get; set; }
         public string StateName { get; private set; }
 
-        public LongValueState(string name, long initialValue)
+        public LongState(string name, long initialValue)
         {
             StateName = name;
             Value = initialValue;

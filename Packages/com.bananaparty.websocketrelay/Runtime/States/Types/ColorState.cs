@@ -3,22 +3,22 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class QuaternionValueState : IState
+    public class ColorState : IState
     {
         public string StateName { get; private set; }
-        public Quaternion Value { get; set; }
+        public Color Value { get; set; }
 
-        private readonly FloatValueState _x = new("x", 0f);
-        private readonly FloatValueState _y = new("y", 0f);
-        private readonly FloatValueState _z = new("z", 0f);
-        private readonly FloatValueState _w = new("w", 1f);
+        private readonly FloatState _r = new("r", 0f);
+        private readonly FloatState _g = new("g", 0f);
+        private readonly FloatState _b = new("b", 0f);
+        private readonly FloatState _a = new("a", 1f);
         private readonly List<IState> _components;
 
-        public QuaternionValueState(string name, Quaternion initialValue)
+        public ColorState(string name, Color initialValue)
         {
             StateName = name;
             Value = initialValue;
-            _components = new List<IState> { _x, _y, _z, _w };
+            _components = new List<IState> { _r, _g, _b, _a };
             SyncComponentsFromValue();
         }
 
@@ -36,15 +36,15 @@ namespace BananaParty.WebSocketRelay
 
         private void SyncComponentsFromValue()
         {
-            _x.Value = Value.x;
-            _y.Value = Value.y;
-            _z.Value = Value.z;
-            _w.Value = Value.w;
+            _r.Value = Value.r;
+            _g.Value = Value.g;
+            _b.Value = Value.b;
+            _a.Value = Value.a;
         }
 
         private void SyncValueFromComponents()
         {
-            Value = new Quaternion(_x.Value, _y.Value, _z.Value, _w.Value);
+            Value = new Color(_r.Value, _g.Value, _b.Value, _a.Value);
         }
     }
 }

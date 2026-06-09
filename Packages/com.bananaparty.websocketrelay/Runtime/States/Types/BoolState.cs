@@ -1,11 +1,11 @@
 namespace BananaParty.WebSocketRelay
 {
-    public class BoolValueState : IState
+    public class BoolState : IState
     {
         public string StateName { get; private set; }
         public bool Value { get; set; }
 
-        public BoolValueState(string name, bool initialValue)
+        public BoolState(string name, bool initialValue)
         {
             StateName = name;
             Value = initialValue;

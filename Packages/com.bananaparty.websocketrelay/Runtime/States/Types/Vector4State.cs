@@ -3,22 +3,22 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class ColorValueState : IState
+    public class Vector4State : IState
     {
         public string StateName { get; private set; }
-        public Color Value { get; set; }
+        public Vector4 Value { get; set; }
 
-        private readonly FloatValueState _r = new("r", 0f);
-        private readonly FloatValueState _g = new("g", 0f);
-        private readonly FloatValueState _b = new("b", 0f);
-        private readonly FloatValueState _a = new("a", 1f);
+        private readonly FloatState _x = new("x", 0f);
+        private readonly FloatState _y = new("y", 0f);
+        private readonly FloatState _z = new("z", 0f);
+        private readonly FloatState _w = new("w", 0f);
         private readonly List<IState> _components;
 
-        public ColorValueState(string name, Color initialValue)
+        public Vector4State(string name, Vector4 initialValue)
         {
             StateName = name;
             Value = initialValue;
-            _components = new List<IState> { _r, _g, _b, _a };
+            _components = new List<IState> { _x, _y, _z, _w };
             SyncComponentsFromValue();
         }
 
@@ -36,15 +36,15 @@ namespace BananaParty.WebSocketRelay
 
         private void SyncComponentsFromValue()
         {
-            _r.Value = Value.r;
-            _g.Value = Value.g;
-            _b.Value = Value.b;
-            _a.Value = Value.a;
+            _x.Value = Value.x;
+            _y.Value = Value.y;
+            _z.Value = Value.z;
+            _w.Value = Value.w;
         }
 
         private void SyncValueFromComponents()
         {
-            Value = new Color(_r.Value, _g.Value, _b.Value, _a.Value);
+            Value = new Vector4(_x.Value, _y.Value, _z.Value, _w.Value);
         }
     }
 }

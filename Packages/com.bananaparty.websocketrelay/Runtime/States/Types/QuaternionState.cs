@@ -1,35 +1,20 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public readonly struct Vector4Int
-    {
-        public int x { get; }
-        public int y { get; }
-        public int z { get; }
-        public int w { get; }
-
-        public Vector4Int(int x, int y, int z, int w)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
-        }
-    }
-
-    public class Vector4IntValueState : IState
+    public class QuaternionState : IState
     {
         public string StateName { get; private set; }
-        public Vector4Int Value { get; set; }
+        public Quaternion Value { get; set; }
 
-        private readonly IntegerValueState _x = new("x", 0);
-        private readonly IntegerValueState _y = new("y", 0);
-        private readonly IntegerValueState _z = new("z", 0);
-        private readonly IntegerValueState _w = new("w", 0);
+        private readonly FloatState _x = new("x", 0f);
+        private readonly FloatState _y = new("y", 0f);
+        private readonly FloatState _z = new("z", 0f);
+        private readonly FloatState _w = new("w", 1f);
         private readonly List<IState> _components;
 
-        public Vector4IntValueState(string name, Vector4Int initialValue)
+        public QuaternionState(string name, Quaternion initialValue)
         {
             StateName = name;
             Value = initialValue;
@@ -59,7 +44,7 @@ namespace BananaParty.WebSocketRelay
 
         private void SyncValueFromComponents()
         {
-            Value = new Vector4Int(_x.Value, _y.Value, _z.Value, _w.Value);
+            Value = new Quaternion(_x.Value, _y.Value, _z.Value, _w.Value);
         }
     }
 }

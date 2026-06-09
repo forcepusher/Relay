@@ -85,9 +85,9 @@ namespace BananaParty.WebSocketRelay.Tests
 
         private class MockGameState : MonoBehaviour, IState
         {
-            private IntegerValueState _playTimeState = new("PlayTime", 0);
-            private FloatValueState _healthState = new("Health", 0f);
-            private Vector3ValueState _positionState = new("Position", Vector3.zero);
+            private IntegerState _playTimeState = new("PlayTime", 0);
+            private FloatState _healthState = new("Health", 0f);
+            private Vector3State _positionState = new("Position", Vector3.zero);
             private List<IState> _states;
 
             private List<IState> StatesList => _states ??= new List<IState>

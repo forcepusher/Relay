@@ -2,12 +2,12 @@ using System;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class GuidValueState : IState
+    public class GuidState : IState
     {
         public string StateName { get; private set; }
         public Guid Value { get; set; }
 
-        public GuidValueState(string name, Guid initialValue)
+        public GuidState(string name, Guid initialValue)
         {
             StateName = name;
             Value = initialValue;

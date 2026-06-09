@@ -3,20 +3,21 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class Vector2ValueState : IState
+    public class Vector3State : IState
     {
         public string StateName { get; private set; }
-        public Vector2 Value { get; set; }
+        public Vector3 Value { get; set; }
 
-        private readonly FloatValueState _x = new("x", 0f);
-        private readonly FloatValueState _y = new("y", 0f);
+        private readonly FloatState _x = new("x", 0f);
+        private readonly FloatState _y = new("y", 0f);
+        private readonly FloatState _z = new("z", 0f);
         private readonly List<IState> _components;
 
-        public Vector2ValueState(string name, Vector2 initialValue)
+        public Vector3State(string name, Vector3 initialValue)
         {
             StateName = name;
             Value = initialValue;
-            _components = new List<IState> { _x, _y };
+            _components = new List<IState> { _x, _y, _z };
             SyncComponentsFromValue();
         }
 
@@ -36,11 +37,12 @@ namespace BananaParty.WebSocketRelay
         {
             _x.Value = Value.x;
             _y.Value = Value.y;
+            _z.Value = Value.z;
         }
 
         private void SyncValueFromComponents()
         {
-            Value = new Vector2(_x.Value, _y.Value);
+            Value = new Vector3(_x.Value, _y.Value, _z.Value);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class Item : MonoBehaviour, IState
     {
-        private FloatValueState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
+        private FloatState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
         private List<IState> _states;
 
         public string StateName => transform.name;

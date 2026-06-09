@@ -14,8 +14,8 @@ namespace BananaParty.WebSocketRelay.Samples
         private CharacterController controller;
         private float verticalVelocity;
 
-        private FloatValueState _health = new(nameof(_health), 100f);
-        private Vector3ValueState _position = new(nameof(_position), Vector3.zero);
+        private FloatState _health = new(nameof(_health), 100f);
+        private Vector3State _position = new(nameof(_position), Vector3.zero);
         private List<IState> _states;
 
         public string StateName => transform.name;
