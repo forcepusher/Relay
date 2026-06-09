@@ -32,7 +32,7 @@ namespace BananaParty.WebSocketRelay
             IFactory<T> factory,
             Action<T> readEntry,
             Action<IState, IState> copyState,
-            Action<T> disposeEntry)
+            Action<T> disposeEntry) where T : IState
         {
             var incoming = new List<T>(count);
             for (int i = 0; i < count; i++)
