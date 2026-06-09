@@ -30,7 +30,6 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
             _itemsState = new(nameof(_itemsState), _items);
-            _itemsJournal = new Journal<Item>(_items);
 
             _states = new List<IState>
             {
@@ -40,6 +39,9 @@ namespace BananaParty.WebSocketRelay.Samples
                 _itemSpawnsState,
                 _itemsState
             };
+
+            _itemsJournal = new Journal<Item>(_items);
+            _itemsJournal.Snapshot();
 
             JsonStateOutput jsonStateOutput = new();
             WriteState(jsonStateOutput);
@@ -55,7 +57,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void ReadState(IStateInput readGraph)
         {
-            _itemsJournal.Snapshot();
+            
 
             readGraph.ReadObject(StateName, _states);
 
