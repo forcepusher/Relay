@@ -59,10 +59,12 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             readGraph.ReadObject(StateName, _states);
 
-            foreach (Item item in _itemsJournal.GetDeleteEntries())
+            foreach (Item item in _itemsJournal.GetRemovedEntries())
+            {
                 Destroy(item.gameObject);
+            }
 
-            foreach (Item item in _itemsJournal.GetNewEntries())
+            foreach (Item item in _itemsJournal.GetAddedEntries())
             {
                 Item instance = Instantiate(_itemPrefab, transform);
                 instance.TimeToDisappear = item.TimeToDisappear;
@@ -70,8 +72,7 @@ namespace BananaParty.WebSocketRelay.Samples
                 Destroy(item.gameObject);
             }
 
-            foreach (Item item in _itemsJournal.GetUpdatedEntries())
-                item.gameObject.SetActive(true);
+            // Iterate over all entries and apply state from _itemsState to _items to update existing items.
 
             _itemsJournal.Snapshot();
         }

@@ -17,7 +17,7 @@ namespace BananaParty.WebSocketRelay
             _snapshot = new List<T>(_list);
         }
 
-        public IReadOnlyList<T> GetDeleteEntries()
+        public IReadOnlyList<T> GetRemovedEntries()
         {
             var deletes = new List<T>();
 
@@ -30,7 +30,7 @@ namespace BananaParty.WebSocketRelay
             return deletes;
         }
 
-        public IReadOnlyList<T> GetNewEntries()
+        public IReadOnlyList<T> GetAddedEntries()
         {
             var writes = new List<T>();
 
@@ -41,19 +41,6 @@ namespace BananaParty.WebSocketRelay
             }
 
             return writes;
-        }
-
-        public IReadOnlyList<T> GetUpdatedEntries()
-        {
-            var updates = new List<T>();
-
-            foreach (T item in _list)
-            {
-                if (_snapshot.Contains(item))
-                    updates.Add(item);
-            }
-
-            return updates;
         }
     }
 }
