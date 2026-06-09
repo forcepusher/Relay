@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -55,6 +56,8 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
+        public void WriteByte(string name, byte value) => WriteEntry(name, value);
+
         public void WriteInt(string name, int value) => WriteEntry(name, value);
 
         public void WriteLong(string name, long value) => WriteEntry(name, value);
@@ -66,6 +69,8 @@ namespace BananaParty.WebSocketRelay
         public void WriteBool(string name, bool value) => WriteEntry(name, value);
 
         public void WriteString(string name, string value) => WriteEntry(name, value);
+
+        public void WriteGuid(string name, Guid value) => WriteEntry(name, value.ToString());
 
         public override string ToString()
         {
@@ -96,6 +101,8 @@ namespace BananaParty.WebSocketRelay
         private void StartObject(string name) => StartContainer('{', '}', name);
 
         private void StartArray(string name) => StartContainer('[', ']', name);
+
+        private void WriteEntry(string name, byte value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
 
         private void WriteEntry(string name, int value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
 

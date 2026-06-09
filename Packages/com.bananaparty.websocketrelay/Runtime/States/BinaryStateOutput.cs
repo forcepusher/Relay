@@ -42,6 +42,8 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
+        public void WriteByte(string name, byte value) => WriteEntry(name, value);
+
         public void WriteInt(string name, int value) => WriteEntry(name, value);
 
         public void WriteLong(string name, long value) => WriteEntry(name, value);
@@ -53,6 +55,8 @@ namespace BananaParty.WebSocketRelay
         public void WriteBool(string name, bool value) => WriteEntry(name, value);
 
         public void WriteString(string name, string value) => WriteEntry(name, value);
+
+        public void WriteGuid(string name, Guid value) => WriteEntry(name, value);
 
         public byte[] ToArray() => _buffer.ToArray();
 
@@ -78,6 +82,12 @@ namespace BananaParty.WebSocketRelay
         {
             if (_inArrayStack.Count > 0)
                 _inArrayStack.Pop();
+        }
+
+        private void WriteEntry(string name, byte value)
+        {
+            WriteNameHash(InArray ? null : name);
+            _buffer.Add(value);
         }
 
         private void WriteEntry(string name, int value)
@@ -116,6 +126,12 @@ namespace BananaParty.WebSocketRelay
             byte[] stringBytes = Encoding.UTF8.GetBytes(value ?? string.Empty);
             _buffer.AddRange(BitConverter.GetBytes((ushort)stringBytes.Length));
             _buffer.AddRange(stringBytes);
+        }
+
+        private void WriteEntry(string name, Guid value)
+        {
+            WriteNameHash(InArray ? null : name);
+            _buffer.AddRange(value.ToByteArray());
         }
 
         private void WriteEntry(int value)

@@ -58,6 +58,12 @@ namespace BananaParty.WebSocketRelay
             return ReadStringValue();
         }
 
+        public byte ReadByte(string name)
+        {
+            VerifyEntryName(name);
+            return ReadByteValue();
+        }
+
         public int ReadInt(string name)
         {
             VerifyEntryName(name);
@@ -86,6 +92,12 @@ namespace BananaParty.WebSocketRelay
         {
             VerifyEntryName(name);
             return ReadBoolValue();
+        }
+
+        public Guid ReadGuid(string name)
+        {
+            VerifyEntryName(name);
+            return ReadGuidValue();
         }
 
         private void StartObject(string name)
@@ -143,6 +155,14 @@ namespace BananaParty.WebSocketRelay
             int hash = BitConverter.ToInt32(_data, _pos);
             _pos += 4;
             return hash;
+        }
+
+        private byte ReadByteValue()
+        {
+            if (_pos >= _data.Length)
+                return 0;
+
+            return _data[_pos++];
         }
 
         private int ReadInt32()
@@ -210,6 +230,17 @@ namespace BananaParty.WebSocketRelay
             string value = Encoding.UTF8.GetString(_data, _pos, length);
             _pos += length;
             return value;
+        }
+
+        private Guid ReadGuidValue()
+        {
+            if (_pos + 16 > _data.Length)
+                return Guid.Empty;
+
+            byte[] bytes = new byte[16];
+            Array.Copy(_data, _pos, bytes, 0, 16);
+            _pos += 16;
+            return new Guid(bytes);
         }
 
         private static int GetNameHash(string name)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -61,6 +62,14 @@ namespace BananaParty.WebSocketRelay
             return ReadValueAsString();
         }
 
+        public byte ReadByte(string name)
+        {
+            if (!TryAdvanceToEntry(name))
+                return 0;
+
+            return ReadByteAtPosition();
+        }
+
         public int ReadInt(string name)
         {
             if (!TryAdvanceToEntry(name))
@@ -99,6 +108,12 @@ namespace BananaParty.WebSocketRelay
                 return false;
 
             return ReadBoolAtPosition();
+        }
+
+        public Guid ReadGuid(string name)
+        {
+            string value = ReadString(name);
+            return Guid.TryParse(value, out Guid result) ? result : Guid.Empty;
         }
 
         private void StartObject(string name)
@@ -231,6 +246,12 @@ namespace BananaParty.WebSocketRelay
                 _position++;
 
             return _jsonString.Substring(valueStart, _position - valueStart).Trim();
+        }
+
+        private byte ReadByteAtPosition()
+        {
+            string value = ReadValueAsString();
+            return byte.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out byte result) ? result : (byte)0;
         }
 
         private int ReadIntAtPosition()
