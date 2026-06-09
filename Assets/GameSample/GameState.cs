@@ -17,6 +17,9 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private IntegerState _playTimeState = new(nameof(_playTimeState), 0);
 
+        [SerializeField]
+        private Item _itemPrefab;
+
         private List<Item> _items = new List<Item>();
         private DynamicArrayState<Item> _itemsState;
         private Journal<Item> _itemsJournal;
@@ -53,19 +56,14 @@ namespace BananaParty.WebSocketRelay.Samples
         public void ReadState(IStateInput readGraph)
         {
             _itemsJournal.Snapshot();
-            readGraph.ReadObject(StateName, _states);
-            ApplyItemsJournal();
-        }
 
-        private void ApplyItemsJournal()
-        {
-            foreach (Item item in _itemsJournal.GetDeletes())
+            readGraph.ReadObject(StateName, _states);
+
+            foreach (Item item in _itemsJournal.GetDeleteEntries())
                 Destroy(item.gameObject);
 
-            foreach (Item item in _itemsJournal.GetWrites())
+            foreach (Item item in _itemsJournal.GetNewEntries())
                 item.gameObject.SetActive(true);
-
-            _itemsJournal.Snapshot();
         }
     }
 }
