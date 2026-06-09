@@ -16,6 +16,7 @@ namespace BananaParty.WebSocketRelay
         public void Write(IWriteGraph writeGraph)
         {
             writeGraph.StartArray(Name);
+            writeGraph.WriteEntry(_states.Count);
 
             foreach (T state in _states)
                 state.Write(writeGraph);
@@ -26,9 +27,13 @@ namespace BananaParty.WebSocketRelay
         public void Read(IReadGraph readGraph)
         {
             readGraph.StartArray(Name);
+            int count = readGraph.ReadIntArrayEntry();
 
-            foreach (T state in _states)
-                state.Read(readGraph);
+            while (_states.Count > count)
+                _states.RemoveAt(_states.Count - 1);
+
+            for (int i = 0; i < count; i++)
+                _states[i].Read(readGraph);
 
             readGraph.EndArray();
         }
