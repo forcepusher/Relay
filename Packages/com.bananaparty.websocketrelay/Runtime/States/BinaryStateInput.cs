@@ -60,18 +60,63 @@ namespace BananaParty.WebSocketRelay
             StartArray(name);
             int count = ReadIntArrayEntry();
 
-            DynamicArraySync.ReadByKey(
-                count,
-                states,
-                factory,
-                entry => entry.ReadState(this),
-                CopyStateFrom,
-                factory.Dispose);
+            var incoming = new List<T>(count);
+            for (int i = 0; i < count; i++)
+            {
+                T staging = factory.Create(Guid.Empty);
+                staging.ReadState(this);
+                incoming.Add(staging);
+            }
+
+            var incomingKeys = new HashSet<Guid>();
+            foreach (T entry in incoming)
+                incomingKeys.Add(entry.StateKey.Value);
+
+            for (int i = states.Count - 1; i >= 0; i--)
+            {
+                if (incomingKeys.Contains(states[i].StateKey.Value))
+                    continue;
+
+                factory.Dispose(states[i]);
+                states.RemoveAt(i);
+            }
+
+            var next = new List<T>(incoming.Count);
+            foreach (T staging in incoming)
+            {
+                Guid entryKey = staging.StateKey.Value;
+                T existing = default;
+                foreach (T state in states)
+                {
+                    if (state.StateKey.Value != entryKey)
+                        continue;
+
+                    existing = state;
+                    break;
+                }
+
+                if (existing != null)
+                {
+                    CopyStateFrom(staging, existing);
+                    factory.Dispose(staging);
+                    next.Add(existing);
+                }
+                else
+                {
+                    T entry = factory.Create(entryKey);
+                    CopyStateFrom(staging, entry);
+                    factory.Dispose(staging);
+                    next.Add(entry);
+                }
+            }
+
+            states.Clear();
+            states.AddRange(next);
 
             EndArray();
         }
 
-        public void CopyStateFrom(IState source, IState target)
+        private void CopyStateFrom(IState source, IState target)
         {
             var output = new BinaryStateOutput();
             source.WriteState(output);
