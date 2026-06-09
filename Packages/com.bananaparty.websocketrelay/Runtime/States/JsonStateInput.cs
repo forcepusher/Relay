@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonStateInput : IReadGraph
+    public class JsonStateInput : IStateInput
     {
         private readonly string _jsonString;
         private int _position;

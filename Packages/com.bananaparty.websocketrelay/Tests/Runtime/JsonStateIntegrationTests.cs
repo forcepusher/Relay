@@ -95,7 +95,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public string Name => "MockGameState";
 
-            public void Write(IWriteGraph writeGraph)
+            public void Write(IStateOutput writeGraph)
             {
                 writeGraph.StartObject(Name);
                 _playTimeState.Write(writeGraph);
@@ -104,7 +104,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 writeGraph.EndObject();
             }
 
-            public void Read(IReadGraph readGraph)
+            public void Read(IStateInput readGraph)
             {
                 readGraph.StartObject(Name);
                 var pt = new IntegerValueState("PlayTime", 0);

@@ -16,12 +16,12 @@ namespace BananaParty.WebSocketRelay.Tests
                 Value = value;
             }
 
-            public void Write(IWriteGraph writeGraph)
+            public void Write(IStateOutput writeGraph)
             {
                 writeGraph.WriteEntry(Name, Value);
             }
 
-            public void Read(IReadGraph readGraph)
+            public void Read(IStateInput readGraph)
             {
                 Value = readGraph.ReadIntEntry(Name);
             }

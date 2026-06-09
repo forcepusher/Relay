@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
@@ -28,11 +29,14 @@ namespace BananaParty.WebSocketRelay.Samples
             JsonStateOutput jsonWriteGraph = new();
             Write(jsonWriteGraph);
             Debug.Log(jsonWriteGraph.ToString());
+
+
+            //ObjectState derp = new ObjectState("Derp", new List<IState> { _playTimeState });
         }
 
         public string Name => transform.name;
 
-        public void Write(IWriteGraph writeGraph)
+        public void Write(IStateOutput writeGraph)
         {
             writeGraph.StartObject(Name);
 
@@ -45,7 +49,7 @@ namespace BananaParty.WebSocketRelay.Samples
             writeGraph.EndObject();
         }
 
-        public void Read(IReadGraph readGraph)
+        public void Read(IStateInput readGraph)
         {
             readGraph.StartObject(Name);
 

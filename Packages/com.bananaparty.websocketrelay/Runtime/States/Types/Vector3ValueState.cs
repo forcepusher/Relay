@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
             Value = initialValue;
         }
 
-        public void Write(IWriteGraph writeGraph)
+        public void Write(IStateOutput writeGraph)
         {
             writeGraph.StartObject(Name);
             writeGraph.WriteEntry("x", Value.x);
@@ -22,7 +22,7 @@ namespace BananaParty.WebSocketRelay
             writeGraph.EndObject();
         }
 
-        public void Read(IReadGraph readGraph)
+        public void Read(IStateInput readGraph)
         {
             readGraph.StartObject(Name);
             Value = new Vector3(

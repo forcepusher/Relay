@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
             _states = states;
         }
 
-        public void Write(IWriteGraph writeGraph)
+        public void Write(IStateOutput writeGraph)
         {
             writeGraph.StartObject(Name);
 
@@ -23,7 +23,7 @@ namespace BananaParty.WebSocketRelay
             writeGraph.EndObject();
         }
 
-        public void Read(IReadGraph readGraph)
+        public void Read(IStateInput readGraph)
         {
             readGraph.StartObject(Name);
 

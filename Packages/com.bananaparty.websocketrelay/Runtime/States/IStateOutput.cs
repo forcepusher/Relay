@@ -1,6 +1,6 @@
 namespace BananaParty.WebSocketRelay
 {
-    public interface IWriteGraph
+    public interface IStateOutput
     {
         void StartObject(string name);
         void EndObject();

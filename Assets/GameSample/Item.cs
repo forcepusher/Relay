@@ -14,14 +14,14 @@ namespace BananaParty.WebSocketRelay.Samples
             set => _timeToDisappear.Value = value;
         }
         
-        public void Write(IWriteGraph writeGraph)
+        public void Write(IStateOutput writeGraph)
         {
             writeGraph.StartObject(Name);
             _timeToDisappear.Write(writeGraph);
             writeGraph.EndObject();
         }
 
-        public void Read(IReadGraph readGraph)
+        public void Read(IStateInput readGraph)
         {
             readGraph.StartObject(Name);
             _timeToDisappear.Read(readGraph);

@@ -9,14 +9,14 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public string Name => transform.name;
 
-        public void Write(IWriteGraph writeGraph)
+        public void Write(IStateOutput writeGraph)
         {
             writeGraph.StartObject(Name);
             _timeToSpawn.Write(writeGraph);
             writeGraph.EndObject();
         }
 
-        public void Read(IReadGraph readGraph)
+        public void Read(IStateInput readGraph)
         {
             readGraph.StartObject(Name);
             _timeToSpawn.Read(readGraph);

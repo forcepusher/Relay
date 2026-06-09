@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class JsonStateOutput : IWriteGraph
+    public class JsonStateOutput : IStateOutput
     {
         private readonly bool _prettyPrint;
         private readonly bool _bracesOnNewLine;
