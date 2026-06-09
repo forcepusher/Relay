@@ -50,7 +50,7 @@ namespace BananaParty.WebSocketRelay.Tests
             }
 
             // Act: Client A serializes and sends state
-            JsonWriteGraph writeGraph = new();
+            JsonStateOutput writeGraph = new();
             stateA.Write(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
@@ -70,7 +70,7 @@ namespace BananaParty.WebSocketRelay.Tests
             string receivedJson = Encoding.UTF8.GetString(receivedBytes);
 
             // Client B deserializes the state
-            JsonReadGraph readGraph = new JsonReadGraph(receivedJson);
+            JsonStateInput readGraph = new JsonStateInput(receivedJson);
             stateB.Read(readGraph);
 
             // Assert: Verify values were synchronized

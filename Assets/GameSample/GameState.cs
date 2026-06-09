@@ -25,7 +25,7 @@ namespace BananaParty.WebSocketRelay.Samples
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
             _itemsState = new(nameof(_itemsState), _items);
 
-            JsonWriteGraph jsonWriteGraph = new();
+            JsonStateOutput jsonWriteGraph = new();
             Write(jsonWriteGraph);
             Debug.Log(jsonWriteGraph.ToString());
         }

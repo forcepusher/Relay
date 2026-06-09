@@ -36,7 +36,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockValueState("Level", 5)
             };
             var root = new ObjectState("GameState", states);
-            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -53,7 +53,7 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockValueState("Level", 0)
             };
             var root = new ObjectState("GameState", states);
-            var graph = new JsonReadGraph("{\"GameState\":{\"Score\":10,\"Level\":5}}");
+            var graph = new JsonStateInput("{\"GameState\":{\"Score\":10,\"Level\":5}}");
 
             root.Read(graph);
 
@@ -80,7 +80,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             var rootStates = new List<IState> { player, bot };
             var root = new ObjectState("GameState", rootStates);
-            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -107,7 +107,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             var rootStates = new List<IState> { player, bot };
             var root = new ObjectState("GameState", rootStates);
-            var graph = new JsonReadGraph("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}");
+            var graph = new JsonStateInput("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}");
 
             root.Read(graph);
 
@@ -122,7 +122,7 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var states = new List<IState> { new MockValueState("X", 1) };
             var root = new ObjectState("Root", states);
-            var graph = new JsonWriteGraph(prettyPrint: true, bracesOnNewLine: true);
+            var graph = new JsonStateOutput(prettyPrint: true, bracesOnNewLine: true);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -144,7 +144,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<MockValueState>("Scores", scores)
             });
-            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -165,7 +165,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<MockValueState>("Scores", scores)
             });
-            var graph = new JsonReadGraph("{\"GameState\":{\"Scores\":[10,20,30]}}");
+            var graph = new JsonStateInput("{\"GameState\":{\"Scores\":[10,20,30]}}");
 
             root.Read(graph);
 
@@ -191,7 +191,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<ObjectState>("Players", new List<ObjectState> { playerOne, playerTwo })
             });
-            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -218,7 +218,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<ObjectState>("Players", new List<ObjectState> { playerOne, playerTwo })
             });
-            var graph = new JsonReadGraph("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
+            var graph = new JsonStateInput("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
 
             root.Read(graph);
 
@@ -245,7 +245,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<StaticArrayState<MockValueState>>("Grid", new List<StaticArrayState<MockValueState>> { rowOne, rowTwo })
             });
-            var graph = new JsonWriteGraph(prettyPrint: false, bracesOnNewLine: false);
+            var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             root.Write(graph);
             string json = graph.ToString();
@@ -272,7 +272,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 new StaticArrayState<StaticArrayState<MockValueState>>("Grid", new List<StaticArrayState<MockValueState>> { rowOne, rowTwo })
             });
-            var graph = new JsonReadGraph("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
+            var graph = new JsonStateInput("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
 
             root.Read(graph);
 

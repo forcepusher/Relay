@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class BinaryReadGraph : IReadGraph
+    public class BinaryStateInput : IReadGraph
     {
         private readonly byte[] _data;
         private int _pos;
@@ -13,7 +13,7 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public BinaryReadGraph(byte[] data)
+        public BinaryStateInput(byte[] data)
         {
             _data = data ?? Array.Empty<byte>();
         }
