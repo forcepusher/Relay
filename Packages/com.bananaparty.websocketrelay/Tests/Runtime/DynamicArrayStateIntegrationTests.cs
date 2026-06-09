@@ -40,7 +40,7 @@ namespace BananaParty.WebSocketRelay.Tests
         }
 
         [Test]
-        public void ShouldGrowDynamicArrayAndInvokeInstantiate()
+        public void ShouldGrowDynamicArrayAndInvokeCreate()
         {
             var source = new List<MockEntry>
             {
@@ -49,26 +49,19 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockEntry { Value = 30 }
             };
             var target = new List<MockEntry> { new MockEntry() };
-            int instantiateCount = 0;
+            var factory = new MockEntryFactory();
 
-            RoundTrip(
-                source,
-                target,
-                instantiate: () =>
-                {
-                    instantiateCount++;
-                    return new MockEntry();
-                });
+            RoundTrip(source, target, factory);
 
             Assert.AreEqual(3, target.Count);
-            Assert.AreEqual(2, instantiateCount);
+            Assert.AreEqual(2, factory.CreateCount);
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);
             Assert.AreEqual(30, target[2].Value);
         }
 
         [Test]
-        public void ShouldShrinkDynamicArrayAndInvokeDelete()
+        public void ShouldShrinkDynamicArrayAndInvokeDispose()
         {
             var source = new List<MockEntry> { new MockEntry { Value = 42 } };
             var target = new List<MockEntry>
@@ -79,27 +72,19 @@ namespace BananaParty.WebSocketRelay.Tests
             };
             MockEntry removedOne = target[1];
             MockEntry removedTwo = target[2];
-            int deleteCount = 0;
-            var deleted = new List<MockEntry>();
+            var factory = new MockEntryFactory();
 
-            RoundTrip(
-                source,
-                target,
-                delete: entry =>
-                {
-                    deleteCount++;
-                    deleted.Add(entry);
-                });
+            RoundTrip(source, target, factory);
 
             Assert.AreEqual(1, target.Count);
             Assert.AreEqual(42, target[0].Value);
-            Assert.AreEqual(2, deleteCount);
-            Assert.Contains(removedOne, deleted);
-            Assert.Contains(removedTwo, deleted);
+            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.Contains(removedOne, factory.Disposed);
+            Assert.Contains(removedTwo, factory.Disposed);
         }
 
         [Test]
-        public void ShouldUpdateExistingEntriesWithoutInstantiateOrDelete()
+        public void ShouldUpdateExistingEntriesWithoutCreateOrDispose()
         {
             var source = new List<MockEntry>
             {
@@ -111,28 +96,19 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockEntry { Value = 1 },
                 new MockEntry { Value = 2 }
             };
-            int instantiateCount = 0;
-            int deleteCount = 0;
+            var factory = new MockEntryFactory();
 
-            RoundTrip(
-                source,
-                target,
-                instantiate: () =>
-                {
-                    instantiateCount++;
-                    return new MockEntry();
-                },
-                delete: _ => deleteCount++);
+            RoundTrip(source, target, factory);
 
             Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(0, instantiateCount);
-            Assert.AreEqual(0, deleteCount);
+            Assert.AreEqual(0, factory.CreateCount);
+            Assert.AreEqual(0, factory.DisposeCount);
             Assert.AreEqual(100, target[0].Value);
             Assert.AreEqual(200, target[1].Value);
         }
 
         [Test]
-        public void ShouldShrinkWithoutDeleteCallback()
+        public void ShouldShrinkWithoutFactory()
         {
             var source = new List<MockEntry> { new MockEntry { Value = 7 } };
             var target = new List<MockEntry>
@@ -148,7 +124,7 @@ namespace BananaParty.WebSocketRelay.Tests
         }
 
         [Test]
-        public void ShouldThrowWhenGrowingWithoutInstantiateCallback()
+        public void ShouldThrowWhenGrowingWithoutFactory()
         {
             var target = new List<MockEntry>();
             var itemsState = new DynamicArrayState<MockEntry>("Items", target);
@@ -157,7 +133,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => root.ReadState(input));
 
-            Assert.That(exception.Message, Does.Contain("instantiate callback"));
+            Assert.That(exception.Message, Does.Contain("requires 2 entries"));
             Assert.AreEqual(0, target.Count);
         }
 
@@ -170,17 +146,10 @@ namespace BananaParty.WebSocketRelay.Tests
                 new MockEntry { Value = 9 }
             };
             var target = new List<MockEntry> { new MockEntry() };
-            int instantiateCount = 0;
+            var factory = new MockEntryFactory();
 
             var sourceState = new DynamicArrayState<MockEntry>("Items", source);
-            var targetState = new DynamicArrayState<MockEntry>(
-                "Items",
-                target,
-                () =>
-                {
-                    instantiateCount++;
-                    return new MockEntry();
-                });
+            var targetState = new DynamicArrayState<MockEntry>("Items", target, factory);
 
             var output = new BinaryStateOutput();
             new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
@@ -189,7 +158,7 @@ namespace BananaParty.WebSocketRelay.Tests
             new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(bytes));
 
             Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(1, instantiateCount);
+            Assert.AreEqual(1, factory.CreateCount);
             Assert.AreEqual(5, target[0].Value);
             Assert.AreEqual(9, target[1].Value);
         }
@@ -239,7 +208,7 @@ namespace BananaParty.WebSocketRelay.Tests
             stateB.ReadState(new JsonStateInput(Encoding.UTF8.GetString(socketB.ReadPayloadQueue())));
 
             Assert.AreEqual(2, stateB.Items.Count);
-            Assert.AreEqual(2, stateB.InstantiateCount);
+            Assert.AreEqual(2, stateB.CreateCount);
             Assert.AreEqual(10, stateB.Items[0].Value);
             Assert.AreEqual(20, stateB.Items[1].Value);
 
@@ -247,14 +216,20 @@ namespace BananaParty.WebSocketRelay.Tests
             UnityEngine.Object.DestroyImmediate(clientBObj);
         }
 
-        private static void RoundTrip(
-            List<MockEntry> source,
-            List<MockEntry> target,
-            Func<MockEntry> instantiate = null,
-            Action<MockEntry> delete = null)
+        private static void RoundTrip(List<MockEntry> source, List<MockEntry> target)
         {
             var sourceState = new DynamicArrayState<MockEntry>("Items", source);
-            var targetState = new DynamicArrayState<MockEntry>("Items", target, instantiate, delete);
+            var targetState = new DynamicArrayState<MockEntry>("Items", target);
+            var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
+
+            new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
+            new ObjectState("Root", new List<IState> { targetState }).ReadState(new JsonStateInput(output.ToString()));
+        }
+
+        private static void RoundTrip(List<MockEntry> source, List<MockEntry> target, IFactory<MockEntry> factory)
+        {
+            var sourceState = new DynamicArrayState<MockEntry>("Items", source);
+            var targetState = new DynamicArrayState<MockEntry>("Items", target, factory);
             var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
             new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
@@ -271,32 +246,50 @@ namespace BananaParty.WebSocketRelay.Tests
             public void ReadState(IStateInput stateInput) => Value = stateInput.ReadInt("Value");
         }
 
-        private class MockGameStateWithDynamicItems : MonoBehaviour, IState
+        private class MockEntryFactory : IFactory<MockEntry>
+        {
+            public int CreateCount { get; private set; }
+            public int DisposeCount { get; private set; }
+            public List<MockEntry> Disposed { get; } = new();
+
+            public MockEntry Create()
+            {
+                CreateCount++;
+                return new MockEntry();
+            }
+
+            public void Dispose(MockEntry entry)
+            {
+                DisposeCount++;
+                Disposed.Add(entry);
+            }
+        }
+
+        private class MockGameStateWithDynamicItems : MonoBehaviour, IState, IFactory<MockEntry>
         {
             private readonly List<MockEntry> _items = new();
             private DynamicArrayState<MockEntry> _itemsState;
             private List<IState> _states;
 
             public IReadOnlyList<MockEntry> Items => _items;
-            public int InstantiateCount { get; private set; }
-            public int DeleteCount { get; private set; }
+            public int CreateCount { get; private set; }
+            public int DisposeCount { get; private set; }
 
             public string StateName => "MockGameStateWithDynamicItems";
 
             private void Awake()
             {
-                _itemsState = new DynamicArrayState<MockEntry>(
-                    "Items",
-                    _items,
-                    () =>
-                    {
-                        InstantiateCount++;
-                        return new MockEntry();
-                    },
-                    _ => DeleteCount++);
-
+                _itemsState = new DynamicArrayState<MockEntry>("Items", _items, this);
                 _states = new List<IState> { _itemsState };
             }
+
+            public MockEntry Create()
+            {
+                CreateCount++;
+                return new MockEntry();
+            }
+
+            public void Dispose(MockEntry entry) => DisposeCount++;
 
             public void SetItems(params int[] values)
             {

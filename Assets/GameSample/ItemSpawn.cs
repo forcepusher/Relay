@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class ItemSpawn : MonoBehaviour, IState
+    public class ItemSpawn : MonoBehaviour, IState, IFactory<Item>
     {
         private const float RespawnDelay = 3f;
 
@@ -19,12 +19,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void Awake()
         {
-            _itemsState = new(
-                nameof(_itemsState),
-                _items,
-                () => Instantiate(_itemPrefab, transform),
-                item => Destroy(item.gameObject));
-            
+            _itemsState = new(nameof(_itemsState), _items, this);
             _states = new List<IState> { _timeToSpawn, _itemsState };
         }
 
@@ -34,19 +29,17 @@ namespace BananaParty.WebSocketRelay.Samples
                 _timeToSpawn.Value -= Time.deltaTime;
             else
             {
-                _items.Add(Object.Instantiate(_itemPrefab, transform));
+                _items.Add(Create());
                 _timeToSpawn.Value = RespawnDelay;
             }
         }
 
-        public void WriteState(IStateOutput stateOutput)
-        {
-            stateOutput.WriteObject(StateName, _states);
-        }
+        public Item Create() => Object.Instantiate(_itemPrefab, transform);
 
-        public void ReadState(IStateInput stateInput)
-        {
-            stateInput.ReadObject(StateName, _states);
-        }
+        public void Dispose(Item item) => Object.Destroy(item.gameObject);
+
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
+
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
@@ -7,21 +6,30 @@ namespace BananaParty.WebSocketRelay
     {
         public string StateName { get; }
         private readonly List<T> _states;
-        private readonly Func<T> _instantiate;
-        private readonly Action<T> _delete;
+        private readonly IFactory<T> _factory;
 
-        public DynamicArrayState(string name, List<T> states, Func<T> instantiate = null, Action<T> delete = null)
+        public DynamicArrayState(string name, List<T> states)
         {
             StateName = name;
             _states = states;
-            _instantiate = instantiate;
-            _delete = delete;
+        }
+
+        public DynamicArrayState(string name, List<T> states, IFactory<T> factory)
+        {
+            StateName = name;
+            _states = states;
+            _factory = factory;
         }
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteDynamicArray(StateName, ToStateList());
 
-        public void ReadState(IStateInput stateInput) =>
-            stateInput.ReadDynamicArray(StateName, _states, _instantiate, _delete);
+        public void ReadState(IStateInput stateInput)
+        {
+            if (_factory != null)
+                stateInput.ReadDynamicArray(StateName, _states, _factory);
+            else
+                stateInput.ReadDynamicArray(StateName, _states);
+        }
 
         private List<IState> ToStateList()
         {

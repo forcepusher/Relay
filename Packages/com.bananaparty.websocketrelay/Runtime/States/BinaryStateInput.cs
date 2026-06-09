@@ -38,7 +38,24 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
-        public void ReadDynamicArray<T>(string name, List<T> states, Func<T> instantiate = null, Action<T> delete = null) where T : IState
+        public void ReadDynamicArray<T>(string name, List<T> states) where T : IState
+        {
+            StartArray(name);
+            int count = ReadIntArrayEntry();
+
+            while (states.Count > count)
+                states.RemoveAt(states.Count - 1);
+
+            if (states.Count < count)
+                throw new InvalidOperationException($"Dynamic array '{name}' requires {count} entries but only {states.Count} exist.");
+
+            for (int i = 0; i < count; i++)
+                states[i].ReadState(this);
+
+            EndArray();
+        }
+
+        public void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IState
         {
             StartArray(name);
             int count = ReadIntArrayEntry();
@@ -47,16 +64,11 @@ namespace BananaParty.WebSocketRelay
             {
                 T removed = states[states.Count - 1];
                 states.RemoveAt(states.Count - 1);
-                delete?.Invoke(removed);
+                factory.Dispose(removed);
             }
 
             while (states.Count < count)
-            {
-                if (instantiate == null)
-                    throw new InvalidOperationException($"Dynamic array '{name}' requires {count} entries but only {states.Count} exist and no instantiate callback was provided.");
-
-                states.Add(instantiate());
-            }
+                states.Add(factory.Create());
 
             for (int i = 0; i < count; i++)
                 states[i].ReadState(this);
