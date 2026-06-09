@@ -5,8 +5,8 @@ namespace BananaParty.WebSocketRelay
     public interface IStateOutput
     {
         void WriteObject(string name, List<IState> states);
-        void WriteArray(string name, List<IState> states);
-        void WriteCountedArray(string name, List<IState> states);
+        void WriteStaticArray(string name, List<IState> states);
+        void WriteDynamicArray(string name, List<IState> states);
         void WriteInt(string name, int value);
         void WriteFloat(string name, float value);
         void WriteBool(string name, bool value);

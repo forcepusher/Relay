@@ -34,7 +34,7 @@ namespace BananaParty.WebSocketRelay
             EndObject();
         }
 
-        public void WriteArray(string name, List<IState> states)
+        public void WriteStaticArray(string name, List<IState> states)
         {
             StartArray(name);
 
@@ -44,7 +44,7 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
-        public void WriteCountedArray(string name, List<IState> states)
+        public void WriteDynamicArray(string name, List<IState> states)
         {
             StartArray(name);
             WriteEntry(states.Count);

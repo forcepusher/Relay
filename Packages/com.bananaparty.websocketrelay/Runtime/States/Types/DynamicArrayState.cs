@@ -13,9 +13,9 @@ namespace BananaParty.WebSocketRelay
             _states = states;
         }
 
-        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteCountedArray(StateName, ToStateList());
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteDynamicArray(StateName, ToStateList());
 
-        public void ReadState(IStateInput stateInput) => stateInput.ReadCountedArray(StateName, ToStateList());
+        public void ReadState(IStateInput stateInput) => stateInput.ReadDynamicArray(StateName, ToStateList());
 
         private List<IState> ToStateList()
         {

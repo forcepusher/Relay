@@ -26,7 +26,7 @@ namespace BananaParty.WebSocketRelay
             EndObject();
         }
 
-        public void ReadArray(string name, List<IState> states)
+        public void ReadStaticArray(string name, List<IState> states)
         {
             StartArray(name);
 
@@ -36,7 +36,7 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
-        public void ReadCountedArray(string name, List<IState> states)
+        public void ReadDynamicArray(string name, List<IState> states)
         {
             StartArray(name);
             int count = ReadIntArrayEntry();
