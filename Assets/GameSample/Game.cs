@@ -17,31 +17,19 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private IntegerState _playTimeState = new(nameof(_playTimeState), 0);
 
-        [SerializeField]
-        private Item _itemPrefab;
-
-        private List<Item> _items = new List<Item>();
-        private DynamicArrayState<Item> _itemsState;
-        private Journal<Item> _itemsJournal;
-
         private List<IState> _states;
 
         private void Awake()
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
-            _itemsState = new(nameof(_itemsState), _items, new ItemLifecycle(this));
 
             _states = new List<IState>
             {
                 _playTimeState,
                 _playerCharacterState,
                 _botCharacterState,
-                _itemSpawnsState,
-                _itemsState
+                _itemSpawnsState
             };
-
-            _itemsJournal = new Journal<Item>(_items);
-            _itemsJournal.Snapshot();
 
             JsonStateOutput jsonStateOutput = new();
             WriteState(jsonStateOutput);
@@ -58,19 +46,6 @@ namespace BananaParty.WebSocketRelay.Samples
         public void ReadState(IStateInput readGraph)
         {
             readGraph.ReadObject(StateName, _states);
-
-            _itemsJournal.Snapshot();
-        }
-
-        private sealed class ItemLifecycle : IDynamicArrayLifecycle<Item>
-        {
-            private readonly Game _game;
-
-            public ItemLifecycle(Game game) => _game = game;
-
-            public Item Create() => Object.Instantiate(_game._itemPrefab, _game.transform);
-
-            public void Delete(Item item) => Object.Destroy(item.gameObject);
         }
     }
 }
