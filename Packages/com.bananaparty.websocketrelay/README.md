@@ -11,6 +11,7 @@ See minimum required Unity version in the `package.json` file.
 ---
   
 Networking as simple as it gets (for programmers though).  
+The goal is to provide bare minimum to get things done.  
   
 Key priorities:  
 1. Developer Experience - JSON data stream for developing. Binary for shipping (JSON debug output on demand).
