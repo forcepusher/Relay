@@ -29,11 +29,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private void Awake()
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
-            _itemsState = new(
-                nameof(_itemsState),
-                _items,
-                () => Instantiate(_itemPrefab, transform),
-                item => Destroy(item.gameObject));
+            _itemsState = new(nameof(_itemsState), _items, new ItemLifecycle(this));
 
             _states = new List<IState>
             {
@@ -64,6 +60,17 @@ namespace BananaParty.WebSocketRelay.Samples
             readGraph.ReadObject(StateName, _states);
 
             _itemsJournal.Snapshot();
+        }
+
+        private sealed class ItemLifecycle : IDynamicArrayLifecycle<Item>
+        {
+            private readonly Game _game;
+
+            public ItemLifecycle(Game game) => _game = game;
+
+            public Item Create() => Object.Instantiate(_game._itemPrefab, _game.transform);
+
+            public void Delete(Item item) => Object.Destroy(item.gameObject);
         }
     }
 }
