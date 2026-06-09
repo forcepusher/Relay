@@ -29,7 +29,11 @@ namespace BananaParty.WebSocketRelay.Samples
         private void Awake()
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
-            _itemsState = new(nameof(_itemsState), _items);
+            _itemsState = new(
+                nameof(_itemsState),
+                _items,
+                () => Instantiate(_itemPrefab, transform),
+                item => Destroy(item.gameObject));
 
             _states = new List<IState>
             {
