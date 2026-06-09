@@ -1,31 +1,24 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class Item : MonoBehaviour, IState
+    public class Item : MonoBehaviour, IKeyedState
     {
-        private FloatValueState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
+        public GuidState StateKey { get; } = new(nameof(StateKey), Guid.Empty);
+        public readonly FloatState TimeToDisappear = new(nameof(TimeToDisappear), 5f);
+        private List<IState> _states;
 
-        public string Name => transform.name;
+        public string StateName => transform.name;
 
-        public float TimeToDisappear
+        private void Awake()
         {
-            get => _timeToDisappear.Value;
-            set => _timeToDisappear.Value = value;
-        }
-        
-        public void Write(IWriteGraph writeGraph)
-        {
-            writeGraph.StartObject(Name);
-            _timeToDisappear.Write(writeGraph);
-            writeGraph.EndObject();
+            _states = new List<IState> { StateKey, TimeToDisappear };
         }
 
-        public void Read(IReadGraph readGraph)
-        {
-            readGraph.StartObject(Name);
-            _timeToDisappear.Read(readGraph);
-            readGraph.EndObject();
-        }
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
+
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
     }
 }

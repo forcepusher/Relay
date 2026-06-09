@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using BananaParty.WebSocketRelay;
 
-namespace BananaParty.WebSocketRelay.Tests.Runtime
+namespace BananaParty.WebSocketRelay.Tests
 {
     public class SocketDisposalTests
     {

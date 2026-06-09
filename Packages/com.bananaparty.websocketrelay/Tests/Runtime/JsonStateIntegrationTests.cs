@@ -50,8 +50,8 @@ namespace BananaParty.WebSocketRelay.Tests
             }
 
             // Act: Client A serializes and sends state
-            JsonWriteGraph writeGraph = new();
-            stateA.Write(writeGraph);
+            JsonStateOutput writeGraph = new();
+            stateA.WriteState(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
 
@@ -70,8 +70,8 @@ namespace BananaParty.WebSocketRelay.Tests
             string receivedJson = Encoding.UTF8.GetString(receivedBytes);
 
             // Client B deserializes the state
-            JsonReadGraph readGraph = new JsonReadGraph(receivedJson);
-            stateB.Read(readGraph);
+            JsonStateInput readGraph = new JsonStateInput(receivedJson);
+            stateB.ReadState(readGraph);
 
             // Assert: Verify values were synchronized
             Assert.AreEqual(stateA.PlayTime, stateB.PlayTime, "PlayTime should be synchronized");
@@ -85,42 +85,41 @@ namespace BananaParty.WebSocketRelay.Tests
 
         private class MockGameState : MonoBehaviour, IState
         {
-            public int PlayTime { get; set; }
-            public float Health { get; set; }
-            public Vector3 Position { get; set; }
+            private IntegerState _playTimeState = new("PlayTime", 0);
+            private FloatState _healthState = new("Health", 0f);
+            private Vector3State _positionState = new("Position", Vector3.zero);
+            private List<IState> _states;
 
-            private IntegerValueState _playTimeState => new("PlayTime", PlayTime);
-            private FloatValueState _healthState => new("Health", Health);
-            private Vector3ValueState _positionState => new("Position", Position);
-
-            public string Name => "MockGameState";
-
-            public void Write(IWriteGraph writeGraph)
+            private List<IState> StatesList => _states ??= new List<IState>
             {
-                writeGraph.StartObject(Name);
-                _playTimeState.Write(writeGraph);
-                _healthState.Write(writeGraph);
-                _positionState.Write(writeGraph);
-                writeGraph.EndObject();
+                _playTimeState,
+                _healthState,
+                _positionState
+            };
+
+            public int PlayTime
+            {
+                get => _playTimeState.Value;
+                set => _playTimeState.Value = value;
             }
 
-            public void Read(IReadGraph readGraph)
+            public float Health
             {
-                readGraph.StartObject(Name);
-                var pt = new IntegerValueState("PlayTime", 0);
-                pt.Read(readGraph);
-                PlayTime = pt.Value;
-
-                var h = new FloatValueState("Health", 0f);
-                h.Read(readGraph);
-                Health = h.Value;
-
-                var p = new Vector3ValueState("Position", Vector3.zero);
-                p.Read(readGraph);
-                Position = p.Value;
-
-                readGraph.EndObject();
+                get => _healthState.Value;
+                set => _healthState.Value = value;
             }
+
+            public Vector3 Position
+            {
+                get => _positionState.Value;
+                set => _positionState.Value = value;
+            }
+
+            public string StateName => "MockGameState";
+
+            public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, StatesList);
+
+            public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, StatesList);
         }
     }
 }
