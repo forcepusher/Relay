@@ -68,47 +68,31 @@ namespace BananaParty.WebSocketRelay
                 incoming.Add(staging);
             }
 
-            var incomingKeys = new HashSet<Guid>();
-            foreach (T entry in incoming)
-                incomingKeys.Add(entry.StateKey.Value);
-
-            for (int i = states.Count - 1; i >= 0; i--)
-            {
-                if (incomingKeys.Contains(states[i].StateKey.Value))
-                    continue;
-
-                factory.Dispose(states[i]);
-                states.RemoveAt(i);
-            }
+            var stateMap = new Dictionary<Guid, T>();
+            foreach (T state in states)
+                stateMap[state.StateKey.Value] = state;
 
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid entryKey = staging.StateKey.Value;
-                T existing = default;
-                foreach (T state in states)
-                {
-                    if (state.StateKey.Value != entryKey)
-                        continue;
-
-                    existing = state;
-                    break;
-                }
-
-                if (existing != null)
+                Guid key = staging.StateKey.Value;
+                if (stateMap.TryGetValue(key, out T existing))
                 {
                     CopyStateFrom(staging, existing);
-                    factory.Dispose(staging);
                     next.Add(existing);
+                    stateMap.Remove(key);
                 }
                 else
                 {
-                    T entry = factory.Create(entryKey);
+                    T entry = factory.Create(key);
                     CopyStateFrom(staging, entry);
-                    factory.Dispose(staging);
                     next.Add(entry);
                 }
+                factory.Dispose(staging);
             }
+
+            foreach (T orphaned in stateMap.Values)
+                factory.Dispose(orphaned);
 
             states.Clear();
             states.AddRange(next);
