@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
@@ -6,21 +7,17 @@ namespace BananaParty.WebSocketRelay.Samples
     {
         private const float RespawnDelay = 10f;
         private FloatValueState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
+        private List<IState> _states;
 
         public string StateName => transform.name;
 
-        public void WriteState(IStateOutput writeGraph)
+        private void Awake()
         {
-            writeGraph.StartObject(StateName);
-            _timeToSpawn.WriteState(writeGraph);
-            writeGraph.EndObject();
+            _states = new List<IState> { _timeToSpawn };
         }
 
-        public void ReadState(IStateInput readGraph)
-        {
-            readGraph.StartObject(StateName);
-            _timeToSpawn.ReadState(readGraph);
-            readGraph.EndObject();
-        }
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
+
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
     }
 }

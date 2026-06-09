@@ -18,7 +18,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public void WriteState(IStateOutput writeGraph)
             {
-                writeGraph.WriteEntry(StateName, Value);
+                writeGraph.WriteInt(StateName, Value);
             }
 
             public void ReadState(IStateInput readGraph)

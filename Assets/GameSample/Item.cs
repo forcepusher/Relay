@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
@@ -5,6 +6,7 @@ namespace BananaParty.WebSocketRelay.Samples
     public class Item : MonoBehaviour, IState
     {
         private FloatValueState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
+        private List<IState> _states;
 
         public string StateName => transform.name;
 
@@ -13,19 +15,14 @@ namespace BananaParty.WebSocketRelay.Samples
             get => _timeToDisappear.Value;
             set => _timeToDisappear.Value = value;
         }
-        
-        public void WriteState(IStateOutput writeGraph)
+
+        private void Awake()
         {
-            writeGraph.StartObject(StateName);
-            _timeToDisappear.WriteState(writeGraph);
-            writeGraph.EndObject();
+            _states = new List<IState> { _timeToDisappear };
         }
 
-        public void ReadState(IStateInput readGraph)
-        {
-            readGraph.StartObject(StateName);
-            _timeToDisappear.ReadState(readGraph);
-            readGraph.EndObject();
-        }
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
+
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
     }
 }

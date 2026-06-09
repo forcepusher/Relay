@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 
 namespace BananaParty.WebSocketRelay
 {
@@ -7,6 +6,7 @@ namespace BananaParty.WebSocketRelay
     {
         void ReadObject(string name, List<IState> states);
         void ReadArray(string name, List<IState> states);
+        void ReadCountedArray(string name, List<IState> states);
         string ReadString(string name);
         int ReadInt(string name);
         float ReadFloat(string name);

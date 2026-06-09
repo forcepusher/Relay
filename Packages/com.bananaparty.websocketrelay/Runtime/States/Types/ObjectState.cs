@@ -13,24 +13,8 @@ namespace BananaParty.WebSocketRelay
             _states = states;
         }
 
-        public void WriteState(IStateOutput writeGraph)
-        {
-            writeGraph.StartObject(StateName);
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
 
-            foreach (IState state in _states)
-                state.WriteState(writeGraph);
-
-            writeGraph.EndObject();
-        }
-
-        public void ReadState(IStateInput readGraph)
-        {
-            readGraph.StartObject(StateName);
-
-            foreach (IState state in _states)
-                state.ReadState(readGraph);
-
-            readGraph.EndObject();
-        }
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
     }
 }

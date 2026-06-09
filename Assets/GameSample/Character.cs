@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,18 +16,24 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private FloatValueState _health = new(nameof(_health), 100f);
         private Vector3ValueState _position = new(nameof(_position), Vector3.zero);
+        private List<IState> _states;
 
         public string StateName => transform.name;
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            _states = new List<IState> { _health, _position };
         }
 
         private void Update()
         {
             Move();
         }
+
+        public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
+
+        public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, _states);
 
         private void Move()
         {
@@ -65,22 +72,6 @@ namespace BananaParty.WebSocketRelay.Samples
             }
 
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
-        }
-
-        public void WriteState(IStateOutput writeGraph)
-        {
-            writeGraph.StartObject(StateName);
-            _health.WriteState(writeGraph);
-            _position.WriteState(writeGraph);
-            writeGraph.EndObject();
-        }
-
-        public void ReadState(IStateInput readGraph)
-        {
-            readGraph.StartObject(StateName);
-            _health.ReadState(readGraph);
-            _position.ReadState(readGraph);
-            readGraph.EndObject();
         }
     }
 }

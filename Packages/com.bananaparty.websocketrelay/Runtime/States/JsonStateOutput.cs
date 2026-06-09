@@ -24,29 +24,44 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _closers.Count > 0 && _closers.Peek() == ']';
 
-        public void StartObject(string name) => StartContainer('{', '}', name);
+        public void WriteObject(string name, List<IState> states)
+        {
+            StartObject(name);
 
-        public void StartArray(string name) => StartContainer('[', ']', name);
+            foreach (IState state in states)
+                state.WriteState(this);
 
-        public void WriteEntry(string name, int value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+            EndObject();
+        }
 
-        public void WriteEntry(string name, float value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+        public void WriteArray(string name, List<IState> states)
+        {
+            StartArray(name);
 
-        public void WriteEntry(string name, bool value) => WritePrimitiveEntry(name, value ? "true" : "false", false);
+            foreach (IState state in states)
+                state.WriteState(this);
 
-        public void WriteEntry(string name, string value) => WritePrimitiveEntry(name, value ?? string.Empty, true);
+            EndArray();
+        }
 
-        public void WriteEntry(int value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
+        public void WriteCountedArray(string name, List<IState> states)
+        {
+            StartArray(name);
+            WriteEntry(states.Count);
 
-        public void WriteEntry(float value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
+            foreach (IState state in states)
+                state.WriteState(this);
 
-        public void WriteEntry(bool value) => WritePrimitiveEntry(null, value ? "true" : "false", false);
+            EndArray();
+        }
 
-        public void WriteArrayEntry(string value) => WritePrimitiveEntry(null, value ?? string.Empty, true);
+        public void WriteInt(string name, int value) => WriteEntry(name, value);
 
-        public void EndObject() => EndContainer('}');
+        public void WriteFloat(string name, float value) => WriteEntry(name, value);
 
-        public void EndArray() => EndContainer(']');
+        public void WriteBool(string name, bool value) => WriteEntry(name, value);
+
+        public void WriteString(string name, string value) => WriteEntry(name, value);
 
         public override string ToString()
         {
@@ -73,6 +88,24 @@ namespace BananaParty.WebSocketRelay
             }
             return result.ToString();
         }
+
+        private void StartObject(string name) => StartContainer('{', '}', name);
+
+        private void StartArray(string name) => StartContainer('[', ']', name);
+
+        private void WriteEntry(string name, int value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+
+        private void WriteEntry(string name, float value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+
+        private void WriteEntry(string name, bool value) => WritePrimitiveEntry(name, value ? "true" : "false", false);
+
+        private void WriteEntry(string name, string value) => WritePrimitiveEntry(name, value ?? string.Empty, true);
+
+        private void WriteEntry(int value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
+
+        private void EndObject() => EndContainer('}');
+
+        private void EndArray() => EndContainer(']');
 
         private void WritePrimitiveEntry(string name, string serializedValue, bool quoteValue)
         {

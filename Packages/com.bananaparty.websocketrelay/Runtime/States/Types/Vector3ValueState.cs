@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BananaParty.WebSocketRelay
@@ -7,29 +8,41 @@ namespace BananaParty.WebSocketRelay
         public string StateName { get; private set; }
         public Vector3 Value { get; set; }
 
+        private readonly FloatValueState _x = new("x", 0f);
+        private readonly FloatValueState _y = new("y", 0f);
+        private readonly FloatValueState _z = new("z", 0f);
+        private readonly List<IState> _components;
+
         public Vector3ValueState(string name, Vector3 initialValue)
         {
             StateName = name;
             Value = initialValue;
+            _components = new List<IState> { _x, _y, _z };
+            SyncComponentsFromValue();
         }
 
-        public void WriteState(IStateOutput writeGraph)
+        public void WriteState(IStateOutput stateOutput)
         {
-            writeGraph.StartObject(StateName);
-            writeGraph.WriteEntry("x", Value.x);
-            writeGraph.WriteEntry("y", Value.y);
-            writeGraph.WriteEntry("z", Value.z);
-            writeGraph.EndObject();
+            SyncComponentsFromValue();
+            stateOutput.WriteObject(StateName, _components);
         }
 
-        public void ReadState(IStateInput readGraph)
+        public void ReadState(IStateInput stateInput)
         {
-            readGraph.StartObject(StateName);
-            Value = new Vector3(
-                readGraph.ReadFloat("x"),
-                readGraph.ReadFloat("y"),
-                readGraph.ReadFloat("z"));
-            readGraph.EndObject();
+            stateInput.ReadObject(StateName, _components);
+            SyncValueFromComponents();
+        }
+
+        private void SyncComponentsFromValue()
+        {
+            _x.Value = Value.x;
+            _y.Value = Value.y;
+            _z.Value = Value.z;
+        }
+
+        private void SyncValueFromComponents()
+        {
+            Value = new Vector3(_x.Value, _y.Value, _z.Value);
         }
     }
 }

@@ -11,49 +11,90 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public void StartObject(string name)
+        public void WriteObject(string name, List<IState> states)
+        {
+            StartObject(name);
+
+            foreach (IState state in states)
+                state.WriteState(this);
+
+            EndObject();
+        }
+
+        public void WriteArray(string name, List<IState> states)
+        {
+            StartArray(name);
+
+            foreach (IState state in states)
+                state.WriteState(this);
+
+            EndArray();
+        }
+
+        public void WriteCountedArray(string name, List<IState> states)
+        {
+            StartArray(name);
+            WriteEntry(states.Count);
+
+            foreach (IState state in states)
+                state.WriteState(this);
+
+            EndArray();
+        }
+
+        public void WriteInt(string name, int value) => WriteEntry(name, value);
+
+        public void WriteFloat(string name, float value) => WriteEntry(name, value);
+
+        public void WriteBool(string name, bool value) => WriteEntry(name, value);
+
+        public void WriteString(string name, string value) => WriteEntry(name, value);
+
+        public byte[] ToArray() => _buffer.ToArray();
+
+        private void StartObject(string name)
         {
             WriteNameHash(name);
             _inArrayStack.Push(false);
         }
 
-        public void EndObject()
+        private void EndObject()
         {
             if (_inArrayStack.Count > 0)
                 _inArrayStack.Pop();
         }
 
-        public void StartArray(string name)
+        private void StartArray(string name)
         {
             WriteNameHash(name);
             _inArrayStack.Push(true);
         }
 
-        public void EndArray()
+        private void EndArray()
         {
             if (_inArrayStack.Count > 0)
                 _inArrayStack.Pop();
         }
 
-        public void WriteEntry(string name, int value)
+        private void WriteEntry(string name, int value)
         {
             WriteNameHash(InArray ? null : name);
             _buffer.AddRange(BitConverter.GetBytes(value));
         }
 
-        public void WriteEntry(string name, float value)
+        private void WriteEntry(string name, float value)
         {
             WriteNameHash(InArray ? null : name);
             _buffer.AddRange(BitConverter.GetBytes(value));
         }
 
-        public void WriteEntry(string name, bool value)
+        private void WriteEntry(string name, bool value)
         {
             WriteNameHash(InArray ? null : name);
             _buffer.Add(value ? (byte)1 : (byte)0);
         }
 
-        public void WriteEntry(string name, string value)
+        private void WriteEntry(string name, string value)
         {
             WriteNameHash(InArray ? null : name);
             byte[] stringBytes = Encoding.UTF8.GetBytes(value ?? string.Empty);
@@ -61,27 +102,11 @@ namespace BananaParty.WebSocketRelay
             _buffer.AddRange(stringBytes);
         }
 
-        public void WriteEntry(int value)
+        private void WriteEntry(int value)
         {
             WriteNameHash(null);
             _buffer.AddRange(BitConverter.GetBytes(value));
         }
-
-        public void WriteEntry(float value)
-        {
-            WriteNameHash(null);
-            _buffer.AddRange(BitConverter.GetBytes(value));
-        }
-
-        public void WriteEntry(bool value)
-        {
-            WriteNameHash(null);
-            _buffer.Add(value ? (byte)1 : (byte)0);
-        }
-
-        public void WriteArrayEntry(string value) => WriteEntry(null, value);
-
-        public byte[] ToArray() => _buffer.ToArray();
 
         private void WriteNameHash(string name)
         {

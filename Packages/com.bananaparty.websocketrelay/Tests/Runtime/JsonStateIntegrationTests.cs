@@ -85,42 +85,41 @@ namespace BananaParty.WebSocketRelay.Tests
 
         private class MockGameState : MonoBehaviour, IState
         {
-            public int PlayTime { get; set; }
-            public float Health { get; set; }
-            public Vector3 Position { get; set; }
+            private IntegerValueState _playTimeState = new("PlayTime", 0);
+            private FloatValueState _healthState = new("Health", 0f);
+            private Vector3ValueState _positionState = new("Position", Vector3.zero);
+            private List<IState> _states;
 
-            private IntegerValueState _playTimeState => new("PlayTime", PlayTime);
-            private FloatValueState _healthState => new("Health", Health);
-            private Vector3ValueState _positionState => new("Position", Position);
+            private List<IState> StatesList => _states ??= new List<IState>
+            {
+                _playTimeState,
+                _healthState,
+                _positionState
+            };
+
+            public int PlayTime
+            {
+                get => _playTimeState.Value;
+                set => _playTimeState.Value = value;
+            }
+
+            public float Health
+            {
+                get => _healthState.Value;
+                set => _healthState.Value = value;
+            }
+
+            public Vector3 Position
+            {
+                get => _positionState.Value;
+                set => _positionState.Value = value;
+            }
 
             public string StateName => "MockGameState";
 
-            public void WriteState(IStateOutput writeGraph)
-            {
-                writeGraph.StartObject(StateName);
-                _playTimeState.WriteState(writeGraph);
-                _healthState.WriteState(writeGraph);
-                _positionState.WriteState(writeGraph);
-                writeGraph.EndObject();
-            }
+            public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, StatesList);
 
-            public void ReadState(IStateInput readGraph)
-            {
-                readGraph.StartObject(StateName);
-                var pt = new IntegerValueState("PlayTime", 0);
-                pt.ReadState(readGraph);
-                PlayTime = pt.Value;
-
-                var h = new FloatValueState("Health", 0f);
-                h.ReadState(readGraph);
-                Health = h.Value;
-
-                var p = new Vector3ValueState("Position", Vector3.zero);
-                p.ReadState(readGraph);
-                Position = p.Value;
-
-                readGraph.EndObject();
-            }
+            public void ReadState(IStateInput stateInput) => stateInput.ReadObject(StateName, StatesList);
         }
     }
 }

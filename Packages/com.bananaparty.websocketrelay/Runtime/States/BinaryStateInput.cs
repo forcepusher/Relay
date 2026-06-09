@@ -18,34 +18,44 @@ namespace BananaParty.WebSocketRelay
             _data = data ?? Array.Empty<byte>();
         }
 
-        public void StartObject(string name)
+        public void ReadObject(string name, List<IState> states)
         {
-            VerifyNameHash(name);
-            _inArrayStack.Push(false);
+            StartObject(name);
+
+            foreach (IState state in states)
+                state.ReadState(this);
+
+            EndObject();
         }
 
-        public void EndObject()
+        public void ReadArray(string name, List<IState> states)
         {
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
+            StartArray(name);
+
+            foreach (IState state in states)
+                state.ReadState(this);
+
+            EndArray();
         }
 
-        public void StartArray(string name)
+        public void ReadCountedArray(string name, List<IState> states)
         {
-            VerifyNameHash(name);
-            _inArrayStack.Push(true);
-        }
+            StartArray(name);
+            int count = ReadIntArrayEntry();
 
-        public void EndArray()
-        {
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
+            while (states.Count > count)
+                states.RemoveAt(states.Count - 1);
+
+            for (int i = 0; i < count; i++)
+                states[i].ReadState(this);
+
+            EndArray();
         }
 
         public string ReadString(string name)
         {
             VerifyEntryName(name);
-            return ReadInt32().ToString();
+            return ReadStringValue();
         }
 
         public int ReadInt(string name)
@@ -63,37 +73,37 @@ namespace BananaParty.WebSocketRelay
         public bool ReadBool(string name)
         {
             VerifyEntryName(name);
-            return ReadBool();
+            return ReadBoolValue();
         }
 
-        public string ReadStringEntry(string name)
+        private void StartObject(string name)
         {
-            VerifyEntryName(name);
-            return ReadString();
+            VerifyNameHash(name);
+            _inArrayStack.Push(false);
         }
 
-        public int ReadIntArrayEntry()
+        private void EndObject()
+        {
+            if (_inArrayStack.Count > 0)
+                _inArrayStack.Pop();
+        }
+
+        private void StartArray(string name)
+        {
+            VerifyNameHash(name);
+            _inArrayStack.Push(true);
+        }
+
+        private void EndArray()
+        {
+            if (_inArrayStack.Count > 0)
+                _inArrayStack.Pop();
+        }
+
+        private int ReadIntArrayEntry()
         {
             VerifyEntryName(null);
             return ReadInt32();
-        }
-
-        public float ReadFloatArrayEntry()
-        {
-            VerifyEntryName(null);
-            return ReadFloat32();
-        }
-
-        public bool ReadBoolArrayEntry()
-        {
-            VerifyEntryName(null);
-            return ReadBool();
-        }
-
-        public string ReadStringArrayEntry()
-        {
-            VerifyEntryName(null);
-            return ReadString();
         }
 
         private void VerifyEntryName(string expectedName)
@@ -143,7 +153,7 @@ namespace BananaParty.WebSocketRelay
             return value;
         }
 
-        private bool ReadBool()
+        private bool ReadBoolValue()
         {
             if (_pos >= _data.Length)
                 return false;
@@ -151,7 +161,7 @@ namespace BananaParty.WebSocketRelay
             return _data[_pos++] != 0;
         }
 
-        private string ReadString()
+        private string ReadStringValue()
         {
             if (_pos + 2 > _data.Length)
                 return null;

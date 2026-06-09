@@ -16,36 +16,47 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public void StartObject(string name)
+        public void ReadObject(string name, List<IState> states)
         {
-            AdvanceIntoContainer('{', name);
-            _inArrayStack.Push(false);
+            StartObject(name);
+
+            foreach (IState state in states)
+                state.ReadState(this);
+
+            EndObject();
         }
 
-        public void EndObject()
+        public void ReadArray(string name, List<IState> states)
         {
-            ReadContainerClose('}');
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
+            StartArray(name);
+
+            foreach (IState state in states)
+                state.ReadState(this);
+
+            EndArray();
         }
 
-        public void StartArray(string name)
+        public void ReadCountedArray(string name, List<IState> states)
         {
-            AdvanceIntoContainer('[', name);
-            _inArrayStack.Push(true);
-        }
+            StartArray(name);
+            int count = ReadIntArrayEntry();
 
-        public void EndArray()
-        {
-            ReadContainerClose(']');
-            if (_inArrayStack.Count > 0)
-                _inArrayStack.Pop();
+            while (states.Count > count)
+                states.RemoveAt(states.Count - 1);
+
+            for (int i = 0; i < count; i++)
+                states[i].ReadState(this);
+
+            EndArray();
         }
 
         public string ReadString(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return null;
+
+            if (_position < _jsonString.Length && _jsonString[_position] == '"')
+                return ReadQuotedString();
 
             return ReadValueAsString();
         }
@@ -74,44 +85,38 @@ namespace BananaParty.WebSocketRelay
             return ReadBoolAtPosition();
         }
 
-        public string ReadStringEntry(string name)
+        private void StartObject(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return null;
-
-            return ReadStringAtPosition();
+            AdvanceIntoContainer('{', name);
+            _inArrayStack.Push(false);
         }
 
-        public int ReadIntArrayEntry()
+        private void EndObject()
+        {
+            ReadContainerClose('}');
+            if (_inArrayStack.Count > 0)
+                _inArrayStack.Pop();
+        }
+
+        private void StartArray(string name)
+        {
+            AdvanceIntoContainer('[', name);
+            _inArrayStack.Push(true);
+        }
+
+        private void EndArray()
+        {
+            ReadContainerClose(']');
+            if (_inArrayStack.Count > 0)
+                _inArrayStack.Pop();
+        }
+
+        private int ReadIntArrayEntry()
         {
             if (!TryAdvanceToEntry(null))
                 return 0;
 
             return ReadIntAtPosition();
-        }
-
-        public float ReadFloatArrayEntry()
-        {
-            if (!TryAdvanceToEntry(null))
-                return 0f;
-
-            return ReadFloatAtPosition();
-        }
-
-        public bool ReadBoolArrayEntry()
-        {
-            if (!TryAdvanceToEntry(null))
-                return false;
-
-            return ReadBoolAtPosition();
-        }
-
-        public string ReadStringArrayEntry()
-        {
-            if (!TryAdvanceToEntry(null))
-                return null;
-
-            return ReadStringAtPosition();
         }
 
         private void AdvanceIntoContainer(char open, string name)
@@ -231,14 +236,6 @@ namespace BananaParty.WebSocketRelay
                 return false;
 
             return result;
-        }
-
-        private string ReadStringAtPosition()
-        {
-            if (_position < _jsonString.Length && _jsonString[_position] == '"')
-                return ReadQuotedString();
-
-            return ReadValueAsString();
         }
 
         private void SkipWhitespace()
