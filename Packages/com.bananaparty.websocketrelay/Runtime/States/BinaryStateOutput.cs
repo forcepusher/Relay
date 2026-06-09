@@ -44,7 +44,11 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteInt(string name, int value) => WriteEntry(name, value);
 
+        public void WriteLong(string name, long value) => WriteEntry(name, value);
+
         public void WriteFloat(string name, float value) => WriteEntry(name, value);
+
+        public void WriteDouble(string name, double value) => WriteEntry(name, value);
 
         public void WriteBool(string name, bool value) => WriteEntry(name, value);
 
@@ -82,7 +86,19 @@ namespace BananaParty.WebSocketRelay
             _buffer.AddRange(BitConverter.GetBytes(value));
         }
 
+        private void WriteEntry(string name, long value)
+        {
+            WriteNameHash(InArray ? null : name);
+            _buffer.AddRange(BitConverter.GetBytes(value));
+        }
+
         private void WriteEntry(string name, float value)
+        {
+            WriteNameHash(InArray ? null : name);
+            _buffer.AddRange(BitConverter.GetBytes(value));
+        }
+
+        private void WriteEntry(string name, double value)
         {
             WriteNameHash(InArray ? null : name);
             _buffer.AddRange(BitConverter.GetBytes(value));

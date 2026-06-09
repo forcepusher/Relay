@@ -57,7 +57,11 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteInt(string name, int value) => WriteEntry(name, value);
 
+        public void WriteLong(string name, long value) => WriteEntry(name, value);
+
         public void WriteFloat(string name, float value) => WriteEntry(name, value);
+
+        public void WriteDouble(string name, double value) => WriteEntry(name, value);
 
         public void WriteBool(string name, bool value) => WriteEntry(name, value);
 
@@ -95,7 +99,11 @@ namespace BananaParty.WebSocketRelay
 
         private void WriteEntry(string name, int value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
 
+        private void WriteEntry(string name, long value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+
         private void WriteEntry(string name, float value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
+
+        private void WriteEntry(string name, double value) => WritePrimitiveEntry(name, value.ToString(CultureInfo.InvariantCulture), false);
 
         private void WriteEntry(string name, bool value) => WritePrimitiveEntry(name, value ? "true" : "false", false);
 

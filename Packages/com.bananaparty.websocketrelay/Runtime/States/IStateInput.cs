@@ -9,7 +9,9 @@ namespace BananaParty.WebSocketRelay
         void ReadDynamicArray(string name, List<IState> states);
         string ReadString(string name);
         int ReadInt(string name);
+        long ReadLong(string name);
         float ReadFloat(string name);
+        double ReadDouble(string name);
         bool ReadBool(string name);
     }
 }

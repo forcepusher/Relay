@@ -64,10 +64,22 @@ namespace BananaParty.WebSocketRelay
             return ReadInt32();
         }
 
+        public long ReadLong(string name)
+        {
+            VerifyEntryName(name);
+            return ReadInt64();
+        }
+
         public float ReadFloat(string name)
         {
             VerifyEntryName(name);
             return ReadFloat32();
+        }
+
+        public double ReadDouble(string name)
+        {
+            VerifyEntryName(name);
+            return ReadFloat64();
         }
 
         public bool ReadBool(string name)
@@ -143,6 +155,16 @@ namespace BananaParty.WebSocketRelay
             return value;
         }
 
+        private long ReadInt64()
+        {
+            if (_pos + 8 > _data.Length)
+                return 0L;
+
+            long value = BitConverter.ToInt64(_data, _pos);
+            _pos += 8;
+            return value;
+        }
+
         private float ReadFloat32()
         {
             if (_pos + 4 > _data.Length)
@@ -150,6 +172,16 @@ namespace BananaParty.WebSocketRelay
 
             float value = BitConverter.ToSingle(_data, _pos);
             _pos += 4;
+            return value;
+        }
+
+        private double ReadFloat64()
+        {
+            if (_pos + 8 > _data.Length)
+                return 0d;
+
+            double value = BitConverter.ToDouble(_data, _pos);
+            _pos += 8;
             return value;
         }
 

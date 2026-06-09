@@ -69,12 +69,28 @@ namespace BananaParty.WebSocketRelay
             return ReadIntAtPosition();
         }
 
+        public long ReadLong(string name)
+        {
+            if (!TryAdvanceToEntry(name))
+                return 0L;
+
+            return ReadLongAtPosition();
+        }
+
         public float ReadFloat(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return 0f;
 
             return ReadFloatAtPosition();
+        }
+
+        public double ReadDouble(string name)
+        {
+            if (!TryAdvanceToEntry(name))
+                return 0d;
+
+            return ReadDoubleAtPosition();
         }
 
         public bool ReadBool(string name)
@@ -223,10 +239,22 @@ namespace BananaParty.WebSocketRelay
             return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result) ? result : 0;
         }
 
+        private long ReadLongAtPosition()
+        {
+            string value = ReadValueAsString();
+            return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long result) ? result : 0L;
+        }
+
         private float ReadFloatAtPosition()
         {
             string value = ReadValueAsString();
             return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float result) ? result : 0f;
+        }
+
+        private double ReadDoubleAtPosition()
+        {
+            string value = ReadValueAsString();
+            return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double result) ? result : 0d;
         }
 
         private bool ReadBoolAtPosition()
