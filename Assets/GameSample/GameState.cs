@@ -13,16 +13,17 @@ namespace BananaParty.WebSocketRelay.Samples
 
         [SerializeField]
         private List<ItemSpawn> _itemSpawns;
+        private StaticArrayState<ItemSpawn> _itemSpawnsState;
 
         private IntegerValueState _playTimeState = new(nameof(_playTimeState), 0);
 
-        private StaticArrayState<ItemSpawn> _itemSpawnsState;
+        private List<Item> _items = new List<Item>();
         private DynamicArrayState<Item> _itemsState;
 
         private void Awake()
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
-            _itemsState = new(nameof(_itemsState), new List<Item>());
+            _itemsState = new(nameof(_itemsState), _items);
 
             JsonWriteGraph jsonWriteGraph = new();
             Write(jsonWriteGraph);
