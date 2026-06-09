@@ -3,6 +3,7 @@ This is a development repository for com.bananaparty.websocketrelay
 See [package Readme file here](https://github.com/forcepusher/WebSocketRelay/tree/master/Packages/com.bananaparty.websocketrelay)
 
 Networking as simple as it gets (for programmers though).  
+The goal is to provide bare minimum code to get things done.  
   
 Key priorities:  
 1. Developer Experience - JSON data stream for developing. Binary for shipping (JSON debug output on demand).
