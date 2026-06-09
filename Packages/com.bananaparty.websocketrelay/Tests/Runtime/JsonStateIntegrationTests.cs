@@ -51,7 +51,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Act: Client A serializes and sends state
             JsonStateOutput writeGraph = new();
-            stateA.Write(writeGraph);
+            stateA.WriteState(writeGraph);
             string jsonPayload = writeGraph.ToString();
             byte[] bytesToSend = Encoding.UTF8.GetBytes(jsonPayload);
 
@@ -71,7 +71,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             // Client B deserializes the state
             JsonStateInput readGraph = new JsonStateInput(receivedJson);
-            stateB.Read(readGraph);
+            stateB.ReadState(readGraph);
 
             // Assert: Verify values were synchronized
             Assert.AreEqual(stateA.PlayTime, stateB.PlayTime, "PlayTime should be synchronized");
@@ -93,30 +93,30 @@ namespace BananaParty.WebSocketRelay.Tests
             private FloatValueState _healthState => new("Health", Health);
             private Vector3ValueState _positionState => new("Position", Position);
 
-            public string Name => "MockGameState";
+            public string StateName => "MockGameState";
 
-            public void Write(IStateOutput writeGraph)
+            public void WriteState(IStateOutput writeGraph)
             {
-                writeGraph.StartObject(Name);
-                _playTimeState.Write(writeGraph);
-                _healthState.Write(writeGraph);
-                _positionState.Write(writeGraph);
+                writeGraph.StartObject(StateName);
+                _playTimeState.WriteState(writeGraph);
+                _healthState.WriteState(writeGraph);
+                _positionState.WriteState(writeGraph);
                 writeGraph.EndObject();
             }
 
-            public void Read(IStateInput readGraph)
+            public void ReadState(IStateInput readGraph)
             {
-                readGraph.StartObject(Name);
+                readGraph.StartObject(StateName);
                 var pt = new IntegerValueState("PlayTime", 0);
-                pt.Read(readGraph);
+                pt.ReadState(readGraph);
                 PlayTime = pt.Value;
 
                 var h = new FloatValueState("Health", 0f);
-                h.Read(readGraph);
+                h.ReadState(readGraph);
                 Health = h.Value;
 
                 var p = new Vector3ValueState("Position", Vector3.zero);
-                p.Read(readGraph);
+                p.ReadState(readGraph);
                 Position = p.Value;
 
                 readGraph.EndObject();

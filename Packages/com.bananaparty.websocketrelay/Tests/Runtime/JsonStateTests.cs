@@ -7,23 +7,23 @@ namespace BananaParty.WebSocketRelay.Tests
     {
         private class MockValueState : IState
         {
-            public string Name { get; }
+            public string StateName { get; }
             public int Value { get; set; }
 
             public MockValueState(string name, int value)
             {
-                Name = name;
+                StateName = name;
                 Value = value;
             }
 
-            public void Write(IStateOutput writeGraph)
+            public void WriteState(IStateOutput writeGraph)
             {
-                writeGraph.WriteEntry(Name, Value);
+                writeGraph.WriteEntry(StateName, Value);
             }
 
-            public void Read(IStateInput readGraph)
+            public void ReadState(IStateInput readGraph)
             {
-                Value = readGraph.ReadInt(Name);
+                Value = readGraph.ReadInt(StateName);
             }
         }
 
@@ -38,7 +38,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var root = new ObjectState("GameState", states);
             var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.AreEqual("{\"GameState\":{\"Score\":10,\"Level\":5}}", json);
@@ -55,7 +55,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var root = new ObjectState("GameState", states);
             var graph = new JsonStateInput("{\"GameState\":{\"Score\":10,\"Level\":5}}");
 
-            root.Read(graph);
+            root.ReadState(graph);
 
             Assert.AreEqual(10, ((MockValueState)states[0]).Value);
             Assert.AreEqual(5, ((MockValueState)states[1]).Value);
@@ -82,7 +82,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var root = new ObjectState("GameState", rootStates);
             var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.AreEqual("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}", json);
@@ -109,7 +109,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var root = new ObjectState("GameState", rootStates);
             var graph = new JsonStateInput("{\"GameState\":{\"Player\":{\"Health\":100,\"Mana\":50},\"Bot\":{\"Health\":80,\"Mana\":20}}}");
 
-            root.Read(graph);
+            root.ReadState(graph);
 
             Assert.AreEqual(100, ((MockValueState)playerStates[0]).Value);
             Assert.AreEqual(50, ((MockValueState)playerStates[1]).Value);
@@ -124,7 +124,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var root = new ObjectState("Root", states);
             var graph = new JsonStateOutput(prettyPrint: true, bracesOnNewLine: true);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.IsTrue(json.Contains("\n"));
@@ -146,7 +146,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.AreEqual("{\"GameState\":{\"Scores\":[10,20,30]}}", json);
@@ -167,7 +167,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateInput("{\"GameState\":{\"Scores\":[10,20,30]}}");
 
-            root.Read(graph);
+            root.ReadState(graph);
 
             Assert.AreEqual(10, scores[0].Value);
             Assert.AreEqual(20, scores[1].Value);
@@ -193,7 +193,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.AreEqual("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}", json);
@@ -220,7 +220,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateInput("{\"GameState\":{\"Players\":[{\"Health\":100,\"Mana\":50},{\"Health\":80,\"Mana\":20}]}}");
 
-            root.Read(graph);
+            root.ReadState(graph);
 
             Assert.AreEqual(100, ((MockValueState)playerOneStates[0]).Value);
             Assert.AreEqual(50, ((MockValueState)playerOneStates[1]).Value);
@@ -247,7 +247,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
 
-            root.Write(graph);
+            root.WriteState(graph);
             string json = graph.ToString();
 
             Assert.AreEqual("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}", json);
@@ -274,7 +274,7 @@ namespace BananaParty.WebSocketRelay.Tests
             });
             var graph = new JsonStateInput("{\"GameState\":{\"Grid\":[[1,2],[3,4]]}}");
 
-            root.Read(graph);
+            root.ReadState(graph);
 
             Assert.AreEqual(1, rowOneValues[0].Value);
             Assert.AreEqual(2, rowOneValues[1].Value);

@@ -16,7 +16,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private FloatValueState _health = new(nameof(_health), 100f);
         private Vector3ValueState _position = new(nameof(_position), Vector3.zero);
 
-        public string Name => transform.name;
+        public string StateName => transform.name;
 
         private void Awake()
         {
@@ -67,19 +67,19 @@ namespace BananaParty.WebSocketRelay.Samples
             controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
         }
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.StartObject(Name);
-            _health.Write(writeGraph);
-            _position.Write(writeGraph);
+            writeGraph.StartObject(StateName);
+            _health.WriteState(writeGraph);
+            _position.WriteState(writeGraph);
             writeGraph.EndObject();
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            readGraph.StartObject(Name);
-            _health.Read(readGraph);
-            _position.Read(readGraph);
+            readGraph.StartObject(StateName);
+            _health.ReadState(readGraph);
+            _position.ReadState(readGraph);
             readGraph.EndObject();
         }
     }

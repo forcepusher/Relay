@@ -4,31 +4,31 @@ namespace BananaParty.WebSocketRelay
 {
     public class ObjectState : IState
     {
-        public string Name { get; }
+        public string StateName { get; }
         private readonly List<IState> _states;
 
         public ObjectState(string name, List<IState> states)
         {
-            Name = name;
+            StateName = name;
             _states = states;
         }
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.StartObject(Name);
+            writeGraph.StartObject(StateName);
 
             foreach (IState state in _states)
-                state.Write(writeGraph);
+                state.WriteState(writeGraph);
 
             writeGraph.EndObject();
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            readGraph.StartObject(Name);
+            readGraph.StartObject(StateName);
 
             foreach (IState state in _states)
-                state.Read(readGraph);
+                state.ReadState(readGraph);
 
             readGraph.EndObject();
         }

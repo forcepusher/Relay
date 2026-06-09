@@ -37,20 +37,20 @@ namespace BananaParty.WebSocketRelay.Samples
             };
 
             JsonStateOutput jsonStateOutput = new();
-            Write(jsonStateOutput);
+            WriteState(jsonStateOutput);
             Debug.Log(jsonStateOutput.ToString());
         }
 
-        public string Name => transform.name;
+        public string StateName => transform.name;
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.WriteObject(Name, _states);
+            writeGraph.WriteObject(StateName, _states);
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            readGraph.ReadObject(Name, _states);
+            readGraph.ReadObject(StateName, _states);
         }
     }
 }

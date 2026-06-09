@@ -3,22 +3,22 @@ namespace BananaParty.WebSocketRelay
     public class IntegerValueState : IState
     {
         public int Value { get; set; }
-        public string Name { get; private set; }
+        public string StateName { get; private set; }
 
         public IntegerValueState(string name, int initialValue)
         {
-            Name = name;
+            StateName = name;
             Value = initialValue;
         }
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.WriteEntry(Name, Value);
+            writeGraph.WriteEntry(StateName, Value);
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            Value = readGraph.ReadInt(Name);
+            Value = readGraph.ReadInt(StateName);
         }
     }
 }

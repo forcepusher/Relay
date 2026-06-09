@@ -2,8 +2,8 @@ namespace BananaParty.WebSocketRelay
 {
     public interface IState
     {
-        string Name { get; }
-        void Write(IStateOutput stateOutput);
-        void Read(IStateInput stateInput);
+        string StateName { get; }
+        void WriteState(IStateOutput stateOutput);
+        void ReadState(IStateInput stateInput);
     }
 }

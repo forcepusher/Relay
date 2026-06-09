@@ -6,7 +6,7 @@ namespace BananaParty.WebSocketRelay.Samples
     {
         private FloatValueState _timeToDisappear = new(nameof(_timeToDisappear), 5f);
 
-        public string Name => transform.name;
+        public string StateName => transform.name;
 
         public float TimeToDisappear
         {
@@ -14,17 +14,17 @@ namespace BananaParty.WebSocketRelay.Samples
             set => _timeToDisappear.Value = value;
         }
         
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.StartObject(Name);
-            _timeToDisappear.Write(writeGraph);
+            writeGraph.StartObject(StateName);
+            _timeToDisappear.WriteState(writeGraph);
             writeGraph.EndObject();
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            readGraph.StartObject(Name);
-            _timeToDisappear.Read(readGraph);
+            readGraph.StartObject(StateName);
+            _timeToDisappear.ReadState(readGraph);
             readGraph.EndObject();
         }
     }

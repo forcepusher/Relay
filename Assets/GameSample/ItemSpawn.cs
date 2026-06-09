@@ -7,19 +7,19 @@ namespace BananaParty.WebSocketRelay.Samples
         private const float RespawnDelay = 10f;
         private FloatValueState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
 
-        public string Name => transform.name;
+        public string StateName => transform.name;
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.StartObject(Name);
-            _timeToSpawn.Write(writeGraph);
+            writeGraph.StartObject(StateName);
+            _timeToSpawn.WriteState(writeGraph);
             writeGraph.EndObject();
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            readGraph.StartObject(Name);
-            _timeToSpawn.Read(readGraph);
+            readGraph.StartObject(StateName);
+            _timeToSpawn.ReadState(readGraph);
             readGraph.EndObject();
         }
     }

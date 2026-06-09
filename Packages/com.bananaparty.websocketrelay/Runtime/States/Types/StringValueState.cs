@@ -2,23 +2,23 @@ namespace BananaParty.WebSocketRelay
 {
     public class StringValueState : IState
     {
-        public string Name { get; private set; }
+        public string StateName { get; private set; }
         public string Value { get; set; }
 
         public StringValueState(string name, string initialValue)
         {
-            Name = name;
+            StateName = name;
             Value = initialValue;
         }
 
-        public void Write(IStateOutput writeGraph)
+        public void WriteState(IStateOutput writeGraph)
         {
-            writeGraph.WriteEntry(Name, Value);
+            writeGraph.WriteEntry(StateName, Value);
         }
 
-        public void Read(IStateInput readGraph)
+        public void ReadState(IStateInput readGraph)
         {
-            Value = readGraph.ReadStringEntry(Name);
+            Value = readGraph.ReadStringEntry(StateName);
         }
     }
 }
