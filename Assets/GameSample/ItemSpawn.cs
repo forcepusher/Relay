@@ -19,7 +19,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void Awake()
         {
-            _itemsState = new(nameof(_itemsState), _items, new ItemLifecycle(this));
+            _itemsState = new DynamicArrayState<Item>(nameof(_itemsState), _items, new ItemLifecycle(this));
             _states = new List<IState> { _timeToSpawn, _itemsState };
         }
 
