@@ -45,16 +45,7 @@ namespace BananaParty.WebSocketRelay
             EndArray();
         }
 
-        public void WriteDynamicArray(string name, List<IState> states)
-        {
-            StartArray(name);
-            WriteEntry(states.Count);
-
-            foreach (IState state in states)
-                state.WriteState(this);
-
-            EndArray();
-        }
+        public void WriteDynamicArray(string name, List<IState> states) => WriteStaticArray(name, states);
 
         public void WriteByte(string name, byte value) => WriteEntry(name, value);
 
@@ -113,8 +104,6 @@ namespace BananaParty.WebSocketRelay
         private void WriteEntry(string name, bool value) => WritePrimitiveEntry(name, value ? "true" : "false", false);
 
         private void WriteEntry(string name, string value) => WritePrimitiveEntry(name, value ?? string.Empty, true);
-
-        private void WriteEntry(int value) => WritePrimitiveEntry(null, value.ToString(CultureInfo.InvariantCulture), false);
 
         private void EndObject() => EndContainer('}');
 

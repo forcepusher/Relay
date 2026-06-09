@@ -143,11 +143,11 @@ namespace BananaParty.WebSocketRelay.Tests
             var target = new List<MockEntry>();
             var itemsState = new DynamicArrayState<MockEntry>("Items", target);
             var root = new ObjectState("Root", new List<IState> { itemsState });
-            var input = new JsonStateInput("{\"Root\":{\"Items\":[2,{\"Id\":\"11111111-1111-1111-1111-111111111111\",\"Value\":1},{\"Id\":\"22222222-2222-2222-2222-222222222222\",\"Value\":2}]}}");
+            var input = new JsonStateInput("{\"Root\":{\"Items\":[{\"Id\":\"11111111-1111-1111-1111-111111111111\",\"Value\":1},{\"Id\":\"22222222-2222-2222-2222-222222222222\",\"Value\":2}]}}");
 
             InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => root.ReadState(input));
 
-            Assert.That(exception.Message, Does.Contain("requires 2 entries"));
+            Assert.That(exception.Message, Does.Contain("requires at least 1 entries"));
             Assert.AreEqual(0, target.Count);
         }
 

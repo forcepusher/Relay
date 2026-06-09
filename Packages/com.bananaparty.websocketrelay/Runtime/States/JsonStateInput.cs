@@ -40,16 +40,19 @@ namespace BananaParty.WebSocketRelay
         public void ReadDynamicArray<T>(string name, List<T> states) where T : IKeyedState
         {
             StartArray(name);
-            int count = ReadIntArrayEntry();
+            int index = 0;
 
-            while (states.Count > count)
+            while (HasNextArrayElement())
+            {
+                if (index >= states.Count)
+                    throw new InvalidOperationException($"Dynamic array '{name}' requires at least {index + 1} entries but only {states.Count} exist.");
+
+                states[index].ReadState(this);
+                index++;
+            }
+
+            while (states.Count > index)
                 states.RemoveAt(states.Count - 1);
-
-            if (states.Count < count)
-                throw new InvalidOperationException($"Dynamic array '{name}' requires {count} entries but only {states.Count} exist.");
-
-            for (int i = 0; i < count; i++)
-                states[i].ReadState(this);
 
             EndArray();
         }
@@ -57,10 +60,9 @@ namespace BananaParty.WebSocketRelay
         public void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IKeyedState
         {
             StartArray(name);
-            int count = ReadIntArrayEntry();
 
-            var incoming = new List<T>(count);
-            for (int i = 0; i < count; i++)
+            var incoming = new List<T>();
+            while (HasNextArrayElement())
             {
                 T staging = factory.Create(Guid.Empty);
                 staging.ReadState(this);
@@ -197,12 +199,10 @@ namespace BananaParty.WebSocketRelay
                 _inArrayStack.Pop();
         }
 
-        private int ReadIntArrayEntry()
+        private bool HasNextArrayElement()
         {
-            if (!TryAdvanceToEntry(null))
-                return 0;
-
-            return ReadIntAtPosition();
+            SkipWhitespace();
+            return _position < _jsonString.Length && _jsonString[_position] != ']';
         }
 
         private void AdvanceIntoContainer(char open, string name)
