@@ -42,25 +42,25 @@ namespace BananaParty.WebSocketRelay
                 _inArrayStack.Pop();
         }
 
-        public string ReadEntry(string name)
+        public string ReadString(string name)
         {
             VerifyEntryName(name);
             return ReadInt32().ToString();
         }
 
-        public int ReadIntEntry(string name)
+        public int ReadInt(string name)
         {
             VerifyEntryName(name);
             return ReadInt32();
         }
 
-        public float ReadFloatEntry(string name)
+        public float ReadFloat(string name)
         {
             VerifyEntryName(name);
             return ReadFloat32();
         }
 
-        public bool ReadBoolEntry(string name)
+        public bool ReadBool(string name)
         {
             VerifyEntryName(name);
             return ReadBool();

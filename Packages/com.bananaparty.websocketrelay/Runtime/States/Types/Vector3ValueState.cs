@@ -26,9 +26,9 @@ namespace BananaParty.WebSocketRelay
         {
             readGraph.StartObject(Name);
             Value = new Vector3(
-                readGraph.ReadFloatEntry("x"),
-                readGraph.ReadFloatEntry("y"),
-                readGraph.ReadFloatEntry("z"));
+                readGraph.ReadFloat("x"),
+                readGraph.ReadFloat("y"),
+                readGraph.ReadFloat("z"));
             readGraph.EndObject();
         }
     }

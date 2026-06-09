@@ -21,45 +21,37 @@ namespace BananaParty.WebSocketRelay.Samples
         private List<Item> _items = new List<Item>();
         private DynamicArrayState<Item> _itemsState;
 
+        private List<IState> _states;
+
         private void Awake()
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
             _itemsState = new(nameof(_itemsState), _items);
 
-            JsonStateOutput jsonWriteGraph = new();
-            Write(jsonWriteGraph);
-            Debug.Log(jsonWriteGraph.ToString());
+            _states = new List<IState>
+            {
+                _playTimeState,
+                _playerCharacterState,
+                _botCharacterState,
+                _itemSpawnsState,
+                _itemsState
+            };
 
-
-            //ObjectState derp = new ObjectState("Derp", new List<IState> { _playTimeState });
+            JsonStateOutput jsonStateOutput = new();
+            Write(jsonStateOutput);
+            Debug.Log(jsonStateOutput.ToString());
         }
 
         public string Name => transform.name;
 
         public void Write(IStateOutput writeGraph)
         {
-            writeGraph.StartObject(Name);
-
-            _playTimeState.Write(writeGraph);
-            _playerCharacterState.Write(writeGraph);
-            _botCharacterState.Write(writeGraph);
-            _itemSpawnsState.Write(writeGraph);
-            _itemsState.Write(writeGraph);
-
-            writeGraph.EndObject();
+            writeGraph.WriteObject(Name, _states);
         }
 
         public void Read(IStateInput readGraph)
         {
-            readGraph.StartObject(Name);
-
-            _playTimeState.Read(readGraph);
-            _playerCharacterState.Read(readGraph);
-            _botCharacterState.Read(readGraph);
-            _itemSpawnsState.Read(readGraph);
-            _itemsState.Read(readGraph);
-
-            readGraph.EndObject();
+            readGraph.ReadObject(Name, _states);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace BananaParty.WebSocketRelay
 
         public void Read(IStateInput readGraph)
         {
-            Value = readGraph.ReadBoolEntry(Name);
+            Value = readGraph.ReadBool(Name);
         }
     }
 }

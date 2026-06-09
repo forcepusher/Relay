@@ -42,7 +42,7 @@ namespace BananaParty.WebSocketRelay
                 _inArrayStack.Pop();
         }
 
-        public string ReadEntry(string name)
+        public string ReadString(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return null;
@@ -50,7 +50,7 @@ namespace BananaParty.WebSocketRelay
             return ReadValueAsString();
         }
 
-        public int ReadIntEntry(string name)
+        public int ReadInt(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return 0;
@@ -58,7 +58,7 @@ namespace BananaParty.WebSocketRelay
             return ReadIntAtPosition();
         }
 
-        public float ReadFloatEntry(string name)
+        public float ReadFloat(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return 0f;
@@ -66,7 +66,7 @@ namespace BananaParty.WebSocketRelay
             return ReadFloatAtPosition();
         }
 
-        public bool ReadBoolEntry(string name)
+        public bool ReadBool(string name)
         {
             if (!TryAdvanceToEntry(name))
                 return false;

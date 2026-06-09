@@ -1,19 +1,15 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+
 namespace BananaParty.WebSocketRelay
 {
     public interface IStateInput
     {
-        void StartObject(string name);
-        void EndObject();
-        void StartArray(string name);
-        void EndArray();
-        string ReadEntry(string name);
-        int ReadIntEntry(string name);
-        float ReadFloatEntry(string name);
-        bool ReadBoolEntry(string name);
-        string ReadStringEntry(string name);
-        int ReadIntArrayEntry();
-        float ReadFloatArrayEntry();
-        bool ReadBoolArrayEntry();
-        string ReadStringArrayEntry();
+        void ReadObject(string name, List<IState> states);
+        void ReadArray(string name, List<IState> states);
+        string ReadString(string name);
+        int ReadInt(string name);
+        float ReadFloat(string name);
+        bool ReadBool(string name);
     }
 }

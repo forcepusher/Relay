@@ -23,7 +23,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public void Read(IStateInput readGraph)
             {
-                Value = readGraph.ReadIntEntry(Name);
+                Value = readGraph.ReadInt(Name);
             }
         }
 
