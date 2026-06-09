@@ -10,7 +10,7 @@ namespace BananaParty.WebSocketRelay
             List<T> states,
             IFactory<T> factory,
             Action<T> readEntry,
-            Action<T> disposeEntry)
+            Action<T> disposeEntry) where T : IState
         {
             while (states.Count > count)
             {
@@ -80,7 +80,7 @@ namespace BananaParty.WebSocketRelay
             states.AddRange(next);
         }
 
-        private static T FindByKey<T>(List<T> states, IFactory<T> factory, Guid entryKey)
+        private static T FindByKey<T>(List<T> states, IFactory<T> factory, Guid entryKey) where T : IState
         {
             foreach (T state in states)
             {
