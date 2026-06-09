@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class GameState : MonoBehaviour, IState
+    public class Game : MonoBehaviour, IState
     {
         [SerializeField]
         private Character _playerCharacterState;
@@ -58,21 +58,6 @@ namespace BananaParty.WebSocketRelay.Samples
         public void ReadState(IStateInput readGraph)
         {
             readGraph.ReadObject(StateName, _states);
-
-            foreach (Item item in _itemsJournal.GetRemovedEntries())
-            {
-                Destroy(item.gameObject);
-            }
-
-            foreach (Item item in _itemsJournal.GetAddedEntries())
-            {
-                Item instance = Instantiate(_itemPrefab, transform);
-                instance.TimeToDisappear = item.TimeToDisappear;
-                _items[_items.IndexOf(item)] = instance;
-                Destroy(item.gameObject);
-            }
-
-            // Iterate over all entries and apply state from _itemsState to _items to update existing items.
 
             _itemsJournal.Snapshot();
         }
