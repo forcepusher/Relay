@@ -19,7 +19,12 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void Awake()
         {
-            _itemsState = new DynamicArrayState<Item>(nameof(_itemsState), _items, new ItemFactory(this));
+            _itemsState = new(
+                nameof(_itemsState),
+                _items,
+                () => Instantiate(_itemPrefab, transform),
+                item => Destroy(item.gameObject));
+            
             _states = new List<IState> { _timeToSpawn, _itemsState };
         }
 
@@ -42,17 +47,6 @@ namespace BananaParty.WebSocketRelay.Samples
         public void ReadState(IStateInput stateInput)
         {
             stateInput.ReadObject(StateName, _states);
-        }
-
-        private sealed class ItemFactory : IDynamicArrayFactory<Item>
-        {
-            private readonly ItemSpawn _spawn;
-
-            public ItemFactory(ItemSpawn spawn) => _spawn = spawn;
-
-            public Item Create() => Object.Instantiate(_spawn._itemPrefab, _spawn.transform);
-
-            public void Dispose(Item item) => Object.Destroy(item.gameObject);
         }
     }
 }
