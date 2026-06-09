@@ -142,22 +142,7 @@ namespace BananaParty.WebSocketRelay
 
         private void WriteNameHash(string name)
         {
-            _buffer.AddRange(BitConverter.GetBytes(GetNameHash(name)));
-        }
-
-        private static int GetNameHash(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return 0;
-
-            unchecked
-            {
-                int hash = 17;
-                foreach (char character in name)
-                    hash = hash * 31 + character;
-
-                return hash;
-            }
+            _buffer.AddRange(BitConverter.GetBytes(Hash.FromName(name)));
         }
     }
 }

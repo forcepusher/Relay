@@ -193,7 +193,7 @@ namespace BananaParty.WebSocketRelay
         private void VerifyNameHash(string expectedName)
         {
             int nameHash = ReadNameHash();
-            int expectedHash = GetNameHash(expectedName);
+            int expectedHash = Hash.FromName(expectedName);
 
             if (nameHash != expectedHash)
             {
@@ -296,21 +296,6 @@ namespace BananaParty.WebSocketRelay
             Array.Copy(_data, _pos, bytes, 0, 16);
             _pos += 16;
             return new Guid(bytes);
-        }
-
-        private static int GetNameHash(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return 0;
-
-            unchecked
-            {
-                int hash = 17;
-                foreach (char character in name)
-                    hash = hash * 31 + character;
-
-                return hash;
-            }
         }
     }
 }
