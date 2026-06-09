@@ -57,15 +57,18 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void ReadState(IStateInput readGraph)
         {
-            
-
             readGraph.ReadObject(StateName, _states);
 
             foreach (Item item in _itemsJournal.GetDeleteEntries())
                 Destroy(item.gameObject);
 
             foreach (Item item in _itemsJournal.GetNewEntries())
-                item.gameObject.SetActive(true);
+                // Instantiate the item prefab
+
+            foreach (Item item in _itemsJournal.GetUpdatedEntries())
+                // Update the item
+
+            _itemsJournal.Snapshot();
         }
     }
 }
