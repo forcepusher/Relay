@@ -4,7 +4,7 @@ namespace BananaParty.WebSocketRelay
 {
     public static class Hash
     {
-        public static int FromName(string name)
+        public static int IntFromName(string name)
         {
             if (string.IsNullOrEmpty(name))
                 return 0;

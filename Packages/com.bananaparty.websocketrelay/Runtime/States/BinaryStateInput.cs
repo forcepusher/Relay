@@ -193,7 +193,7 @@ namespace BananaParty.WebSocketRelay
         private void VerifyNameHash(string expectedName)
         {
             int nameHash = ReadNameHash();
-            int expectedHash = Hash.FromName(expectedName);
+            int expectedHash = Hash.IntFromName(expectedName);
 
             if (nameHash != expectedHash)
             {
