@@ -260,12 +260,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 785604b5a364ec74c9a1363d923a180a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameState
-  _playerCharacter: {fileID: 1734842256}
-  _botCharacter: {fileID: 1555568738}
+  _playerCharacterState: {fileID: 0}
+  _botCharacterState: {fileID: 0}
   _itemSpawns:
-  - {fileID: 2028833679}
+  - {fileID: 0}
   - {fileID: 472791616}
   - {fileID: 614933109}
+  _itemPrefab: {fileID: 0}
 --- !u!4 &306160918
 Transform:
   m_ObjectHideFlags: 0
@@ -422,6 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b72c07ef3b2ca5438a93538a85675f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.ItemSpawn
+  _itemPrefab: {fileID: 6427208625548972233, guid: 9f173f4e03ccfa8419498a9159b9ebcd, type: 3}
 --- !u!4 &472791617
 Transform:
   m_ObjectHideFlags: 0
@@ -635,6 +637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b72c07ef3b2ca5438a93538a85675f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.ItemSpawn
+  _itemPrefab: {fileID: 4146442439057737911, guid: f3d2e7151405ccd48829abbea936e097, type: 3}
 --- !u!4 &614933110
 Transform:
   m_ObjectHideFlags: 0
@@ -951,72 +954,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1555568738 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6874780850883058954, guid: e0b504692cc65ab448036b1fc974dd2d, type: 3}
-  m_PrefabInstance: {fileID: 550986348}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afcb542baf6bb5c4c85a47f7aeb6a989, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.Character
---- !u!114 &1734842256 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6874780850883058954, guid: e0b504692cc65ab448036b1fc974dd2d, type: 3}
-  m_PrefabInstance: {fileID: 5557970400718775192}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afcb542baf6bb5c4c85a47f7aeb6a989, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.Character
---- !u!1 &2028833678
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2028833680}
-  - component: {fileID: 2028833679}
-  m_Layer: 0
-  m_Name: ArmorItemSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2028833679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028833678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b72c07ef3b2ca5438a93538a85675f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BananaParty.WebSocketRelay.Samples.ItemSpawn
---- !u!4 &2028833680
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028833678}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.90584, y: 1.91242, z: -3.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2122646711
 GameObject:
   m_ObjectHideFlags: 0
@@ -1200,6 +1137,5 @@ SceneRoots:
   - {fileID: 5557970400718775192}
   - {fileID: 550986348}
   - {fileID: 306160918}
-  - {fileID: 2028833680}
   - {fileID: 614933110}
   - {fileID: 472791617}

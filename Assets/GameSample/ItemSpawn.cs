@@ -5,7 +5,11 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class ItemSpawn : MonoBehaviour, IState
     {
-        private const float RespawnDelay = 10f;
+        private const float RespawnDelay = 3f;
+
+        [SerializeField]
+        private Item _itemPrefab;
+
         private FloatState _timeToSpawn = new(nameof(_timeToSpawn), RespawnDelay);
         private List<IState> _states;
 
@@ -14,6 +18,14 @@ namespace BananaParty.WebSocketRelay.Samples
         private void Awake()
         {
             _states = new List<IState> { _timeToSpawn };
+        }
+
+        private void Update()
+        {
+            if (_timeToSpawn.Value > 0f)
+                _timeToSpawn.Value -= Time.deltaTime;
+            else
+                Instantiate(_itemPrefab, transform);
         }
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);

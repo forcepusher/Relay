@@ -63,10 +63,15 @@ namespace BananaParty.WebSocketRelay.Samples
                 Destroy(item.gameObject);
 
             foreach (Item item in _itemsJournal.GetNewEntries())
-                // Instantiate the item prefab
+            {
+                Item instance = Instantiate(_itemPrefab, transform);
+                instance.TimeToDisappear = item.TimeToDisappear;
+                _items[_items.IndexOf(item)] = instance;
+                Destroy(item.gameObject);
+            }
 
             foreach (Item item in _itemsJournal.GetUpdatedEntries())
-                // Update the item
+                item.gameObject.SetActive(true);
 
             _itemsJournal.Snapshot();
         }
