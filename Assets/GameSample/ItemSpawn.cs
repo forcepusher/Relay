@@ -38,7 +38,7 @@ namespace BananaParty.WebSocketRelay.Samples
         public Item Create(Guid key)
         {
             Item item = Instantiate(_itemPrefab, transform);
-            item.Key.Value = key;
+            item.StateKey.Value = key;
 
             return item;
         }

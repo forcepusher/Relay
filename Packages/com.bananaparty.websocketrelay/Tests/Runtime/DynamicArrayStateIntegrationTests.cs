@@ -14,6 +14,13 @@ namespace BananaParty.WebSocketRelay.Tests
         private static readonly Guid Id2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
         private static readonly Guid Id3 = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
+        private static MockEntry Entry(Guid id, int value = 0)
+        {
+            var entry = new MockEntry { Value = value };
+            entry.StateKey.Value = id;
+            return entry;
+        }
+
         private static string ServerAddress => $"ws://127.0.0.1:{TestParameters.RelayServerPort}";
 
         [UnitySetUp]
@@ -27,13 +34,13 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 10 },
-                new MockEntry { Id = Id2, Value = 20 }
+                Entry(Id1, 10),
+                Entry(Id2, 20)
             };
             var target = new List<MockEntry>
             {
-                new MockEntry { Id = Id1 },
-                new MockEntry { Id = Id2 }
+                Entry(Id1),
+                Entry(Id2)
             };
 
             RoundTrip(source, target);
@@ -48,11 +55,11 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 10 },
-                new MockEntry { Id = Id2, Value = 20 },
-                new MockEntry { Id = Id3, Value = 30 }
+                Entry(Id1, 10),
+                Entry(Id2, 20),
+                Entry(Id3, 30)
             };
-            MockEntry existing = new MockEntry { Id = Id1 };
+            MockEntry existing = Entry(Id1);
             var target = new List<MockEntry> { existing };
             var factory = new MockEntryFactory();
 
@@ -70,12 +77,12 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldShrinkDynamicArrayAndInvokeDispose()
         {
-            var source = new List<MockEntry> { new MockEntry { Id = Id1, Value = 42 } };
+            var source = new List<MockEntry> { Entry(Id1, 42) };
             var target = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 1 },
-                new MockEntry { Id = Id2, Value = 2 },
-                new MockEntry { Id = Id3, Value = 3 }
+                Entry(Id1, 1),
+                Entry(Id2, 2),
+                Entry(Id3, 3)
             };
             MockEntry removedOne = target[1];
             MockEntry removedTwo = target[2];
@@ -95,11 +102,11 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 100 },
-                new MockEntry { Id = Id2, Value = 200 }
+                Entry(Id1, 100),
+                Entry(Id2, 200)
             };
-            MockEntry first = new MockEntry { Id = Id1, Value = 1 };
-            MockEntry second = new MockEntry { Id = Id2, Value = 2 };
+            MockEntry first = Entry(Id1, 1);
+            MockEntry second = Entry(Id2, 2);
             var target = new List<MockEntry> { first, second };
             var factory = new MockEntryFactory();
 
@@ -117,11 +124,11 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldShrinkWithoutFactory()
         {
-            var source = new List<MockEntry> { new MockEntry { Id = Id1, Value = 7 } };
+            var source = new List<MockEntry> { Entry(Id1, 7) };
             var target = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 1 },
-                new MockEntry { Id = Id2, Value = 2 }
+                Entry(Id1, 1),
+                Entry(Id2, 2)
             };
 
             RoundTrip(source, target);
@@ -149,10 +156,10 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 5 },
-                new MockEntry { Id = Id2, Value = 9 }
+                Entry(Id1, 5),
+                Entry(Id2, 9)
             };
-            var target = new List<MockEntry> { new MockEntry { Id = Id1 } };
+            var target = new List<MockEntry> { Entry(Id1) };
             var factory = new MockEntryFactory();
 
             var sourceState = new DynamicArrayState<MockEntry>("Items", source);
@@ -176,11 +183,11 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Id = Id1, Value = 10 },
-                new MockEntry { Id = Id2, Value = 20 }
+                Entry(Id1, 10),
+                Entry(Id2, 20)
             };
-            MockEntry idTwo = new MockEntry { Id = Id2, Value = 0 };
-            MockEntry idOne = new MockEntry { Id = Id1, Value = 0 };
+            MockEntry idTwo = Entry(Id2, 0);
+            MockEntry idOne = Entry(Id1, 0);
             var target = new List<MockEntry> { idTwo, idOne };
             var factory = new MockEntryFactory();
 
@@ -271,19 +278,18 @@ namespace BananaParty.WebSocketRelay.Tests
         private class MockEntry : IKeyedState
         {
             public string StateName => string.Empty;
-            public Guid Id { get; set; }
-            public Guid StateKey => Id;
+            public GuidState StateKey { get; } = new("Id", Guid.Empty);
             public int Value { get; set; }
 
             public void WriteState(IStateOutput stateOutput)
             {
-                stateOutput.WriteGuid("Id", Id);
+                stateOutput.WriteGuid(StateKey.StateName, StateKey.Value);
                 stateOutput.WriteInt("Value", Value);
             }
 
             public void ReadState(IStateInput stateInput)
             {
-                Id = stateInput.ReadGuid("Id");
+                StateKey.Value = stateInput.ReadGuid(StateKey.StateName);
                 Value = stateInput.ReadInt("Value");
             }
         }
@@ -297,7 +303,7 @@ namespace BananaParty.WebSocketRelay.Tests
             public MockEntry Create(Guid id)
             {
                 CreateCount++;
-                return new MockEntry { Id = id };
+                return Entry(id);
             }
 
             public void Dispose(MockEntry entry)
@@ -328,7 +334,7 @@ namespace BananaParty.WebSocketRelay.Tests
             public MockEntry Create(Guid id)
             {
                 CreateCount++;
-                return new MockEntry { Id = id };
+                return Entry(id);
             }
 
             public void Dispose(MockEntry entry) => DisposeCount++;
@@ -337,7 +343,7 @@ namespace BananaParty.WebSocketRelay.Tests
             {
                 _items.Clear();
                 foreach ((Guid id, int value) in items)
-                    _items.Add(new MockEntry { Id = id, Value = value });
+                    _items.Add(Entry(id, value));
             }
 
             public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);

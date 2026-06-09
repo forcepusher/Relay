@@ -6,17 +6,15 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class Item : MonoBehaviour, IKeyedState
     {
-        public readonly GuidState Key = new(nameof(Key), Guid.Empty);
+        public GuidState StateKey { get; } = new(nameof(StateKey), Guid.Empty);
         public readonly FloatState TimeToDisappear = new(nameof(TimeToDisappear), 5f);
         private List<IState> _states;
 
         public string StateName => transform.name;
 
-        Guid IKeyedState.StateKey => Key.Value;
-
         private void Awake()
         {
-            _states = new List<IState> { Key, TimeToDisappear };
+            _states = new List<IState> { StateKey, TimeToDisappear };
         }
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
