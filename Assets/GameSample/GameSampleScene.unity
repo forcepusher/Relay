@@ -263,7 +263,6 @@ MonoBehaviour:
   _playerCharacterState: {fileID: 1822008114}
   _botCharacterState: {fileID: 389857435}
   _itemSpawns:
-  - {fileID: 0}
   - {fileID: 472791616}
   - {fileID: 614933109}
 --- !u!4 &306160918
