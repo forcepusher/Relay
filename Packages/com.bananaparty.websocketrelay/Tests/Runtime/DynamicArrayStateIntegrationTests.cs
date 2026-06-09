@@ -272,7 +272,7 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             public string StateName => string.Empty;
             public Guid Id { get; set; }
-            public Guid Key => Id;
+            public Guid StateKey => Id;
             public int Value { get; set; }
 
             public void WriteState(IStateOutput stateOutput)

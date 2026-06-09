@@ -44,11 +44,11 @@ namespace BananaParty.WebSocketRelay
 
             var incomingKeys = new HashSet<Guid>();
             foreach (T entry in incoming)
-                incomingKeys.Add(entry.Key);
+                incomingKeys.Add(entry.StateKey);
 
             for (int i = states.Count - 1; i >= 0; i--)
             {
-                if (incomingKeys.Contains(states[i].Key))
+                if (incomingKeys.Contains(states[i].StateKey))
                     continue;
 
                 T removed = states[i];
@@ -59,7 +59,7 @@ namespace BananaParty.WebSocketRelay
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid entryKey = staging.Key;
+                Guid entryKey = staging.StateKey;
                 T existing = FindByKey(states, entryKey);
                 if (existing != null)
                 {
@@ -84,7 +84,7 @@ namespace BananaParty.WebSocketRelay
         {
             foreach (T state in states)
             {
-                if (state.Key == entryKey)
+                if (state.StateKey == entryKey)
                     return state;
             }
 
