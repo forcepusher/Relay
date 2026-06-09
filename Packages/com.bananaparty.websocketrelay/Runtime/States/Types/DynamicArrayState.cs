@@ -6,19 +6,19 @@ namespace BananaParty.WebSocketRelay
     {
         public string StateName { get; }
         private readonly List<T> _states;
-        private readonly IDynamicArrayLifecycle<T> _lifecycle;
+        private readonly IDynamicArrayFactory<T> _factory;
 
-        public DynamicArrayState(string name, List<T> states, IDynamicArrayLifecycle<T> lifecycle = null)
+        public DynamicArrayState(string name, List<T> states, IDynamicArrayFactory<T> factory = null)
         {
             StateName = name;
             _states = states;
-            _lifecycle = lifecycle;
+            _factory = factory;
         }
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteDynamicArray(StateName, ToStateList());
 
         public void ReadState(IStateInput stateInput) =>
-            stateInput.ReadDynamicArray(StateName, _states, _lifecycle);
+            stateInput.ReadDynamicArray(StateName, _states, _factory);
 
         private List<IState> ToStateList()
         {
