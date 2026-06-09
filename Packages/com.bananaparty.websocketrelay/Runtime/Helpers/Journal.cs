@@ -12,7 +12,7 @@ namespace BananaParty.WebSocketRelay
             _list = list;
         }
 
-        public void CaptureSnapshot()
+        public void Snapshot()
         {
             _snapshot = new List<T>(_list);
         }

@@ -19,6 +19,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private List<Item> _items = new List<Item>();
         private DynamicArrayState<Item> _itemsState;
+        private Journal<Item> _itemsJournal;
 
         private List<IState> _states;
 
@@ -26,6 +27,7 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             _itemSpawnsState = new(nameof(_itemSpawns), _itemSpawns);
             _itemsState = new(nameof(_itemsState), _items);
+            _itemsJournal = new Journal<Item>(_items);
 
             _states = new List<IState>
             {
@@ -50,7 +52,20 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void ReadState(IStateInput readGraph)
         {
+            _itemsJournal.Snapshot();
             readGraph.ReadObject(StateName, _states);
+            ApplyItemsJournal();
+        }
+
+        private void ApplyItemsJournal()
+        {
+            foreach (Item item in _itemsJournal.GetDeletes())
+                Destroy(item.gameObject);
+
+            foreach (Item item in _itemsJournal.GetWrites())
+                item.gameObject.SetActive(true);
+
+            _itemsJournal.Snapshot();
         }
     }
 }
