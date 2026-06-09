@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,9 +35,18 @@ namespace BananaParty.WebSocketRelay.Samples
             }
         }
 
-        public Item Create() => Object.Instantiate(_itemPrefab, transform);
+        public Item Create()
+        {
+            Item item = Object.Instantiate(_itemPrefab, transform);
+            if (item.Id == Guid.Empty)
+                item.Id = Guid.NewGuid();
+
+            return item;
+        }
 
         public void Dispose(Item item) => Object.Destroy(item.gameObject);
+
+        public Guid GetKey(Item item) => item.Id;
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
 

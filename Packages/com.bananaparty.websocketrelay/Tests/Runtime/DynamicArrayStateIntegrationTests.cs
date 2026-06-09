@@ -10,6 +10,10 @@ namespace BananaParty.WebSocketRelay.Tests
 {
     public class DynamicArrayStateIntegrationTests
     {
+        private static readonly Guid Id1 = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        private static readonly Guid Id2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        private static readonly Guid Id3 = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
         private static string ServerAddress => $"ws://127.0.0.1:{TestParameters.RelayServerPort}";
 
         [UnitySetUp]
@@ -23,13 +27,13 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Value = 10 },
-                new MockEntry { Value = 20 }
+                new MockEntry { Id = Id1, Value = 10 },
+                new MockEntry { Id = Id2, Value = 20 }
             };
             var target = new List<MockEntry>
             {
-                new MockEntry(),
-                new MockEntry()
+                new MockEntry { Id = Id1 },
+                new MockEntry { Id = Id2 }
             };
 
             RoundTrip(source, target);
@@ -44,17 +48,20 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Value = 10 },
-                new MockEntry { Value = 20 },
-                new MockEntry { Value = 30 }
+                new MockEntry { Id = Id1, Value = 10 },
+                new MockEntry { Id = Id2, Value = 20 },
+                new MockEntry { Id = Id3, Value = 30 }
             };
-            var target = new List<MockEntry> { new MockEntry() };
+            MockEntry existing = new MockEntry { Id = Id1 };
+            var target = new List<MockEntry> { existing };
             var factory = new MockEntryFactory();
 
             RoundTrip(source, target, factory);
 
             Assert.AreEqual(3, target.Count);
-            Assert.AreEqual(2, factory.CreateCount);
+            Assert.AreEqual(3, factory.CreateCount);
+            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.AreSame(existing, target[0]);
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);
             Assert.AreEqual(30, target[2].Value);
@@ -63,12 +70,12 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldShrinkDynamicArrayAndInvokeDispose()
         {
-            var source = new List<MockEntry> { new MockEntry { Value = 42 } };
+            var source = new List<MockEntry> { new MockEntry { Id = Id1, Value = 42 } };
             var target = new List<MockEntry>
             {
-                new MockEntry { Value = 1 },
-                new MockEntry { Value = 2 },
-                new MockEntry { Value = 3 }
+                new MockEntry { Id = Id1, Value = 1 },
+                new MockEntry { Id = Id2, Value = 2 },
+                new MockEntry { Id = Id3, Value = 3 }
             };
             MockEntry removedOne = target[1];
             MockEntry removedTwo = target[2];
@@ -78,7 +85,7 @@ namespace BananaParty.WebSocketRelay.Tests
 
             Assert.AreEqual(1, target.Count);
             Assert.AreEqual(42, target[0].Value);
-            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.AreEqual(3, factory.DisposeCount);
             Assert.Contains(removedOne, factory.Disposed);
             Assert.Contains(removedTwo, factory.Disposed);
         }
@@ -88,21 +95,21 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Value = 100 },
-                new MockEntry { Value = 200 }
+                new MockEntry { Id = Id1, Value = 100 },
+                new MockEntry { Id = Id2, Value = 200 }
             };
-            var target = new List<MockEntry>
-            {
-                new MockEntry { Value = 1 },
-                new MockEntry { Value = 2 }
-            };
+            MockEntry first = new MockEntry { Id = Id1, Value = 1 };
+            MockEntry second = new MockEntry { Id = Id2, Value = 2 };
+            var target = new List<MockEntry> { first, second };
             var factory = new MockEntryFactory();
 
             RoundTrip(source, target, factory);
 
             Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(0, factory.CreateCount);
-            Assert.AreEqual(0, factory.DisposeCount);
+            Assert.AreEqual(2, factory.CreateCount);
+            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.AreSame(first, target[0]);
+            Assert.AreSame(second, target[1]);
             Assert.AreEqual(100, target[0].Value);
             Assert.AreEqual(200, target[1].Value);
         }
@@ -110,11 +117,11 @@ namespace BananaParty.WebSocketRelay.Tests
         [Test]
         public void ShouldShrinkWithoutFactory()
         {
-            var source = new List<MockEntry> { new MockEntry { Value = 7 } };
+            var source = new List<MockEntry> { new MockEntry { Id = Id1, Value = 7 } };
             var target = new List<MockEntry>
             {
-                new MockEntry { Value = 1 },
-                new MockEntry { Value = 2 }
+                new MockEntry { Id = Id1, Value = 1 },
+                new MockEntry { Id = Id2, Value = 2 }
             };
 
             RoundTrip(source, target);
@@ -129,7 +136,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var target = new List<MockEntry>();
             var itemsState = new DynamicArrayState<MockEntry>("Items", target);
             var root = new ObjectState("Root", new List<IState> { itemsState });
-            var input = new JsonStateInput("{\"Root\":{\"Items\":[2,{\"Value\":1},{\"Value\":2}]}}");
+            var input = new JsonStateInput("{\"Root\":{\"Items\":[2,{\"Id\":\"11111111-1111-1111-1111-111111111111\",\"Value\":1},{\"Id\":\"22222222-2222-2222-2222-222222222222\",\"Value\":2}]}}");
 
             InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => root.ReadState(input));
 
@@ -142,10 +149,10 @@ namespace BananaParty.WebSocketRelay.Tests
         {
             var source = new List<MockEntry>
             {
-                new MockEntry { Value = 5 },
-                new MockEntry { Value = 9 }
+                new MockEntry { Id = Id1, Value = 5 },
+                new MockEntry { Id = Id2, Value = 9 }
             };
-            var target = new List<MockEntry> { new MockEntry() };
+            var target = new List<MockEntry> { new MockEntry { Id = Id1 } };
             var factory = new MockEntryFactory();
 
             var sourceState = new DynamicArrayState<MockEntry>("Items", source);
@@ -158,9 +165,34 @@ namespace BananaParty.WebSocketRelay.Tests
             new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(bytes));
 
             Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(1, factory.CreateCount);
+            Assert.AreEqual(2, factory.CreateCount);
+            Assert.AreEqual(1, factory.DisposeCount);
             Assert.AreEqual(5, target[0].Value);
             Assert.AreEqual(9, target[1].Value);
+        }
+
+        [Test]
+        public void ShouldReconcileByKeyAndPreserveExistingInstances()
+        {
+            var source = new List<MockEntry>
+            {
+                new MockEntry { Id = Id1, Value = 10 },
+                new MockEntry { Id = Id2, Value = 20 }
+            };
+            MockEntry idTwo = new MockEntry { Id = Id2, Value = 0 };
+            MockEntry idOne = new MockEntry { Id = Id1, Value = 0 };
+            var target = new List<MockEntry> { idTwo, idOne };
+            var factory = new MockEntryFactory();
+
+            RoundTrip(source, target, factory);
+
+            Assert.AreEqual(2, target.Count);
+            Assert.AreEqual(2, factory.CreateCount);
+            Assert.AreEqual(2, factory.DisposeCount);
+            Assert.AreSame(idOne, target[0]);
+            Assert.AreSame(idTwo, target[1]);
+            Assert.AreEqual(10, target[0].Value);
+            Assert.AreEqual(20, target[1].Value);
         }
 
         [UnityTest]
@@ -172,7 +204,7 @@ namespace BananaParty.WebSocketRelay.Tests
             var stateA = clientAObj.AddComponent<MockGameStateWithDynamicItems>();
             var stateB = clientBObj.AddComponent<MockGameStateWithDynamicItems>();
 
-            stateA.SetItems(10, 20);
+            stateA.SetItems((Id1, 10), (Id2, 20));
 
             using Socket socketA = new Socket(ServerAddress);
             using Socket socketB = new Socket(ServerAddress);
@@ -239,11 +271,20 @@ namespace BananaParty.WebSocketRelay.Tests
         private class MockEntry : IState
         {
             public string StateName => string.Empty;
+            public Guid Id { get; set; }
             public int Value { get; set; }
 
-            public void WriteState(IStateOutput stateOutput) => stateOutput.WriteInt("Value", Value);
+            public void WriteState(IStateOutput stateOutput)
+            {
+                stateOutput.WriteGuid("Id", Id);
+                stateOutput.WriteInt("Value", Value);
+            }
 
-            public void ReadState(IStateInput stateInput) => Value = stateInput.ReadInt("Value");
+            public void ReadState(IStateInput stateInput)
+            {
+                Id = stateInput.ReadGuid("Id");
+                Value = stateInput.ReadInt("Value");
+            }
         }
 
         private class MockEntryFactory : IFactory<MockEntry>
@@ -263,6 +304,8 @@ namespace BananaParty.WebSocketRelay.Tests
                 DisposeCount++;
                 Disposed.Add(entry);
             }
+
+            public Guid GetKey(MockEntry entry) => entry.Id;
         }
 
         private class MockGameStateWithDynamicItems : MonoBehaviour, IState, IFactory<MockEntry>
@@ -291,11 +334,13 @@ namespace BananaParty.WebSocketRelay.Tests
 
             public void Dispose(MockEntry entry) => DisposeCount++;
 
-            public void SetItems(params int[] values)
+            public Guid GetKey(MockEntry entry) => entry.Id;
+
+            public void SetItems(params (Guid id, int value)[] items)
             {
                 _items.Clear();
-                foreach (int value in values)
-                    _items.Add(new MockEntry { Value = value });
+                foreach ((Guid id, int value) in items)
+                    _items.Add(new MockEntry { Id = id, Value = value });
             }
 
             public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);

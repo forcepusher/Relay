@@ -59,20 +59,22 @@ namespace BananaParty.WebSocketRelay
             StartArray(name);
             int count = ReadIntArrayEntry();
 
-            while (states.Count > count)
-            {
-                T removed = states[states.Count - 1];
-                states.RemoveAt(states.Count - 1);
-                factory.Dispose(removed);
-            }
-
-            while (states.Count < count)
-                states.Add(factory.Create());
-
-            for (int i = 0; i < count; i++)
-                states[i].ReadState(this);
+            DynamicArraySync.ReadByKey(
+                count,
+                states,
+                factory,
+                entry => entry.ReadState(this),
+                CopyStateFrom,
+                factory.Dispose);
 
             EndArray();
+        }
+
+        public void CopyStateFrom(IState source, IState target)
+        {
+            var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
+            source.WriteState(output);
+            target.ReadState(new JsonStateInput(output.ToString()));
         }
 
         public string ReadString(string name)
