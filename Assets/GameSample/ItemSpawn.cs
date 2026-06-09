@@ -38,15 +38,15 @@ namespace BananaParty.WebSocketRelay.Samples
         public Item Create()
         {
             Item item = Instantiate(_itemPrefab, transform);
-            if (item.Id == Guid.Empty)
-                item.Id = Guid.NewGuid();
+            if (item.Guid.Value == Guid.Empty)
+                item.Guid.Value = Guid.NewGuid();
 
             return item;
         }
 
         public void Dispose(Item item) => Destroy(item.gameObject);
 
-        public Guid GetKey(Item item) => item.Id;
+        public Guid GetKey(Item item) => item.Guid.Value;
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
 
