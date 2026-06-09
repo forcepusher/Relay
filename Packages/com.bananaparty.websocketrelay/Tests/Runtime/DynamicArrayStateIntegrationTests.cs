@@ -59,8 +59,8 @@ namespace BananaParty.WebSocketRelay.Tests
             RoundTrip(source, target, factory);
 
             Assert.AreEqual(3, target.Count);
-            Assert.AreEqual(3, factory.CreateCount);
-            Assert.AreEqual(1, factory.DisposeCount);
+            Assert.AreEqual(5, factory.CreateCount);
+            Assert.AreEqual(3, factory.DisposeCount);
             Assert.AreSame(existing, target[0]);
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);
@@ -165,8 +165,8 @@ namespace BananaParty.WebSocketRelay.Tests
             new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(bytes));
 
             Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(2, factory.CreateCount);
-            Assert.AreEqual(1, factory.DisposeCount);
+            Assert.AreEqual(3, factory.CreateCount);
+            Assert.AreEqual(2, factory.DisposeCount);
             Assert.AreEqual(5, target[0].Value);
             Assert.AreEqual(9, target[1].Value);
         }
@@ -240,7 +240,7 @@ namespace BananaParty.WebSocketRelay.Tests
             stateB.ReadState(new JsonStateInput(Encoding.UTF8.GetString(socketB.ReadPayloadQueue())));
 
             Assert.AreEqual(2, stateB.Items.Count);
-            Assert.AreEqual(2, stateB.CreateCount);
+            Assert.AreEqual(4, stateB.CreateCount);
             Assert.AreEqual(10, stateB.Items[0].Value);
             Assert.AreEqual(20, stateB.Items[1].Value);
 
@@ -293,10 +293,10 @@ namespace BananaParty.WebSocketRelay.Tests
             public int DisposeCount { get; private set; }
             public List<MockEntry> Disposed { get; } = new();
 
-            public MockEntry Create()
+            public MockEntry Create(Guid id)
             {
                 CreateCount++;
-                return new MockEntry();
+                return new MockEntry { Id = id };
             }
 
             public void Dispose(MockEntry entry)
@@ -326,10 +326,10 @@ namespace BananaParty.WebSocketRelay.Tests
                 _states = new List<IState> { _itemsState };
             }
 
-            public MockEntry Create()
+            public MockEntry Create(Guid id)
             {
                 CreateCount++;
-                return new MockEntry();
+                return new MockEntry { Id = id };
             }
 
             public void Dispose(MockEntry entry) => DisposeCount++;

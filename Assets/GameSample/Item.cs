@@ -6,7 +6,7 @@ namespace BananaParty.WebSocketRelay.Samples
 {
     public class Item : MonoBehaviour, IState
     {
-        public GuidState Guid = new(nameof(Guid), System.Guid.Empty);
+        public GuidState Key = new(nameof(Key), Guid.Empty);
         public FloatState TimeToDisappear = new(nameof(TimeToDisappear), 5f);
         private List<IState> _states;
 
@@ -14,7 +14,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void Awake()
         {
-            _states = new List<IState> { Guid, TimeToDisappear };
+            _states = new List<IState> { Key, TimeToDisappear };
         }
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);

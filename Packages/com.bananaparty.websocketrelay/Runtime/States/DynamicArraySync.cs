@@ -20,7 +20,7 @@ namespace BananaParty.WebSocketRelay
             }
 
             while (states.Count < count)
-                states.Add(factory.Create());
+                states.Add(factory.Create(Guid.Empty));
 
             for (int i = 0; i < count; i++)
                 readEntry(states[i]);
@@ -37,7 +37,7 @@ namespace BananaParty.WebSocketRelay
             var incoming = new List<T>(count);
             for (int i = 0; i < count; i++)
             {
-                T staging = factory.Create();
+                T staging = factory.Create(Guid.Empty);
                 readEntry(staging);
                 incoming.Add(staging);
             }
@@ -69,7 +69,10 @@ namespace BananaParty.WebSocketRelay
                 }
                 else
                 {
-                    next.Add(staging);
+                    T entry = factory.Create(entryKey);
+                    copyState(staging, entry);
+                    disposeEntry(staging);
+                    next.Add(entry);
                 }
             }
 

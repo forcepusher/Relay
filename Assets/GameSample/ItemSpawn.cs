@@ -30,23 +30,22 @@ namespace BananaParty.WebSocketRelay.Samples
                 _timeToSpawn.Value -= Time.deltaTime;
             else
             {
-                _items.Add(Create());
+                _items.Add(Create(Guid.NewGuid()));
                 _timeToSpawn.Value = RespawnDelay;
             }
         }
 
-        public Item Create()
+        public Item Create(Guid key)
         {
             Item item = Instantiate(_itemPrefab, transform);
-            if (item.Guid.Value == Guid.Empty)
-                item.Guid.Value = Guid.NewGuid();
+            item.Key.Value = key;
 
             return item;
         }
 
         public void Dispose(Item item) => Destroy(item.gameObject);
 
-        public Guid GetKey(Item item) => item.Guid.Value;
+        public Guid GetKey(Item item) => item.Key.Value;
 
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteObject(StateName, _states);
 
