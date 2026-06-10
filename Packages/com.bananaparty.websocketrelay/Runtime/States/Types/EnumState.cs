@@ -18,5 +18,11 @@ namespace BananaParty.WebSocketRelay
 
         public void ReadState(IStateInput stateInput) =>
             Value = (T)Enum.ToObject(typeof(T), stateInput.ReadInt(StateName));
+
+        public void CopyFrom(IState other)
+        {
+            if (other is EnumState<T> otherState)
+                this.Value = otherState.Value;
+        }
     }
 }

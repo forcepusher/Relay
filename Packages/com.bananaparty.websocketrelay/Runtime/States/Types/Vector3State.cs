@@ -33,6 +33,12 @@ namespace BananaParty.WebSocketRelay
             SyncValueFromComponents();
         }
 
+        public void CopyFrom(IState other)
+        {
+            if (other is Vector3State otherState)
+                this.Value = otherState.Value;
+        }
+
         private void SyncComponentsFromValue()
         {
             _x.Value = Value.x;

@@ -14,5 +14,11 @@ namespace BananaParty.WebSocketRelay
         public void WriteState(IStateOutput stateOutput) => stateOutput.WriteLong(StateName, Value);
 
         public void ReadState(IStateInput stateInput) => Value = stateInput.ReadLong(StateName);
+
+        public void CopyFrom(IState other)
+        {
+            if (other is LongState otherState)
+                this.Value = otherState.Value;
+        }
     }
 }

@@ -103,9 +103,7 @@ namespace BananaParty.WebSocketRelay
 
         private void CopyStateFrom(IState source, IState target)
         {
-            var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
-            source.WriteState(output);
-            new JsonStateInput(output.ToString()).ReadObject(string.Empty, new List<IState> { target });
+            target.CopyFrom(source);
         }
 
         public string ReadString(string name)

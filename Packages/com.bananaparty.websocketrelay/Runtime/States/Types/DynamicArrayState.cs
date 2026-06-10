@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace BananaParty.WebSocketRelay
@@ -29,6 +30,17 @@ namespace BananaParty.WebSocketRelay
                 stateInput.ReadDynamicArray(StateName, _states, _factory);
             else
                 stateInput.ReadDynamicArray(StateName, _states);
+        }
+
+        public void CopyFrom(IState other)
+        {
+            if (other is DynamicArrayState<T> otherState)
+            {
+                for (int i = 0; i < Math.Min(_states.Count, otherState._states.Count); i++)
+                {
+                    _states[i].CopyFrom(otherState._states[i]);
+                }
+            }
         }
 
         private List<IState> ToStateList()
