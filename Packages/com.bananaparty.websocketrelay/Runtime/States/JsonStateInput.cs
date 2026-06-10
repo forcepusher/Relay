@@ -60,40 +60,57 @@ namespace BananaParty.WebSocketRelay
         public void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IKeyedState
         {
             StartArray(name);
+            int count = ReadIntArrayEntry();
 
-            var incoming = new List<T>();
-            while (HasNextArrayElement())
+            var incoming = new List<T>(count);
+            for (int i = 0; i < count; i++)
             {
                 T staging = factory.Create(Guid.Empty);
                 staging.ReadState(this);
                 incoming.Add(staging);
             }
 
-            var stateMap = new Dictionary<Guid, T>();
-            foreach (T state in states)
-                stateMap[state.StateKey.Value] = state;
+            var incomingKeys = new HashSet<Guid>();
+            foreach (T entry in incoming)
+                incomingKeys.Add(entry.StateKey.Value);
+
+            for (int i = states.Count - 1; i >= 0; i--)
+            {
+                if (incomingKeys.Contains(states[i].StateKey.Value))
+                    continue;
+
+                factory.Dispose(states[i]);
+                states.RemoveAt(i);
+            }
 
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid key = staging.StateKey.Value;
-                if (stateMap.TryGetValue(key, out T existing))
+                Guid entryKey = staging.StateKey.Value;
+                T existing = default;
+                foreach (T state in states)
+                {
+                    if (state.StateKey.Value != entryKey)
+                        continue;
+
+                    existing = state;
+                    break;
+                }
+
+                if (existing != null)
                 {
                     CopyStateFrom(staging, existing);
+                    factory.Dispose(staging);
                     next.Add(existing);
-                    stateMap.Remove(key);
                 }
                 else
                 {
-                    T entry = factory.Create(key);
+                    T entry = factory.Create(entryKey);
                     CopyStateFrom(staging, entry);
+                    factory.Dispose(staging);
                     next.Add(entry);
                 }
-                factory.Dispose(staging);
             }
-
-            foreach (T orphaned in stateMap.Values)
-                factory.Dispose(orphaned);
 
             states.Clear();
             states.AddRange(next);
@@ -103,7 +120,9 @@ namespace BananaParty.WebSocketRelay
 
         private void CopyStateFrom(IState source, IState target)
         {
-            StateBridge.Copy(source, target);
+            var output = new JsonStateOutput(prettyPrint: false, bracesOnNewLine: false);
+            source.WriteState(output);
+            new JsonStateInput(output.ToString()).ReadObject(string.Empty, new List<IState> { target });
         }
 
         public string ReadString(string name)
