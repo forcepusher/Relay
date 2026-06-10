@@ -32,17 +32,6 @@ namespace BananaParty.WebSocketRelay
                 stateInput.ReadDynamicArray(StateName, _states);
         }
 
-        public void CopyFrom(IState other)
-        {
-            if (other is DynamicArrayState<T> otherState)
-            {
-                for (int i = 0; i < Math.Min(_states.Count, otherState._states.Count); i++)
-                {
-                    StateBridge.Copy(otherState._states[i], _states[i]);
-                }
-            }
-        }
-
         private List<IState> ToStateList()
         {
             var states = new List<IState>(_states.Count);

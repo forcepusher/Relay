@@ -19,23 +19,15 @@ namespace BananaParty.WebSocketRelay
             if (sourceType != targetType)
                 throw new ArgumentException($"Cannot copy state from {sourceType.Name} to {targetType.Name}");
 
-            // Optimization: Check if the type has a CopyFrom method we can call directly
-            // (Even if it's not in the interface, we can use reflection once or cache the delegate)
-            var copyMethod = sourceType.GetMethod("CopyFrom", new[] { typeof(IState) });
-            if (copyMethod != null)
+            // Handle container states first by looking for the '_states' field
+            var statesField = sourceType.GetField("_states", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (statesField != null)
             {
-                copyMethod.Invoke(target, new object[] { source });
+                CopyContainerStates(source, target, statesField);
                 return;
             }
 
-            // Handle complex states first
-            if (source is ObjectState objSource && target is ObjectState objTarget)
-            {
-                CopyObjectStates(objSource, objTarget);
-                return;
-            }
-
-            // For most other states, they have a 'Value' property.
+            // For simple states, they have a 'Value' property.
             var valueProp = GetValueProperty(sourceType);
             if (valueProp != null)
             {
@@ -44,20 +36,20 @@ namespace BananaParty.WebSocketRelay
             }
         }
 
-        private static void CopyObjectStates(ObjectState source, ObjectState target)
+        private static void CopyContainerStates(IState source, IState target, FieldInfo statesField)
         {
-            // Since we can't access the private _states list easily without reflection
-            var statesField = typeof(ObjectState).GetField("_states", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (statesField == null) return;
+            var sourceList = statesField.GetValue(source) as IList;
+            var targetList = statesField.GetValue(target) as IList;
 
-            var sourceStates = (List<IState>)statesField.GetValue(source);
-            var targetStates = (List<IState>)statesField.GetValue(target);
+            if (sourceList == null || targetList == null) return;
 
-            if (sourceStates == null || targetStates == null) return;
-
-            for (int i = 0; i < Math.Min(sourceStates.Count, targetStates.Count); i++)
+            int count = Math.Min(sourceList.Count, targetList.Count);
+            for (int i = 0; i < count; i++)
             {
-                Copy(sourceStates[i], targetStates[i]);
+                var s = sourceList[i] as IState;
+                var t = targetList[i] as IState;
+                if (s != null && t != null)
+                    Copy(s, t);
             }
         }
 
