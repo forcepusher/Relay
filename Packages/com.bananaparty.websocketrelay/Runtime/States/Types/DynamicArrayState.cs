@@ -38,7 +38,7 @@ namespace BananaParty.WebSocketRelay
             {
                 for (int i = 0; i < Math.Min(_states.Count, otherState._states.Count); i++)
                 {
-                    _states[i].CopyFrom(otherState._states[i]);
+                    StateBridge.Copy(otherState._states[i], _states[i]);
                 }
             }
         }

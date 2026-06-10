@@ -102,7 +102,7 @@ namespace BananaParty.WebSocketRelay
 
         private void CopyStateFrom(IState source, IState target)
         {
-            target.CopyFrom(source);
+            StateBridge.Copy(source, target);
         }
 
         public string ReadString(string name)

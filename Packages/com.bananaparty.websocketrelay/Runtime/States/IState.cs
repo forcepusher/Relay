@@ -5,6 +5,5 @@ namespace BananaParty.WebSocketRelay
         string StateName { get; }
         void WriteState(IStateOutput stateOutput);
         void ReadState(IStateInput stateInput);
-        void CopyFrom(IState other);
     }
 }
