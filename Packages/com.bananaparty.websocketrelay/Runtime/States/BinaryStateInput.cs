@@ -7,15 +7,15 @@ namespace BananaParty.WebSocketRelay
 {
     public class BinaryStateInput : IStateInput
     {
-        private readonly byte[] _data;
+        private readonly ReadOnlyMemory<byte> _data;
         private int _pos;
         private readonly Stack<bool> _inArrayStack = new();
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public BinaryStateInput(byte[] data)
+        public BinaryStateInput(ReadOnlyMemory<byte> data)
         {
-            _data = data ?? Array.Empty<byte>();
+            _data = data;
         }
 
         public void ReadObject(string name, List<IState> states)
@@ -223,7 +223,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 4 > _data.Length)
                 return 0;
 
-            int hash = BitConverter.ToInt32(_data, _pos);
+            int hash = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return hash;
         }
@@ -233,7 +233,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos >= _data.Length)
                 return 0;
 
-            return _data[_pos++];
+            return _data.Span[_pos++];
         }
 
         private int ReadInt32()
@@ -241,7 +241,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 4 > _data.Length)
                 return 0;
 
-            int value = BitConverter.ToInt32(_data, _pos);
+            int value = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return value;
         }
@@ -251,7 +251,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 8 > _data.Length)
                 return 0L;
 
-            long value = BitConverter.ToInt64(_data, _pos);
+            long value = BitConverter.ToInt64(_data.Span.Slice(_pos, 8));
             _pos += 8;
             return value;
         }
@@ -261,7 +261,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 4 > _data.Length)
                 return 0f;
 
-            float value = BitConverter.ToSingle(_data, _pos);
+            float value = BitConverter.ToSingle(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return value;
         }
@@ -271,7 +271,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 8 > _data.Length)
                 return 0d;
 
-            double value = BitConverter.ToDouble(_data, _pos);
+            double value = BitConverter.ToDouble(_data.Span.Slice(_pos, 8));
             _pos += 8;
             return value;
         }
@@ -281,7 +281,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos >= _data.Length)
                 return false;
 
-            return _data[_pos++] != 0;
+            return _data.Span[_pos++] != 0;
         }
 
         private string ReadStringValue()
@@ -289,7 +289,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 2 > _data.Length)
                 return null;
 
-            ushort length = BitConverter.ToUInt16(_data, _pos);
+            ushort length = BitConverter.ToUInt16(_data.Span.Slice(_pos, 2));
             _pos += 2;
 
             if (length == 0)
@@ -298,7 +298,7 @@ namespace BananaParty.WebSocketRelay
             if (_pos + length > _data.Length)
                 return null;
 
-            string value = Encoding.UTF8.GetString(_data, _pos, length);
+            string value = Encoding.UTF8.GetString(_data.Span.Slice(_pos, length));
             _pos += length;
             return value;
         }
@@ -308,10 +308,9 @@ namespace BananaParty.WebSocketRelay
             if (_pos + 16 > _data.Length)
                 return Guid.Empty;
 
-            byte[] bytes = new byte[16];
-            Array.Copy(_data, _pos, bytes, 0, 16);
+            ReadOnlySpan<byte> guidBytes = _data.Span.Slice(_pos, 16);
             _pos += 16;
-            return new Guid(bytes);
+            return new Guid(guidBytes);
         }
     }
 }

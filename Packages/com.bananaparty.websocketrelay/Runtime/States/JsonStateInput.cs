@@ -216,6 +216,14 @@ namespace BananaParty.WebSocketRelay
                 _inArrayStack.Pop();
         }
 
+        private int ReadIntArrayEntry()
+        {
+            if (!TryAdvanceToEntry(null))
+                return 0;
+
+            return ReadIntAtPosition();
+        }
+
         private bool HasNextArrayElement()
         {
             SkipWhitespace();
