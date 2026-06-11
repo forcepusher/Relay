@@ -221,7 +221,7 @@ namespace BananaParty.WebSocketRelay
         private int ReadNameHash()
         {
             if (_pos + 4 > _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading name hash.");
 
             int hash = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
@@ -231,7 +231,7 @@ namespace BananaParty.WebSocketRelay
         private byte ReadByteValue()
         {
             if (_pos >= _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading byte value.");
 
             return _data.Span[_pos++];
         }
@@ -239,7 +239,7 @@ namespace BananaParty.WebSocketRelay
         private int ReadInt32()
         {
             if (_pos + 4 > _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Int32.");
 
             int value = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
@@ -249,7 +249,7 @@ namespace BananaParty.WebSocketRelay
         private long ReadInt64()
         {
             if (_pos + 8 > _data.Length)
-                return 0L;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Int64.");
 
             long value = BitConverter.ToInt64(_data.Span.Slice(_pos, 8));
             _pos += 8;
@@ -259,7 +259,7 @@ namespace BananaParty.WebSocketRelay
         private float ReadFloat32()
         {
             if (_pos + 4 > _data.Length)
-                return 0f;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Float32.");
 
             float value = BitConverter.ToSingle(_data.Span.Slice(_pos, 4));
             _pos += 4;
@@ -269,7 +269,7 @@ namespace BananaParty.WebSocketRelay
         private double ReadFloat64()
         {
             if (_pos + 8 > _data.Length)
-                return 0d;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Float64.");
 
             double value = BitConverter.ToDouble(_data.Span.Slice(_pos, 8));
             _pos += 8;
@@ -279,7 +279,7 @@ namespace BananaParty.WebSocketRelay
         private bool ReadBoolValue()
         {
             if (_pos >= _data.Length)
-                return false;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading boolean.");
 
             return _data.Span[_pos++] != 0;
         }
@@ -287,7 +287,7 @@ namespace BananaParty.WebSocketRelay
         private string ReadStringValue()
         {
             if (_pos + 2 > _data.Length)
-                return null;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading string length.");
 
             ushort length = BitConverter.ToUInt16(_data.Span.Slice(_pos, 2));
             _pos += 2;
@@ -296,7 +296,7 @@ namespace BananaParty.WebSocketRelay
                 return string.Empty;
 
             if (_pos + length > _data.Length)
-                return null;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading string content.");
 
             string value = Encoding.UTF8.GetString(_data.Span.Slice(_pos, length));
             _pos += length;
@@ -306,7 +306,7 @@ namespace BananaParty.WebSocketRelay
         private Guid ReadGuidValue()
         {
             if (_pos + 16 > _data.Length)
-                return Guid.Empty;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Guid.");
 
             ReadOnlySpan<byte> guidBytes = _data.Span.Slice(_pos, 16);
             _pos += 16;

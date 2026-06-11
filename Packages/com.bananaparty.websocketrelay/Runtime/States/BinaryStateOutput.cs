@@ -18,6 +18,8 @@ namespace BananaParty.WebSocketRelay
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
+        public ReadOnlyMemory<byte> GetBuffer() => _stream.GetBuffer().AsMemory(0, (int)_stream.Length);
+
         public void WriteObject(string name, List<IState> states)
         {
             StartObject(name);

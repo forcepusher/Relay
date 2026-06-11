@@ -44,7 +44,11 @@ namespace BananaParty.WebSocketRelay.Tests
             };
 
             RoundTrip(source, target);
+            Assert.AreEqual(2, target.Count);
+            Assert.AreEqual(10, target[0].Value);
+            Assert.AreEqual(20, target[1].Value);
 
+            BinaryRoundTrip(source, target);
             Assert.AreEqual(2, target.Count);
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);
@@ -64,7 +68,6 @@ namespace BananaParty.WebSocketRelay.Tests
             var factory = new MockEntryFactory();
 
             RoundTrip(source, target, factory);
-
             Assert.AreEqual(3, target.Count);
             Assert.AreEqual(5, factory.CreateCount);
             Assert.AreEqual(3, factory.DisposeCount);
@@ -72,6 +75,15 @@ namespace BananaParty.WebSocketRelay.Tests
             Assert.AreEqual(10, target[0].Value);
             Assert.AreEqual(20, target[1].Value);
             Assert.AreEqual(30, target[2].Value);
+
+            // Reset factory for binary test
+            var factoryBin = new MockEntryFactory();
+            var targetBin = new List<MockEntry> { existing };
+            BinaryRoundTrip(source, targetBin, factoryBin);
+            Assert.AreEqual(3, targetBin.Count);
+            Assert.AreEqual(10, targetBin[0].Value);
+            Assert.AreEqual(20, targetBin[1].Value);
+            Assert.AreEqual(30, targetBin[2].Value);
         }
 
         [Test]
@@ -89,12 +101,17 @@ namespace BananaParty.WebSocketRelay.Tests
             var factory = new MockEntryFactory();
 
             RoundTrip(source, target, factory);
-
             Assert.AreEqual(1, target.Count);
             Assert.AreEqual(42, target[0].Value);
             Assert.AreEqual(3, factory.DisposeCount);
             Assert.Contains(removedOne, factory.Disposed);
             Assert.Contains(removedTwo, factory.Disposed);
+
+            var factoryBin = new MockEntryFactory();
+            var targetBin = new List<MockEntry> { Entry(Id1, 1), Entry(Id2, 2), Entry(Id3, 3) };
+            BinaryRoundTrip(source, targetBin, factoryBin);
+            Assert.AreEqual(1, targetBin.Count);
+            Assert.AreEqual(42, targetBin[0].Value);
         }
 
         [Test]
@@ -111,7 +128,6 @@ namespace BananaParty.WebSocketRelay.Tests
             var factory = new MockEntryFactory();
 
             RoundTrip(source, target, factory);
-
             Assert.AreEqual(2, target.Count);
             Assert.AreEqual(2, factory.CreateCount);
             Assert.AreEqual(2, factory.DisposeCount);
@@ -119,6 +135,13 @@ namespace BananaParty.WebSocketRelay.Tests
             Assert.AreSame(second, target[1]);
             Assert.AreEqual(100, target[0].Value);
             Assert.AreEqual(200, target[1].Value);
+
+            var factoryBin = new MockEntryFactory();
+            var targetBin = new List<MockEntry> { Entry(Id1, 1), Entry(Id2, 2) };
+            BinaryRoundTrip(source, targetBin, factoryBin);
+            Assert.AreEqual(2, targetBin.Count);
+            Assert.AreEqual(100, targetBin[0].Value);
+            Assert.AreEqual(200, targetBin[1].Value);
         }
 
         [Test]
@@ -132,7 +155,10 @@ namespace BananaParty.WebSocketRelay.Tests
             };
 
             RoundTrip(source, target);
+            Assert.AreEqual(1, target.Count);
+            Assert.AreEqual(7, target[0].Value);
 
+            BinaryRoundTrip(source, target);
             Assert.AreEqual(1, target.Count);
             Assert.AreEqual(7, target[0].Value);
         }
@@ -149,33 +175,45 @@ namespace BananaParty.WebSocketRelay.Tests
 
             Assert.That(exception.Message, Does.Contain("requires at least 1 entries"));
             Assert.AreEqual(0, target.Count);
+
+            // Binary test
+            var sourceBin = new List<MockEntry> { Entry(Id1), Entry(Id2) };
+            var sourceStateBin = new DynamicArrayState<MockEntry>("Items", sourceBin);
+            var outputBin = new BinaryStateOutput();
+            new ObjectState("Root", new List<IState> { sourceStateBin }).WriteState(outputBin);
+
+            Assert.Throws<InvalidOperationException>(() =>
+                new ObjectState("Root", new List<IState> { itemsState }).ReadState(new BinaryStateInput(outputBin.GetBuffer())));
         }
 
         [Test]
-        public void ShouldRoundTripThroughBinaryFormat()
+        public void ShouldHandleEmptyArrays()
         {
-            var source = new List<MockEntry>
-            {
-                Entry(Id1, 5),
-                Entry(Id2, 9)
-            };
+            var source = new List<MockEntry>();
             var target = new List<MockEntry> { Entry(Id1) };
             var factory = new MockEntryFactory();
 
-            var sourceState = new DynamicArrayState<MockEntry>("Items", source);
-            var targetState = new DynamicArrayState<MockEntry>("Items", target, factory);
+            RoundTrip(source, target, factory);
+            Assert.AreEqual(0, target.Count);
 
-            var output = new BinaryStateOutput();
-            new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
-            byte[] bytes = output.ToArray();
+            BinaryRoundTrip(source, target, factory);
+            Assert.AreEqual(0, target.Count);
+        }
 
-            new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(bytes));
+        [Test]
+        public void ShouldThrowOnMalformedData()
+        {
+            var target = new List<MockEntry>();
+            var itemsState = new DynamicArrayState<MockEntry>("Items", target);
+            var root = new ObjectState("Root", new List<IState> { itemsState });
 
-            Assert.AreEqual(2, target.Count);
-            Assert.AreEqual(3, factory.CreateCount);
-            Assert.AreEqual(2, factory.DisposeCount);
-            Assert.AreEqual(5, target[0].Value);
-            Assert.AreEqual(9, target[1].Value);
+            // JSON: Missing "Id" field in one of the entries
+            var jsonInput = new JsonStateInput("{\"Root\":{\"Items\":[{\"Value\":1}]}}");
+            Assert.Throws<KeyNotFoundException>(() => root.ReadState(jsonInput));
+
+            // Binary: Truncated buffer (only 2 bytes instead of a full header/entry)
+            var binaryInput = new BinaryStateInput(new byte[] { 0, 1 });
+            Assert.Throws<EndOfStreamException>(() => root.ReadState(binaryInput));
         }
 
         [Test]
@@ -273,6 +311,26 @@ namespace BananaParty.WebSocketRelay.Tests
 
             new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
             new ObjectState("Root", new List<IState> { targetState }).ReadState(new JsonStateInput(output.ToString()));
+        }
+
+        private static void BinaryRoundTrip(List<MockEntry> source, List<MockEntry> target)
+        {
+            var sourceState = new DynamicArrayState<MockEntry>("Items", source);
+            var targetState = new DynamicArrayState<MockEntry>("Items", target);
+            var output = new BinaryStateOutput();
+
+            new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
+            new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(output.GetBuffer()));
+        }
+
+        private static void BinaryRoundTrip(List<MockEntry> source, List<MockEntry> target, IFactory<MockEntry> factory)
+        {
+            var sourceState = new DynamicArrayState<MockEntry>("Items", source);
+            var targetState = new DynamicArrayState<MockEntry>("Items", target, factory);
+            var output = new BinaryStateOutput();
+
+            new ObjectState("Root", new List<IState> { sourceState }).WriteState(output);
+            new ObjectState("Root", new List<IState> { targetState }).ReadState(new BinaryStateInput(output.GetBuffer()));
         }
 
         private class MockEntry : IKeyedState
