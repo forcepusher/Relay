@@ -60,57 +60,40 @@ namespace BananaParty.WebSocketRelay
         public void ReadDynamicArray<T>(string name, List<T> states, IFactory<T> factory) where T : IKeyedState
         {
             StartArray(name);
-            int count = ReadIntArrayEntry();
 
-            var incoming = new List<T>(count);
-            for (int i = 0; i < count; i++)
+            var incoming = new List<T>();
+            while (HasNextArrayElement())
             {
                 T staging = factory.Create(Guid.Empty);
                 staging.ReadState(this);
                 incoming.Add(staging);
             }
 
-            var incomingKeys = new HashSet<Guid>();
-            foreach (T entry in incoming)
-                incomingKeys.Add(entry.StateKey.Value);
-
-            for (int i = states.Count - 1; i >= 0; i--)
-            {
-                if (incomingKeys.Contains(states[i].StateKey.Value))
-                    continue;
-
-                factory.Dispose(states[i]);
-                states.RemoveAt(i);
-            }
+            var stateMap = new Dictionary<Guid, T>();
+            foreach (T state in states)
+                stateMap[state.StateKey.Value] = state;
 
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid entryKey = staging.StateKey.Value;
-                T existing = default;
-                foreach (T state in states)
-                {
-                    if (state.StateKey.Value != entryKey)
-                        continue;
-
-                    existing = state;
-                    break;
-                }
-
-                if (existing != null)
+                Guid key = staging.StateKey.Value;
+                if (stateMap.TryGetValue(key, out T existing))
                 {
                     CopyStateFrom(staging, existing);
-                    factory.Dispose(staging);
                     next.Add(existing);
+                    stateMap.Remove(key);
                 }
                 else
                 {
-                    T entry = factory.Create(entryKey);
+                    T entry = factory.Create(key);
                     CopyStateFrom(staging, entry);
-                    factory.Dispose(staging);
                     next.Add(entry);
                 }
+                factory.Dispose(staging);
             }
+
+            foreach (T orphaned in stateMap.Values)
+                factory.Dispose(orphaned);
 
             states.Clear();
             states.AddRange(next);
@@ -127,8 +110,7 @@ namespace BananaParty.WebSocketRelay
 
         public string ReadString(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return null;
+            AdvanceToEntry(name);
 
             if (_position < _jsonString.Length && _jsonString[_position] == '"')
                 return ReadQuotedString();
@@ -138,48 +120,42 @@ namespace BananaParty.WebSocketRelay
 
         public byte ReadByte(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0;
+            AdvanceToEntry(name);
 
             return ReadByteAtPosition();
         }
 
         public int ReadInt(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0;
+            AdvanceToEntry(name);
 
             return ReadIntAtPosition();
         }
 
         public long ReadLong(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0L;
+            AdvanceToEntry(name);
 
             return ReadLongAtPosition();
         }
 
         public float ReadFloat(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0f;
+            AdvanceToEntry(name);
 
             return ReadFloatAtPosition();
         }
 
         public double ReadDouble(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0d;
+            AdvanceToEntry(name);
 
             return ReadDoubleAtPosition();
         }
 
         public bool ReadBool(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return false;
+            AdvanceToEntry(name);
 
             return ReadBoolAtPosition();
         }
@@ -214,14 +190,6 @@ namespace BananaParty.WebSocketRelay
             ReadContainerClose(']');
             if (_inArrayStack.Count > 0)
                 _inArrayStack.Pop();
-        }
-
-        private int ReadIntArrayEntry()
-        {
-            if (!TryAdvanceToEntry(null))
-                return 0;
-
-            return ReadIntAtPosition();
         }
 
         private bool HasNextArrayElement()
@@ -264,21 +232,16 @@ namespace BananaParty.WebSocketRelay
             ReadQuotedString();
         }
 
-        private bool TryAdvanceToEntry(string expectedName)
+        private void AdvanceToEntry(string expectedName)
         {
-            if (InArray)
-            {
-                SkipItemSeparator();
-                return true;
-            }
-
             SkipItemSeparator();
+            if (InArray) return;
+
             string entryName = ReadQuotedString();
             if (!string.IsNullOrEmpty(expectedName) && entryName != expectedName)
-                return false;
+                throw new KeyNotFoundException($"Expected field '{expectedName}' but found '{entryName ?? "null"}' in JSON state.");
 
             SkipColon();
-            return true;
         }
 
         private void SkipItemSeparator()
