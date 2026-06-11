@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace BananaParty.WebSocketRelay.Samples
 {
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour, IState, IICharacterInput
+    public class Character : MonoBehaviour, IState
     {
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotationSpeed = 10f;
@@ -14,7 +14,7 @@ namespace BananaParty.WebSocketRelay.Samples
         private CharacterController _characteController;
         private IICharacterInput _characterInput;
 
-        private float _jumpVelocity;
+        private float _verticalVelocity;
 
         private FloatState _health = new(nameof(_health), 100f);
         private Vector3State _position = new(nameof(_position), Vector3.zero);
@@ -42,22 +42,7 @@ namespace BananaParty.WebSocketRelay.Samples
 
         private void Move()
         {
-            Vector2 input = Vector2.zero;
-
-            if (Keyboard.current != null)
-            {
-                if (Keyboard.current.wKey.isPressed) input.y += 1f;
-                if (Keyboard.current.sKey.isPressed) input.y -= 1f;
-                if (Keyboard.current.aKey.isPressed) input.x -= 1f;
-                if (Keyboard.current.dKey.isPressed) input.x += 1f;
-
-                if (_characteController.isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
-                {
-                    _jumpVelocity = Mathf.Sqrt(jumpHeight * 2f * 9.81f);
-                }
-            }
-
-            Vector3 moveDirection = new Vector3(input.x, 0, input.y).normalized;
+            Vector3 moveDirection = new Vector3(_characterInput.MovementInput.x, 0, _characterInput.MovementInput.y).normalized;
 
             if (moveDirection != Vector3.zero)
             {
@@ -67,16 +52,21 @@ namespace BananaParty.WebSocketRelay.Samples
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
 
-            if (_characteController.isGrounded && _jumpVelocity < 0)
+            if (_characterInput.JumpInput && _characteController.isGrounded)
             {
-                _jumpVelocity = -2f;
+                _verticalVelocity = Mathf.Sqrt(jumpHeight * 2f * 9.81f);
+            }
+
+            if (_characteController.isGrounded && _verticalVelocity < 0)
+            {
+                _verticalVelocity = -2f;
             }
             else
             {
-                _jumpVelocity -= 9.81f * Time.deltaTime;
+                _verticalVelocity -= 9.81f * Time.deltaTime;
             }
 
-            _characteController.Move(Vector3.up * _jumpVelocity * Time.deltaTime);
+            _characteController.Move(Vector3.up * _verticalVelocity * Time.deltaTime);
         }
     }
 }

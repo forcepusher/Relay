@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace BananaParty.WebSocketRelay.Samples
 {
-    public class KeyboardCharacterInput : IICharacterInput
+    public class KeyboardCharacterInput : MonoBehaviour, IICharacterInput
     {
         public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
@@ -12,6 +12,7 @@ namespace BananaParty.WebSocketRelay.Samples
         public void PollInput()
         {
             Vector2 input = Vector2.zero;
+            JumpInput = false;
 
             if (Keyboard.current == null)
                 return;
