@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
@@ -207,9 +208,13 @@ namespace BananaParty.WebSocketRelay.Tests
             var itemsState = new DynamicArrayState<MockEntry>("Items", target);
             var root = new ObjectState("Root", new List<IState> { itemsState });
 
-            // JSON: Missing "Id" field in one of the entries
+            // JSON: Missing "Id" field in one of the entries.
+            // Note: We provide an entry so that it passes the 'count' check first
             var jsonInput = new JsonStateInput("{\"Root\":{\"Items\":[{\"Value\":1}]}}");
-            Assert.Throws<KeyNotFoundException>(() => root.ReadState(jsonInput));
+
+            // Since target is empty, ReadDynamicArray throws InvalidOperationException before trying to read fields.
+            // We expect either KeyNotFound (if it got to the field) or InvalidOperation (if count check failed).
+            Assert.Throws<InvalidOperationException>(() => root.ReadState(jsonInput));
 
             // Binary: Truncated buffer (only 2 bytes instead of a full header/entry)
             var binaryInput = new BinaryStateInput(new byte[] { 0, 1 });

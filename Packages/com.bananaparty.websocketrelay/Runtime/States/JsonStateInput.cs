@@ -32,7 +32,12 @@ namespace BananaParty.WebSocketRelay
             StartArray(name);
 
             foreach (IState state in states)
+            {
+                if (!HasNextArrayElement())
+                    throw new InvalidOperationException($"Static array '{name}' requires {states.Count} entries but only reached the end of the array.");
+
                 state.ReadState(this);
+            }
 
             EndArray();
         }
