@@ -26,6 +26,8 @@ namespace BananaParty.WebSocketRelay.Samples
         {
             _characteController = GetComponent<CharacterController>();
 
+            _characterInput = GetComponent<IICharacterInput>();
+
             _states = new List<IState> { _health, _position };
         }
 

@@ -11,11 +11,6 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void PollInput()
         {
-            Vector2 input = Vector2.zero;
-            JumpInput = false;
-
-            if (Keyboard.current == null)
-                return;
 
         }
     }

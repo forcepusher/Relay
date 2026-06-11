@@ -11,17 +11,18 @@ namespace BananaParty.WebSocketRelay.Samples
 
         public void PollInput()
         {
-            Vector2 input = Vector2.zero;
+            Vector2 movementInput = Vector2.zero;
             JumpInput = false;
 
             if (Keyboard.current == null)
                 return;
 
-            if (Keyboard.current.wKey.isPressed) input.y += 1f;
-            if (Keyboard.current.sKey.isPressed) input.y -= 1f;
-            if (Keyboard.current.aKey.isPressed) input.x -= 1f;
-            if (Keyboard.current.dKey.isPressed) input.x += 1f;
+            if (Keyboard.current.wKey.isPressed) movementInput.y += 1f;
+            if (Keyboard.current.sKey.isPressed) movementInput.y -= 1f;
+            if (Keyboard.current.aKey.isPressed) movementInput.x -= 1f;
+            if (Keyboard.current.dKey.isPressed) movementInput.x += 1f;
 
+            MovementInput = movementInput;
             JumpInput = Keyboard.current.spaceKey.wasPressedThisFrame;
         }
     }
