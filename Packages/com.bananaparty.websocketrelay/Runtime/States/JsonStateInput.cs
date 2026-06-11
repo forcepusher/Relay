@@ -32,7 +32,12 @@ namespace BananaParty.WebSocketRelay
             StartArray(name);
 
             foreach (IState state in states)
+            {
+                if (!HasNextArrayElement())
+                    throw new InvalidOperationException($"Static array '{name}' requires {states.Count} entries but only reached the end of the array.");
+
                 state.ReadState(this);
+            }
 
             EndArray();
         }
@@ -110,8 +115,7 @@ namespace BananaParty.WebSocketRelay
 
         public string ReadString(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return null;
+            AdvanceToEntry(name);
 
             if (_position < _jsonString.Length && _jsonString[_position] == '"')
                 return ReadQuotedString();
@@ -121,48 +125,42 @@ namespace BananaParty.WebSocketRelay
 
         public byte ReadByte(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0;
+            AdvanceToEntry(name);
 
             return ReadByteAtPosition();
         }
 
         public int ReadInt(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0;
+            AdvanceToEntry(name);
 
             return ReadIntAtPosition();
         }
 
         public long ReadLong(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0L;
+            AdvanceToEntry(name);
 
             return ReadLongAtPosition();
         }
 
         public float ReadFloat(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0f;
+            AdvanceToEntry(name);
 
             return ReadFloatAtPosition();
         }
 
         public double ReadDouble(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return 0d;
+            AdvanceToEntry(name);
 
             return ReadDoubleAtPosition();
         }
 
         public bool ReadBool(string name)
         {
-            if (!TryAdvanceToEntry(name))
-                return false;
+            AdvanceToEntry(name);
 
             return ReadBoolAtPosition();
         }
@@ -239,21 +237,16 @@ namespace BananaParty.WebSocketRelay
             ReadQuotedString();
         }
 
-        private bool TryAdvanceToEntry(string expectedName)
+        private void AdvanceToEntry(string expectedName)
         {
-            if (InArray)
-            {
-                SkipItemSeparator();
-                return true;
-            }
-
             SkipItemSeparator();
+            if (InArray) return;
+
             string entryName = ReadQuotedString();
             if (!string.IsNullOrEmpty(expectedName) && entryName != expectedName)
-                return false;
+                throw new KeyNotFoundException($"Expected field '{expectedName}' but found '{entryName ?? "null"}' in JSON state.");
 
             SkipColon();
-            return true;
         }
 
         private void SkipItemSeparator()

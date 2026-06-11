@@ -7,15 +7,15 @@ namespace BananaParty.WebSocketRelay
 {
     public class BinaryStateInput : IStateInput
     {
-        private readonly byte[] _data;
+        private readonly ReadOnlyMemory<byte> _data;
         private int _pos;
         private readonly Stack<bool> _inArrayStack = new();
 
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
 
-        public BinaryStateInput(byte[] data)
+        public BinaryStateInput(ReadOnlyMemory<byte> data)
         {
-            _data = data ?? Array.Empty<byte>();
+            _data = data;
         }
 
         public void ReadObject(string name, List<IState> states)
@@ -68,31 +68,47 @@ namespace BananaParty.WebSocketRelay
                 incoming.Add(staging);
             }
 
-            var stateMap = new Dictionary<Guid, T>();
-            foreach (T state in states)
-                stateMap[state.StateKey.Value] = state;
+            var incomingKeys = new HashSet<Guid>();
+            foreach (T entry in incoming)
+                incomingKeys.Add(entry.StateKey.Value);
+
+            for (int i = states.Count - 1; i >= 0; i--)
+            {
+                if (incomingKeys.Contains(states[i].StateKey.Value))
+                    continue;
+
+                factory.Dispose(states[i]);
+                states.RemoveAt(i);
+            }
 
             var next = new List<T>(incoming.Count);
             foreach (T staging in incoming)
             {
-                Guid key = staging.StateKey.Value;
-                if (stateMap.TryGetValue(key, out T existing))
+                Guid entryKey = staging.StateKey.Value;
+                T existing = default;
+                foreach (T state in states)
+                {
+                    if (state.StateKey.Value != entryKey)
+                        continue;
+
+                    existing = state;
+                    break;
+                }
+
+                if (existing != null)
                 {
                     CopyStateFrom(staging, existing);
+                    factory.Dispose(staging);
                     next.Add(existing);
-                    stateMap.Remove(key);
                 }
                 else
                 {
-                    T entry = factory.Create(key);
+                    T entry = factory.Create(entryKey);
                     CopyStateFrom(staging, entry);
+                    factory.Dispose(staging);
                     next.Add(entry);
                 }
-                factory.Dispose(staging);
             }
-
-            foreach (T orphaned in stateMap.Values)
-                factory.Dispose(orphaned);
 
             states.Clear();
             states.AddRange(next);
@@ -205,9 +221,9 @@ namespace BananaParty.WebSocketRelay
         private int ReadNameHash()
         {
             if (_pos + 4 > _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading name hash.");
 
-            int hash = BitConverter.ToInt32(_data, _pos);
+            int hash = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return hash;
         }
@@ -215,17 +231,17 @@ namespace BananaParty.WebSocketRelay
         private byte ReadByteValue()
         {
             if (_pos >= _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading byte value.");
 
-            return _data[_pos++];
+            return _data.Span[_pos++];
         }
 
         private int ReadInt32()
         {
             if (_pos + 4 > _data.Length)
-                return 0;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Int32.");
 
-            int value = BitConverter.ToInt32(_data, _pos);
+            int value = BitConverter.ToInt32(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return value;
         }
@@ -233,9 +249,9 @@ namespace BananaParty.WebSocketRelay
         private long ReadInt64()
         {
             if (_pos + 8 > _data.Length)
-                return 0L;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Int64.");
 
-            long value = BitConverter.ToInt64(_data, _pos);
+            long value = BitConverter.ToInt64(_data.Span.Slice(_pos, 8));
             _pos += 8;
             return value;
         }
@@ -243,9 +259,9 @@ namespace BananaParty.WebSocketRelay
         private float ReadFloat32()
         {
             if (_pos + 4 > _data.Length)
-                return 0f;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Float32.");
 
-            float value = BitConverter.ToSingle(_data, _pos);
+            float value = BitConverter.ToSingle(_data.Span.Slice(_pos, 4));
             _pos += 4;
             return value;
         }
@@ -253,9 +269,9 @@ namespace BananaParty.WebSocketRelay
         private double ReadFloat64()
         {
             if (_pos + 8 > _data.Length)
-                return 0d;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Float64.");
 
-            double value = BitConverter.ToDouble(_data, _pos);
+            double value = BitConverter.ToDouble(_data.Span.Slice(_pos, 8));
             _pos += 8;
             return value;
         }
@@ -263,26 +279,26 @@ namespace BananaParty.WebSocketRelay
         private bool ReadBoolValue()
         {
             if (_pos >= _data.Length)
-                return false;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading boolean.");
 
-            return _data[_pos++] != 0;
+            return _data.Span[_pos++] != 0;
         }
 
         private string ReadStringValue()
         {
             if (_pos + 2 > _data.Length)
-                return null;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading string length.");
 
-            ushort length = BitConverter.ToUInt16(_data, _pos);
+            ushort length = BitConverter.ToUInt16(_data.Span.Slice(_pos, 2));
             _pos += 2;
 
             if (length == 0)
                 return string.Empty;
 
             if (_pos + length > _data.Length)
-                return null;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading string content.");
 
-            string value = Encoding.UTF8.GetString(_data, _pos, length);
+            string value = Encoding.UTF8.GetString(_data.Span.Slice(_pos, length));
             _pos += length;
             return value;
         }
@@ -290,12 +306,11 @@ namespace BananaParty.WebSocketRelay
         private Guid ReadGuidValue()
         {
             if (_pos + 16 > _data.Length)
-                return Guid.Empty;
+                throw new EndOfStreamException("Unexpected end of binary stream while reading Guid.");
 
-            byte[] bytes = new byte[16];
-            Array.Copy(_data, _pos, bytes, 0, 16);
+            ReadOnlySpan<byte> guidBytes = _data.Span.Slice(_pos, 16);
             _pos += 16;
-            return new Guid(bytes);
+            return new Guid(guidBytes);
         }
     }
 }

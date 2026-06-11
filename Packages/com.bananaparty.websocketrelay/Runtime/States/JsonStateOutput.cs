@@ -68,19 +68,22 @@ namespace BananaParty.WebSocketRelay
             if (!_hasStarted) return "{}";
 
             StringBuilder result = new(_sb.ToString());
-            while (_closers.Count > 0)
+            int tempDepth = _depth;
+            var closersCopy = new Stack<char>(_closers);
+
+            while (closersCopy.Count > 0)
             {
-                char closer = _closers.Pop();
-                if (_prettyPrint && _depth > 0)
+                char closer = closersCopy.Pop();
+                if (_prettyPrint && tempDepth > 1)
                 {
                     result.Append('\n');
-                    _depth--;
-                    if (_depth > 0)
-                        result.Append(new string(' ', _depth * _indentationCount));
+                    tempDepth--;
+                    if (tempDepth > 0)
+                        result.Append(new string(' ', tempDepth * _indentationCount));
                 }
                 else
                 {
-                    _depth--;
+                    tempDepth--;
                 }
                 result.Append(closer);
             }

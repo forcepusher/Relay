@@ -1,15 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace BananaParty.WebSocketRelay
 {
-    public class BinaryStateOutput : IStateOutput
+    public class BinaryStateOutput : IStateOutput, IDisposable
     {
-        private readonly List<byte> _buffer = new();
+        private readonly MemoryStream _stream = new();
+        private readonly BinaryWriter _buffer;
         private readonly Stack<bool> _inArrayStack = new();
 
+        public BinaryStateOutput()
+        {
+            _buffer = new BinaryWriter(_stream, Encoding.UTF8, leaveOpen: true);
+        }
+
         private bool InArray => _inArrayStack.Count > 0 && _inArrayStack.Peek();
+
+        public ReadOnlyMemory<byte> GetBuffer() => _stream.GetBuffer().AsMemory(0, (int)_stream.Length);
 
         public void WriteObject(string name, List<IState> states)
         {
@@ -58,7 +67,7 @@ namespace BananaParty.WebSocketRelay
 
         public void WriteGuid(string name, Guid value) => WriteEntry(name, value);
 
-        public byte[] ToArray() => _buffer.ToArray();
+        public byte[] ToArray() => _stream.ToArray();
 
         private void StartObject(string name)
         {
@@ -87,62 +96,68 @@ namespace BananaParty.WebSocketRelay
         private void WriteEntry(string name, byte value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.Add(value);
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, int value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.AddRange(BitConverter.GetBytes(value));
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, long value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.AddRange(BitConverter.GetBytes(value));
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, float value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.AddRange(BitConverter.GetBytes(value));
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, double value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.AddRange(BitConverter.GetBytes(value));
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, bool value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.Add(value ? (byte)1 : (byte)0);
+            _buffer.Write(value);
         }
 
         private void WriteEntry(string name, string value)
         {
             WriteNameHash(InArray ? null : name);
             byte[] stringBytes = Encoding.UTF8.GetBytes(value ?? string.Empty);
-            _buffer.AddRange(BitConverter.GetBytes((ushort)stringBytes.Length));
-            _buffer.AddRange(stringBytes);
+            _buffer.Write((ushort)stringBytes.Length);
+            _buffer.Write(stringBytes);
         }
 
         private void WriteEntry(string name, Guid value)
         {
             WriteNameHash(InArray ? null : name);
-            _buffer.AddRange(value.ToByteArray());
+            _buffer.Write(value.ToByteArray());
         }
 
         private void WriteEntry(int value)
         {
             WriteNameHash(null);
-            _buffer.AddRange(BitConverter.GetBytes(value));
+            _buffer.Write(value);
         }
 
         private void WriteNameHash(string name)
         {
-            _buffer.AddRange(BitConverter.GetBytes(Hash.StringToInt(name)));
+            _buffer.Write(Hash.StringToInt(name));
+        }
+
+        public void Dispose()
+        {
+            _buffer.Dispose();
+            _stream.Dispose();
         }
     }
 }
